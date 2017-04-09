@@ -16,4 +16,4 @@ Defer your questions about the license to the relevant sites, but here are my ge
 * If you use it as derivation (whole or part) to other software, give me proper credit and share under a similar license with the same philosophy.
 * Profitting from the use of or access to this software is not OK.
 
-TL;DR -- Feel free to use this software for education, but do not take away my credit for what it does for you.
+TL;DR -- Feel free to use this software for education and academic research, but do not take away my credit for what it does for you.
