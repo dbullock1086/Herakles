@@ -18,26 +18,26 @@ This setup assumes that you are working on lxplus. It is anticipated that it sho
 
 Clone the repository to a "user" area:
 
-'''
+```
 cd ~
 mkdir PrometeoSource
 cd PrometeoSource
 git clone https://github.com/dbullock1086/Herakles
-'''
+```
 
 Now create a "work" area in a directory suitable for working with large files (~ 10 MB to 10 GB):
 
-'''
+```
 cd ~/workarea
 mkdir PrometeoTest
 cd PrometeoTest
-'''
+```
 
 Copy the `setup.sh` file from the source directory into this new area:
 
-'''
+```
 cp ~/PrometeoSource/Herakles/share/setup.sh .
-'''
+```
 
 Edit this setup file to ensure that
 - the RootCore version is acceptable
