@@ -10,7 +10,7 @@
 #include <Herakles/Global.h>
 #include <EventLoop/Algorithm.h>
 #include <TTree.h>
-#include <TH1S.h>
+#include <TH1D.h>
 
 namespace TD
 {
@@ -28,7 +28,7 @@ namespace TD
 
     TTree *m_tree; //!
 
-    TH1S *m_charge; //!
+    TH1D *m_charge; //!
 
     Int_t charge; //!
 

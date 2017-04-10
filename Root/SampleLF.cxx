@@ -35,10 +35,12 @@ namespace TD
     m_lfstd_hi = new TH2D ("SampleLF_std_hi",
 			   "SampleLF_std_hi",
 			   128, 0, 128, 48, 0, 48);
+
     wk()->addOutput (m_lfmean_lo);
     wk()->addOutput (m_lfmean_hi);
     wk()->addOutput (m_lfstd_lo);
     wk()->addOutput (m_lfstd_hi);
+
     for (pmt=1; pmt<49; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);

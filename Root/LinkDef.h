@@ -15,6 +15,8 @@
 #pragma link off all functions;
 #pragma link C++ nestedclass;
 
+#pragma link C++ function PulseShape+;
+
 #pragma link C++ namespace TD;
 
 #pragma link C++ class EvtRange+;
@@ -22,12 +24,14 @@
 #pragma link C++ class CapRange+;
 #pragma link C++ class ChargeRange+;
 #pragma link C++ class PedRange+;
-#pragma link C++ class PedRatio+;
-#pragma link C++ class SampleHF+;
-#pragma link C++ class SampleLF+;
 #pragma link C++ class SampleRange+;
 
-#pragma link C++ class HFRange;
-#pragma link C++ class HFRange;
-#pragma link C++ class PulseRange;
+#pragma link C++ class PedRatio+;
+#pragma link C++ class CRCError+;
+#pragma link C++ class SampleHF+;
+#pragma link C++ class SampleLF+;
+#pragma link C++ class CorrHF+;
+#pragma link C++ class PulseFit+;
+#pragma link C++ class PulseShape+;
+
 #endif

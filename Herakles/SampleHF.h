@@ -10,7 +10,7 @@
 #include <Herakles/Global.h>
 #include <EventLoop/Algorithm.h>
 #include <TTree.h>
-#include <TH2D.h>
+#include <TH1D.h>
 
 namespace TD
 {
@@ -37,10 +37,15 @@ namespace TD
     EL::NTupleSvc *ntuple; //!
     TTree *m_tree; //!
 
-    TH2D *m_hfmean_lo; //!
-    TH2D *m_hfmean_hi; //!
-    TH2D *m_hfstd_lo;  //!
-    TH2D *m_hfstd_hi;  //!
+    TH1D *m_hfmean_lo_min; //!
+    TH1D *m_hfmean_lo_max; //!
+    TH1D *m_hfmean_hi_min; //!
+    TH1D *m_hfmean_hi_max; //!
+
+    TH1D *m_hfstd_lo_min; //!
+    TH1D *m_hfstd_lo_max; //!
+    TH1D *m_hfstd_hi_min; //!
+    TH1D *m_hfstd_hi_max; //!
 
     Float_t samples_hi[48][128]; //!
     Float_t samples_lo[48][128]; //!

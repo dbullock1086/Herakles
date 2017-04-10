@@ -11,8 +11,6 @@
 #include <EventLoop/Algorithm.h>
 #include <EventLoopAlgs/NTupleSvc.h>
 #include <TTree.h>
-#include <TH2S.h>
-#include <TH2D.h>
 #include <TH1D.h>
 #include <TF1.h>
 
@@ -44,20 +42,40 @@ namespace TD
     TF1   *fit_temp;       //!
     TF1   *fitRes;         //!
 
-    TH2D *m_pedestal_lo; //!
-    TH2D *m_pedestal_hi; //!
-    TH2D *m_height_lo;   //!
-    TH2D *m_height_hi;   //!
-    TH2D *m_phase_lo;    //!
-    TH2D *m_phase_hi;    //!
-    TH2D *m_width_lo;    //!
-    TH2D *m_width_hi;    //!
-    TH2D *m_chisqr_lo;   //!
-    TH2D *m_chisqr_hi;   //!
-    TH2S *m_ndf_lo;      //!
-    TH2S *m_ndf_hi;      //!
-    TH2D *m_chgratio_lo; //!
-    TH2D *m_chgratio_hi; //!
+    TH1D *m_pedestal_lo_min; //!
+    TH1D *m_pedestal_lo_max; //!
+    TH1D *m_pedestal_hi_min; //!
+    TH1D *m_pedestal_hi_max; //!
+
+    TH1D *m_height_lo_min; //!
+    TH1D *m_height_lo_max; //!
+    TH1D *m_height_hi_min; //!
+    TH1D *m_height_hi_max; //!
+
+    TH1D *m_phase_lo_min; //!
+    TH1D *m_phase_lo_max; //!
+    TH1D *m_phase_hi_min; //!
+    TH1D *m_phase_hi_max; //!
+
+    TH1D *m_width_lo_min; //!
+    TH1D *m_width_lo_max; //!
+    TH1D *m_width_hi_min; //!
+    TH1D *m_width_hi_max; //!
+
+    TH1D *m_chisqr_lo_min; //!
+    TH1D *m_chisqr_lo_max; //!
+    TH1D *m_chisqr_hi_min; //!
+    TH1D *m_chisqr_hi_max; //!
+
+    TH1D *m_ndf_lo_min; //!
+    TH1D *m_ndf_lo_max; //!
+    TH1D *m_ndf_hi_min; //!
+    TH1D *m_ndf_hi_max; //!
+
+    TH1D *m_chgratio_lo_min; //!
+    TH1D *m_chgratio_lo_max; //!
+    TH1D *m_chgratio_hi_min; //!
+    TH1D *m_chgratio_hi_max; //!
 
     Float_t samples_hi[48][128]; //!
     Float_t samples_lo[48][128]; //!
@@ -73,24 +91,30 @@ namespace TD
     UShort sample; //!
 
     Double_t pedestal[2][48]; //!
-    Double_t height[2][48]; //!
-    Double_t width[2][48]; //!
-    Double_t phase[2][48]; //!
-    Double_t chisqr[2][48]; //!
-    Double_t chgratio[2][48]; //!
-    Short_t ndf[2][48]; //!
     Double_t pedestal_min[2][48]; //!
     Double_t pedestal_max[2][48]; //!
+
+    Double_t height[2][48]; //!
     Double_t height_min[2][48]; //!
     Double_t height_max[2][48]; //!
+
+    Double_t width[2][48]; //!
     Double_t width_min[2][48]; //!
     Double_t width_max[2][48]; //!
+
+    Double_t phase[2][48]; //!
     Double_t phase_min[2][48]; //!
     Double_t phase_max[2][48]; //!
+
+    Double_t chisqr[2][48]; //!
     Double_t chisqr_min[2][48]; //!
     Double_t chisqr_max[2][48]; //!
+
+    Short_t ndf[2][48]; //!
     Short_t ndf_min[2][48]; //!
     Short_t ndf_max[2][48]; //!
+
+    Double_t chgratio[2][48]; //!
     Double_t chgratio_min[2][48]; //!
     Double_t chgratio_max[2][48]; //!
 

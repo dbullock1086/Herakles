@@ -21,10 +21,10 @@ namespace TD
   {
     evt_min = 10e10;
     evt_max = -1;
-    m_evt = new TH1S ("EvtRange", "EvtRange", 2, 0, 2);
+    m_evt = new TH1D ("EvtRange", "Evt Range", 2, 0, 2);
     wk()->addOutput (m_evt);
-    m_evt->GetXaxis()->SetBinLabel (1, "evt_min");
-    m_evt->GetXaxis()->SetBinLabel (2, "evt_max");
+    m_evt->GetXaxis()->SetBinLabel (1, "Min");
+    m_evt->GetXaxis()->SetBinLabel (2, "Max");
 
     return EL::StatusCode::SUCCESS;
   }
@@ -41,8 +41,8 @@ namespace TD
     m_tree->SetBranchAddress ("evt", &evt);
     m_tree->GetEntry (wk()->treeEntry());
 
-    if (evt < evt_min)      evt_min = evt;
-    else if (evt > evt_max) evt_max = evt;
+    if (evt < evt_min) evt_min = evt;
+    if (evt > evt_max) evt_max = evt;
 
     return EL::StatusCode::SUCCESS;
   }

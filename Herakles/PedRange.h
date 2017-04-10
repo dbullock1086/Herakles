@@ -10,7 +10,7 @@
 #include <Herakles/Global.h>
 #include <EventLoop/Algorithm.h>
 #include <TTree.h>
-#include <TH2S.h>
+#include <TH1D.h>
 
 namespace TD
 {
@@ -35,8 +35,12 @@ namespace TD
 
     TTree *m_tree; //!
 
-    TH2S *m_ped_lo; //!
-    TH2S *m_ped_hi; //!
+    TH1D *m_ped_lo_min; //!
+    TH1D *m_ped_lo_max; //!
+    TH1D *m_ped_hi_min; //!
+    TH1D *m_ped_hi_max; //!
+    TH1D *m_pedsteps_lo; //!
+    TH1D *m_pedsteps_hi; //!
 
     Float_t ped_hi[48]; //!
     Float_t ped_lo[48]; //!

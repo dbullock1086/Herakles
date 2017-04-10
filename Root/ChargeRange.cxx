@@ -19,13 +19,18 @@ namespace TD
 
   EL::StatusCode ChargeRange :: initialize ()
   {
-    charge_min = 0;
-    charge_max = 0;
+    charge_min = 4096;
+    charge_max = -1;
 
-    m_charge = new TH1S ("ChargeRange", "ChargeRange", 2, 0, 2);
+    charge_prev = -1;
+    charge_steps = 0;
+
+    m_charge = new TH1D ("ChargeRange", "Charge Range", 2, 0, 2);
+    m_chargesteps = new TH1D ("ChargeSteps", "Charge Steps", 1, 0, 1);
     wk()->addOutput (m_charge);
-    m_charge->GetXaxis()->SetBinLabel (1, "charge_min");
-    m_charge->GetXaxis()->SetBinLabel (2, "charge_max");
+    m_charge->GetXaxis()->SetBinLabel (1, "Min");
+    m_charge->GetXaxis()->SetBinLabel (2, "Max");
+    m_chargesteps->GetXaxis()->SetBinLabel (1, "Steps");
 
     return EL::StatusCode::SUCCESS;
   }
@@ -42,8 +47,8 @@ namespace TD
     m_tree->SetBranchAddress ("charge", &charge);
     m_tree->GetEntry (wk()->treeEntry());
 
-    if (charge < charge_min)      charge_min = charge;
-    else if (charge > charge_max) charge_max = charge;
+    if (charge < charge_min) charge_min = charge;
+    if (charge > charge_max) charge_max = charge;
 
     return EL::StatusCode::SUCCESS;
   }
@@ -61,6 +66,9 @@ namespace TD
     m_charge->SetBinContent (2, charge_max);
     m_charge->SetBinError (2, 0);
 
+    m_chargesteps->SetBinContent (1, charge_steps);
+    m_chargesteps->SetBinError (1, 0);
+    
     return EL::::StatusCode::SUCCESS;
   }
 }

@@ -21,19 +21,37 @@ namespace TD
   {
     char buffer[5];
     
-    m_ped_lo = new TH2S ("PedRange_lo", "PedRange_lo", 48, 0, 48, 2, 0, 2);
-    m_ped_hi = new TH2S ("PedRange_hi", "PedRange_hi", 48, 0, 48, 2, 0, 2);
-    wk()->addOutput (m_ped_lo);
-    wk()->addOutput (m_ped_hi);
-    m_ped_lo->GetYaxis()->SetBinLabel (1, "Min");
-    m_ped_lo->GetYaxis()->SetBinLabel (2, "Max");
-    m_ped_hi->GetYaxis()->SetBinLabel (1, "Min");
-    m_ped_hi->GetYaxis()->SetBinLabel (2, "Max");
+    m_ped_lo_min = new TH1D ("PedRange_lo_min", "PedRange Low", 48, 0, 48);
+    m_ped_lo_max = new TH1D ("PedRange_lo_max", "PedRange Low", 48, 0, 48);
+    m_ped_hi_min = new TH1D ("PedRange_hi_min", "PedRange High", 48, 0, 48);
+    m_ped_hi_max = new TH1D ("PedRange_hi_max", "PedRange High", 48, 0, 48);
+
+    m_pedsteps_lo = new TH1D ("PedSteps_lo", "Ped Steps Low", 48, 0, 48);
+    m_pedsteps_hi = new TH1D ("PedSteps_hi", "Ped Steps High", 48, 0, 48);
+
+    wk()->addOutput (m_ped_lo_min);
+    wk()->addOutput (m_ped_lo_max);
+    wk()->addOutput (m_ped_hi_min);
+    wk()->addOutput (m_ped_hi_max);
+    wk()->addOutput (m_pedsteps_lo);
+    wk()->addOutput (m_pedsteps_hi);
+
+    m_ped_lo_min->SetYTitle ("Min");
+    m_ped_lo_max->SetYTitle ("Max");
+    m_ped_hi_min->SetYTitle ("Min");
+    m_ped_hi_max->SetYTitle ("Max");
+    m_pedsteps_lo->SetYTitle ("Steps");
+    m_pedsteps_hi->SetYTitle ("Steps");
+
     for (pmt=1; pmt<49; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
-	m_ped_lo->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_ped_hi->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_ped_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_ped_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_ped_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_ped_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_pedsteps_lo->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_pedsteps_hi->GetXaxis()->SetBinLabel (pmt, buffer);
       }
 
     for (i=0; i<sizeof(gains); i++)
@@ -44,6 +62,8 @@ namespace TD
 	    pmt = channels[j];
 	    ped_min[gain][pmt] = 4096;
 	    ped_max[gain][pmt] = -1;
+	    ped_prev[gain][pmt] = -1;
+	    ped_steps[gain][pmt] = 0;
 	  } // end pmt
       } // end gain
 
@@ -71,7 +91,9 @@ namespace TD
 	    if (gain) ped = ped_hi[pmt];
 	    else ped = ped_lo[pmt];
 	    if (ped < ped_min[gain][pmt]) ped_min[gain][pmt] = ped;
-	    else if (ped > ped_max[gain][pmt]) ped_max[gain][pmt] = ped;
+	    if (ped > ped_max[gain][pmt]) ped_max[gain][pmt] = ped;
+	    if (ped != ped_prev[gain][pmt]) ped_steps[gain][pmt]++;
+	    ped_prev[gain][pmt] = ped;
 	  } // end pmt
       } // end gain
     return EL::StatusCode::SUCCESS;
@@ -94,14 +116,16 @@ namespace TD
 
 	    if (gain)
 	      {
-		m_ped_hi->Fill (pmt, 0, ped_min[gain][pmt]);
-		m_ped_hi->Fill (pmt, 1, ped_max[gain][pmt]);
+		m_ped_hi_min->Fill (pmt, ped_min[gain][pmt]);
+		m_ped_hi_max->Fill (pmt, ped_max[gain][pmt]);
+		m_pedsteps_hi->Fill (pmt, ped_steps[gain][pmt];
 	      }
 
 	    else
 	      {
-		m_ped_lo->Fill (pmt, 0, ped_min[gain][pmt]);
-		m_ped_lo->Fill (pmt, 1, ped_max[gain][pmt]);
+		m_ped_lo_min->Fill (pmt, ped_min[gain][pmt]);
+		m_ped_lo_max->Fill (pmt, ped_max[gain][pmt]);
+		m_pedsteps_lo->Fill (pmt, ped_steps[gain][pmt];
 	      }
 	  } // end pmt
       } // end gain

@@ -93,7 +93,7 @@ namespace TD
 		  {
 		    pedratio_min[gain][pmt] = pedratio[gain][pmt][sample];
 		  }
-		else if (pedratio[gain][pmt][sample] > pedratio_max[gain][pmt])
+		if (pedratio[gain][pmt][sample] > pedratio_max[gain][pmt])
 		  {
 		    pedratio_max[gain][pmt] = pedratio[gain][pmt][sample];
 		  }

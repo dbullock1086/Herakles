@@ -21,16 +21,25 @@ namespace TD
   {
     char buffer[5];
 
-    m_sample_lo = new TH2S ("SampleRange_lo", "SampleRange_lo",
-			    48, 0, 48, 2, 0, 2);
-    m_sample_hi = new TH2S ("SampleRange_hi", "SampleRange_hi",
-			    48, 0, 48, 2, 0, 2);
-    wk()->addOutput (m_sample_lo);
-    wk()->addOutput (m_sample_hi);
-    m_sample_lo->GetXaxis()->SetBinLabel (1, "Min");
-    m_sample_lo->GetXaxis()->SetBinLabel (2, "Max");
-    m_sample_hi->GetXaxis()->SetBinLabel (1, "Min");
-    m_sample_hi->GetXaxis()->SetBinLabel (2, "Max");
+    m_sample_lo_min = new TH1D ("SampleRange_lo_min", "Sample Range Low",
+				48, 0, 48);
+    m_sample_lo_max = new TH1D ("SampleRange_lo_max", "Sample Range Low",
+				48, 0, 48);
+    m_sample_hi_min = new TH1D ("SampleRange_hi_min", "Sample Range High",
+				48, 0, 48);
+    m_sample_hi_max = new TH1D ("SampleRange_hi_max", "Sample Range High",
+				48, 0, 48);
+
+    wk()->addOutput (m_sample_lo_min);
+    wk()->addOutput (m_sample_lo_max);
+    wk()->addOutput (m_sample_hi_min);
+    wk()->addOutput (m_sample_hi_max);
+
+    m_sample_lo_min->SetYTitle ("Min");
+    m_sample_lo_max->SetYTitle ("Max");
+    m_sample_hi_min->SetYTitle ("Min");
+    m_sample_hi_max->SetYTitle ("Max");
+
     for (pmt=1; pmt<49; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
@@ -82,7 +91,7 @@ namespace TD
 		      {
 			samples_min[gain][pmt] = sval;
 		      }
-		    else if (sval > samples_max[gain][pmt])
+		    if (sval > samples_max[gain][pmt])
 		      {
 			samples_max[gain][pmt] = sval;
 		      }
@@ -110,14 +119,14 @@ namespace TD
 
             if (gain)
 	      {
-		m_sample_hi->Fill (pmt, 0, sample_min[gain][pmt]);
-		m_sample_hi->Fill (pmt, 1, sample_max[gain][pmt]);
+		m_sample_hi_min->Fill (pmt, sample_min[gain][pmt]);
+		m_sample_hi_max->Fill (pmt, sample_max[gain][pmt]);
 	      }
 
 	    else
 	      {
-		m_sample_lo->Fill (pmt, 0, sample_min[gain][pmt]);
-		m_sample_lo->Fill (pmt, 1, sample_max[gain][pmt]);
+		m_sample_lo_min->Fill (pmt, sample_min[gain][pmt]);
+		m_sample_lo_max->Fill (pmt, sample_max[gain][pmt]);
 	      }
 	  } // end pmt
       } // end gain

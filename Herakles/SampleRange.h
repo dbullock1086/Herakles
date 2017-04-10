@@ -11,7 +11,7 @@
 #include <EventLoop/Algorithm.h>
 #include <EventLoopAlgs/NTupleSvc.h>
 #include <TTree.h>
-#include <TH2S.h>
+#include <TH1D.h>
 
 namespace TD
 {
@@ -37,8 +37,10 @@ namespace TD
 
     TTree *m_tree; //!
 
-    TH2S *m_sample_lo; //!
-    TH2S *m_sample_hi; //!
+    TH1D *m_sample_lo_min; //!
+    TH1D *m_sample_lo_max; //!
+    TH1D *m_sample_hi_min; //!
+    TH1D *m_sample_hi_max; //!
 
     Float_t samples_hi[48][128]; //!
     Float_t samples_lo[48][128]; //!

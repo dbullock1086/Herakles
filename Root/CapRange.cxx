@@ -22,10 +22,16 @@ namespace TD
     cap_min = 4096;
     cap_max = -1;
 
-    m_cap = new TH1S ("CapRange", "CapRange", 2, 0, 2);
+    cap_prev = -1;
+    cap_steps = 0;
+
+    m_cap = new TH1D ("CapRange", "Cap Range", 2, 0, 2);
+    m_capsteps = new TH1D ("CapSteps", "Cap Steps", 1, 0, 1);
     wk()->addOutput (m_cap);
-    m_cap->GetXaxis()->SetBinLabel (1, "cap_min");
-    m_cap->GetXaxis()->SetBinLabel (2, "cap_max");
+    wk()->addOutput (m_capsteps);
+    m_cap->GetXaxis()->SetBinLabel (1, "Min");
+    m_cap->GetXaxis()->SetBinLabel (2, "Max");
+    m_capsteps->GetXaxis()->SetBinLabel (1, "Steps");
 
     return EL::StatusCode::SUCCESS;
   }
@@ -42,8 +48,11 @@ namespace TD
     m_tree->SetBranchAddress ("cap", &cap);
     m_tree->GetEntry (wk()->treeEntry());
 
-    if (cap < cap_min)      cap_min = cap;
-    else if (cap > cap_max) cap_max = cap;
+    if (cap < cap_min) cap_min = cap;
+    if (cap > cap_max) cap_max = cap;
+
+    if (cap != cap_prev) cap_steps++;
+    cap_prev = cap;
 
     return EL::StatusCode::SUCCESS;
   }
@@ -60,6 +69,9 @@ namespace TD
     m_cap->SetBinError (1, 0);
     m_cap->SetBinContent (2, cap_max);
     m_cap->SetBinError (2, 0);
+
+    m_capsteps->SetBinContent (1, cap_steps);
+    m_capsteps->SetBinError (1, 0);
 
     return EL::::StatusCode::SUCCESS;
   }

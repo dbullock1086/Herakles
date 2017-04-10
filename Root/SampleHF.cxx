@@ -26,33 +26,57 @@ namespace TD
     ntuple->tree()->Branch ("hfmean", &hfmean, "hfmean[2][48]/D");
     ntuple->tree()->Branch ("hfstd",  &hfstd,  "hfstd[2][48]/D");
 
-    m_hfmean_lo = new TH2D ("SampleHF_mean_lo", "SampleHF_mean_lo",
-			    48, 0, 48, 2, 0, 2);
-    m_hfmean_hi = new TH1D ("SampleHF_mean_hi", "SampleHF_mean_hi",
-			    48, 0, 48, 2, 0, 2);
-    m_hfstd_lo  = new TH1D ("SampleHF_std_lo", "SampleHF_std_lo",
-			    48, 0, 48, 2, 0, 2);
-    m_hfstd_hi  = new TH1D ("SampleHF_std_hi", "SampleHF_std_hi",
-			    48, 0, 48, 2, 0, 2);
-    wk()->addOutput (m_hfmean_lo);
-    wk()->addOutput (m_hfmean_hi);
-    wk()->addOutput (m_hfstd_lo);
-    wk()->addOutput (m_hfstd_hi);
-    m_hfmean_lo->GetXaxis()->SetBinLabel (1, "Min");
-    m_hfmean_lo->GetXaxis()->SetBinLabel (2, "Max");
-    m_hfmean_hi->GetXaxis()->SetBinLabel (1, "Min");
-    m_hfmean_hi->GetXaxis()->SetBinLabel (2, "Max");
-    m_hfstd_lo ->GetXaxis()->SetBinLabel (1, "Min");
-    m_hfstd_lo ->GetXaxis()->SetBinLabel (2, "Max");
-    m_hfstd_hi ->GetXaxis()->SetBinLabel (1, "Min");
-    m_hfstd_hi ->GetXaxis()->SetBinLabel (2, "Max");
+    m_hfmean_lo_min = new TH1D ("SampleHF_mean_lo_min", "Sample HF Mean Low",
+				48, 0, 48);
+    m_hfmean_lo_max = new TH1D ("SampleHF_mean_lo_max", "Sample HF Mean Low",
+				48, 0, 48);
+    m_hfmean_hi_min = new TH1D ("SampleHF_mean_hi_min", "Sample HF Mean High",
+				48, 0, 48);
+    m_hfmean_hi_max = new TH1D ("SampleHF_mean_hi_max", "Sample HF Mean High",
+				48, 0, 48);
+
+    m_hfstd_lo_min = new TH1D ("SampleHF_std_lo_min", "Sample HF StdDev Low",
+			       48, 0, 48);
+    m_hfstd_lo_max = new TH1D ("SampleHF_std_lo_max", "Sample HF StdDev Low",
+			       48, 0, 48);
+    m_hfstd_hi_min = new TH1D ("SampleHF_std_hi_min", "Sample HF StdDev High",
+			       48, 0, 48);
+    m_hfstd_hi_max = new TH1D ("SampleHF_std_hi_max", "Sample HF StdDev High",
+			       48, 0, 48);
+
+    wk()->addOutput (m_hfmean_lo_min);
+    wk()->addOutput (m_hfmean_lo_max);
+    wk()->addOutput (m_hfmean_hi_min);
+    wk()->addOutput (m_hfmean_hi_max);
+
+    wk()->addOutput (m_hfstd_lo_min);
+    wk()->addOutput (m_hfstd_lo_max);
+    wk()->addOutput (m_hfstd_hi_min);
+    wk()->addOutput (m_hfstd_hi_max);
+
+    m_hfmean_lo_min->SetYTitle ("Min");
+    m_hfmean_lo_max->SetYTitle ("Max");
+    m_hfmean_hi_min->SetYTitle ("Min");
+    m_hfmean_hi_max->SetYTitle ("Max");
+
+    m_hfstd_lo_min->SetYTitle ("Min");
+    m_hfstd_lo_max->SetYTitle ("Max");
+    m_hfstd_hi_min->SetYTitle ("Min");
+    m_hfstd_hi_max->SetYTitle ("Max");
+
     for (pmt=1; pmt<49; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
-	m_hfmean_lo->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfmean_hi->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfstd_lo ->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfstd_hi ->GetXaxis()->SetBinLabel (pmt, buffer);
+
+	m_hfmean_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfmean_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfmean_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfmean_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+
+	m_hfstd_lo_min ->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfstd_lo_max ->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfstd_hi_min ->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfstd_hi_max ->GetXaxis()->SetBinLabel (pmt, buffer);
       }
 
     for (i=0; i<sizeof(gains); i++)
@@ -123,7 +147,7 @@ namespace TD
 	      {
 		hfmean_min[gain][pmt] = mean;
 	      }
-	    else if (mean > hfmean_max[gain][pmt])
+	    if (mean > hfmean_max[gain][pmt])
 	      {
 		hfmean_max[gain][pmt] = mean;
 	      }
@@ -131,7 +155,7 @@ namespace TD
 	      {
 		hfstd_min[gain][pmt] = std;
 	      }
-	    else if (std > hfstd_max[gain][pmt])
+	    if (std > hfstd_max[gain][pmt])
 	      {
 		hfstd_max[gain][pmt] = std;
 	      }
@@ -162,10 +186,10 @@ namespace TD
 
 	    if (gain)
 	      {
-		m_hfmean_hi->Fill (pmt, 0, hfmean_min[gain][pmt]);
-		m_hfmean_hi->Fill (pmt, 1, hfmean_max[gain][pmt]);
-		m_hfstd_hi ->Fill (pmt, 0, hfstd_min[gain][pmt]);
-		m_hfstd_hi ->Fill (pmt, 1, hfstd_max[gain][pmt]);
+		m_hfmean_hi_min->Fill (pmt, hfmean_min[gain][pmt]);
+		m_hfmean_hi_max->Fill (pmt, hfmean_max[gain][pmt]);
+		m_hfstd_hi_min->Fill (pmt, hfstd_min[gain][pmt]);
+		m_hfstd_hi_max->Fill (pmt, hfstd_max[gain][pmt]);
 	      }
 
 	    else

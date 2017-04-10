@@ -25,19 +25,33 @@ namespace TD
     ntuple = EL::getNTupleSvc (wk(), "ntuple");
     ntuple->tree()->Branch ("crc", &crc, "crc[2][48]/s");
 
-    m_crc_lo = new TH2S ("CRCError_lo", "CRCError_lo", 48, 0, 48, 2, 0, 2);
-    m_crc_hi = new TH2S ("CRCError_hi", "CRCError_hi", 48, 0, 48, 2, 0, 2);
-    wk()->addOutput (m_crc_lo);
-    wk()->addOutput (m_crc_hi);
-    m_crc_lo->GetYaxis()->SetBinLabel (1, "Min");
-    m_crc_lo->GetYaxis()->SetBinLabel (2, "Max");
-    m_crc_hi->GetYaxis()->SetBinLabel (1, "Min");
-    m_crc_hi->GetYaxis()->SetBinLabel (2, "Max");
+    m_crc_lo_min = new TH1D ("CRCError_lo_min", "CRC Low",
+			     48, 0, 48);
+    m_crc_lo_max = new TH1D ("CRCError_lo_max", "CRC Low",
+			     48, 0, 48);
+    m_crc_hi_min = new TH1D ("CRCError_hi_min", "CRC High",\
+			     48, 0, 48);
+    m_crc_hi_max = new TH1D ("CRCError_hi_max", "CRC High",\
+			     48, 0, 48);
+
+    wk()->addOutput (m_crc_lo_min);
+    wk()->addOutput (m_crc_lo_max);
+    wk()->addOutput (m_crc_hi_min);
+    wk()->addOutput (m_crc_hi_max);
+
+    m_crc_lo_min->SetYTitle ("Min");
+    m_crc_lo_max->SetYTitle ("Max");
+    m_crc_hi_min->SetYTitle ("Min");
+    m_crc_hi_max->SetYTitle ("Max");
+
     for (pmt=1; pmt<49; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
-	m_crc_lo->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_crc_hi->GetXaxis()->SetBinLabel (pmt, buffer);
+
+	m_crc_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_crc_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_crc_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_crc_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
       }
     
     for (i=0; i<sizeof(gains); i++)
@@ -85,7 +99,7 @@ namespace TD
 	      {
 		crc_min[gain][pmt] = crc[gain][pmt];
 	      }
-	    else if (crc[gain][pmt] > crc_max[gain][pmt])
+	    if (crc[gain][pmt] > crc_max[gain][pmt])
 	      {
 		crc_max[gain][pmt] = crc[gain][pmt];
 	      }
@@ -110,13 +124,13 @@ namespace TD
 	      }
 	    if (gain)
 	      {
-		m_crc_hi->Fill (pmt, 0, crc_min[gain][pmt]);
-		m_crc_hi->Fill (pmt, 1, crc_max[gain][pmt]);
+		m_crc_hi_min->Fill (pmt, crc_min[gain][pmt]);
+		m_crc_hi_max->Fill (pmt, crc_max[gain][pmt]);
 	      }
 	    else
 	      {
-		m_crc_lo->Fill (pmt, 0, crc_min[gain][pmt]);
-		m_crc_lo->Fill (pmt, 1, crc_max[gain][pmt]);
+		m_crc_lo_min->Fill (pmt, crc_min[gain][pmt]);
+		m_crc_lo_max->Fill (pmt, crc_max[gain][pmt]);
 	      }
 	  } // end pmt
       } // end gain
