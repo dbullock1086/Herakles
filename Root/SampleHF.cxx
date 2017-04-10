@@ -20,12 +20,29 @@ namespace TD
 
   EL::StatusCode SampleHF :: initialize ()
   {
+    // label buffer
     char buffer[5];
 
+    // initialize with inverted min-max
+    for (i=0; i<sizeof(gains); i++)
+      {
+	gain = gains[i];
+	for (j=0; j<sizeof(channels); j++)
+	  {
+	    pmt = channels[i];
+	    hfmean_min[gain][pmt] = 4096;
+	    hfmean_max[gain][pmt] = -1;
+	    hfstd_min [gain][pmt] = 4096;
+	    hfstd_max [gain][pmt] = -1;
+	  } // end pmt
+      } // end gain
+
+    // new branch added to raw data
     ntuple = EL::getNTupleSvc (wk(), "ntuple");
     ntuple->tree()->Branch ("hfmean", &hfmean, "hfmean[2][48]/D");
     ntuple->tree()->Branch ("hfstd",  &hfstd,  "hfstd[2][48]/D");
 
+    // histogram contains min and max in separate bins
     m_hfmean_lo_min = new TH1D ("SampleHF_mean_lo_min", "Sample HF Mean Low",
 				48, 0, 48);
     m_hfmean_lo_max = new TH1D ("SampleHF_mean_lo_max", "Sample HF Mean Low",
@@ -43,16 +60,6 @@ namespace TD
 			       48, 0, 48);
     m_hfstd_hi_max = new TH1D ("SampleHF_std_hi_max", "Sample HF StdDev High",
 			       48, 0, 48);
-
-    wk()->addOutput (m_hfmean_lo_min);
-    wk()->addOutput (m_hfmean_lo_max);
-    wk()->addOutput (m_hfmean_hi_min);
-    wk()->addOutput (m_hfmean_hi_max);
-
-    wk()->addOutput (m_hfstd_lo_min);
-    wk()->addOutput (m_hfstd_lo_max);
-    wk()->addOutput (m_hfstd_hi_min);
-    wk()->addOutput (m_hfstd_hi_max);
 
     m_hfmean_lo_min->SetYTitle ("Min");
     m_hfmean_lo_max->SetYTitle ("Max");
@@ -79,24 +86,23 @@ namespace TD
 	m_hfstd_hi_max ->GetXaxis()->SetBinLabel (pmt, buffer);
       }
 
-    for (i=0; i<sizeof(gains); i++)
-      {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
-	  {
-	    pmt = channels[i];
-	    hfmean_min[gain][pmt] = 4096;
-	    hfmean_max[gain][pmt] = -1;
-	    hfstd_min [gain][pmt] = 4096;
-	    hfstd_max [gain][pmt] = -1;
-	  }
-      }
+    // add the histograms to EL output
+    wk()->addOutput (m_hfmean_lo_min);
+    wk()->addOutput (m_hfmean_lo_max);
+    wk()->addOutput (m_hfmean_hi_min);
+    wk()->addOutput (m_hfmean_hi_max);
+
+    wk()->addOutput (m_hfstd_lo_min);
+    wk()->addOutput (m_hfstd_lo_max);
+    wk()->addOutput (m_hfstd_hi_min);
+    wk()->addOutput (m_hfstd_hi_max);
 
     return EL::StatusCode::SUCCESS;
     }
 
   EL::StatusCode SampleHF :: changeInput (bool firstFile)
   {
+    // refresh the TTree reference
     m_tree = wk()->tree();
     m_tree->ResetBit (TTree::kForceRead);
     return EL::StatusCode::SUCCESS;
@@ -104,10 +110,12 @@ namespace TD
 
   EL::StatusCode SampleHF :: execute ()
   {
+    // refresh the variable reference per algorithm
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->GetEntry (wk()->treeEntry());
 
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -143,6 +151,7 @@ namespace TD
 	    hfmean[gain][pmt] = mean;
 	    hfstd [gain][pmt] = std;
 
+            // check if value exceeds range
 	    if (mean < hfmean_min[gain][pmt])
 	      {
 		hfmean_min[gain][pmt] = mean;
@@ -166,6 +175,7 @@ namespace TD
 
   EL::StatusCode SampleHF :: finalize ()
   {
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -173,6 +183,7 @@ namespace TD
 	  {
 	    pmt = channels[i];
 
+            // error state: min is still greater than max
 	    if (hfmean_min[gain][pmt] > hfmean_max[gain][pmt])
 	      {
 		hfmean_min[gain][pmt] = -1;
@@ -184,6 +195,7 @@ namespace TD
 		hfstd_max[gain][pmt] = -1;
 	      }
 
+	    // set min-max bin contents in histograms
 	    if (gain)
 	      {
 		m_hfmean_hi_min->Fill (pmt, hfmean_min[gain][pmt]);
@@ -201,6 +213,7 @@ namespace TD
 	      }
 	  } // end pmt
       } // end gain
+
     return EL::StatusCode::SUCCESS;
   }
 }

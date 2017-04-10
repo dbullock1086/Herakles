@@ -20,11 +20,26 @@ namespace TD
 
   EL::StatusCode CRCError :: initialize ()
   {
+    // label buffer
     char buffer[5];
     
+    // new branch added to raw data
     ntuple = EL::getNTupleSvc (wk(), "ntuple");
     ntuple->tree()->Branch ("crc", &crc, "crc[2][48]/s");
 
+    // initialize with inverted min-max
+    for (i=0; i<sizeof(gains); i++)
+      {
+	gain = gains[i];
+	for (j=0; j<sizeof(channels); j++)
+	  {
+	    pmt = channels[j];
+	    crc_min[gain][pmt] = 129;
+	    crc_max[gain][pmt] = -1;
+	  } // end pmt
+      } // end gain
+
+    // histogram contains min and max in separate bins
     m_crc_lo_min = new TH1D ("CRCError_lo_min", "CRC Low",
 			     48, 0, 48);
     m_crc_lo_max = new TH1D ("CRCError_lo_max", "CRC Low",
@@ -34,17 +49,12 @@ namespace TD
     m_crc_hi_max = new TH1D ("CRCError_hi_max", "CRC High",\
 			     48, 0, 48);
 
-    wk()->addOutput (m_crc_lo_min);
-    wk()->addOutput (m_crc_lo_max);
-    wk()->addOutput (m_crc_hi_min);
-    wk()->addOutput (m_crc_hi_max);
-
     m_crc_lo_min->SetYTitle ("Min");
     m_crc_lo_max->SetYTitle ("Max");
     m_crc_hi_min->SetYTitle ("Min");
     m_crc_hi_max->SetYTitle ("Max");
 
-    for (pmt=1; pmt<49; pmt++)
+    for (pmt=1; pmt<49; pmt++) // notice number convention
       {
 	sprintf (buffer, "PMT%d", pmt);
 
@@ -54,22 +64,18 @@ namespace TD
 	m_crc_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
       }
     
-    for (i=0; i<sizeof(gains); i++)
-      {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
-	  {
-	    pmt = channels[j];
-	    crc_min[gain][pmt] = 129;
-	    crc_max[gain][pmt] = -1;
-	  }
-      }
+    // add the histograms to EL output
+    wk()->addOutput (m_crc_lo_min);
+    wk()->addOutput (m_crc_lo_max);
+    wk()->addOutput (m_crc_hi_min);
+    wk()->addOutput (m_crc_hi_max);
 
     return EL::StatusCode::SUCCESS;
     }
 
   EL::StatusCode CRCError :: changeInput (bool firstFile)
   {
+    // refresh the TTree reference
     m_tree = wk()->tree();
     m_tree->ResetBit (TTree::kForceRead);
     return EL::StatusCode::SUCCESS;
@@ -77,10 +83,12 @@ namespace TD
 
   EL::StatusCode CRCError :: execute ()
   {
+    // refresh the variable reference per algorithm
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->GetEntry (wk()->treeEntry());
 
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -95,6 +103,7 @@ namespace TD
 		if (sval > 4095 || sval < 0) crc[gain][pmt]++;
 	      } // end sample
 	    
+            // check if value exceeds range
 	    if (crc[gain][pmt] < crc_min[gain][pmt])
 	      {
 		crc_min[gain][pmt] = crc[gain][pmt];
@@ -111,17 +120,22 @@ namespace TD
 
   EL::StatusCode CRCError :: finalize ()
   {
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
 	for (j=0; j<sizeof(channels); j++)
 	  {
 	    pmt = channels[i];
+
+            // error state: min is still greater than max
 	    if (crc_min[gain][pmt] > crc_max[gain][pmt])
 	      {
 		crc_min[gain][pmt] = -1;
 		crc_max[gain][pmt] = -1;
 	      }
+
+            // set min-max bin contents in histograms
 	    if (gain)
 	      {
 		m_crc_hi_min->Fill (pmt, crc_min[gain][pmt]);
@@ -134,6 +148,7 @@ namespace TD
 	      }
 	  } // end pmt
       } // end gain
+
     return EL::StatusCode::SUCCESS;
   }
 }

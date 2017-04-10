@@ -20,30 +20,14 @@ namespace TD
 
   EL::StatusCode SampleHF :: initialize ()
   {
+    // label buffer
     char buffer[5];
-    
+
+    // new branch added to raw data
     ntuple = EL::getNTupleSvc (wk(), "ntuple");
     ntuple->tree()->Branch ("pedratio", &pedratio, "pedratio[2][48][128]/D");
 
-    m_pedratio_lo = new TH2D ("PedRatio_lo", "PedRatio_lo",
-			      48, 0, 48, 2, 0, 2);
-    m_pedratio_hi = new TH2D ("PedRatio_hi", "PedRatio_hi",
-			      48, 0, 48, 2, 0, 2);
-    wk()->addOutput (m_pedratio_lo);
-    wk()->addOutput (m_pedratio_hi);
-    m_pedratio_lo->GetYaxis()->SetBinLabel (1, "Min");
-    m_pedratio_lo->GetYaxis()->SetBinLabel (2, "Max");
-    m_pedratio_hi->GetYaxis()->SetBinLabel (1, "Min");
-    m_pedratio_hi->GetYaxis()->SetBinLabel (2, "Max");
-    for (pmt=1; pmt<49; pmt++)
-      {
-	sprintf (buffer, "PMT%d", pmt);
-	m_pedratio_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_pedratio_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_pedratio_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_pedratio_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
-      } // end pmt
-    
+    // initialize with inverted min-max
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -55,11 +39,39 @@ namespace TD
 	  } // end pmt
       } // end gain
 
+    // histogram contains min and max in separate bins
+    m_pedratio_lo_min = new TH1D ("PedRatio_lo_min", "Pedestal Ratio Low",
+				  48, 0, 48);
+    m_pedratio_lo_max = new TH1D ("PedRatio_lo_max", "Pedestal Ratio Low",
+				  48, 0, 48);
+    m_pedratio_hi_min = new TH1D ("PedRatio_hi_min", "Pedestal Ratio High",
+				  48, 0, 48);
+    m_pedratio_hi_max = new TH1D ("PedRatio_hi_max", "Pedestal Ratio High",
+				  48, 0, 48);
+    m_pedratio_lo_min->SetYTitle ("Min");
+    m_pedratio_lo_max->SetYTitle ("Max");
+    m_pedratio_hi_min->SetYTitle ("Min");
+    m_pedratio_hi_max->SetYTitle ("Max");
+
+    for (pmt=1; pmt<49; pmt++) // notice number convention
+      {
+	sprintf (buffer, "PMT%d", pmt);
+	m_pedratio_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_pedratio_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_pedratio_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_pedratio_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+      } // end pmt
+
+    // add the histograms to EL output
+    wk()->addOutput (m_pedratio_lo);
+    wk()->addOutput (m_pedratio_hi);
+    
     return EL::StatusCode::SUCCESS;
   }
 
   EL::StatusCode PedRatio :: changeInput (bool firstFile)
   {
+    // refresh the TTree reference
     m_tree = wk()->tree();
     m_tree->ResetBit (TTree::kForceRead);
     return EL::StatusCode::SUCCESS;
@@ -67,11 +79,14 @@ namespace TD
 
   EL::StatusCode PedRatio :: execute ()
   {
+    // refresh the variable reference per algorithm
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->SetBranchAddress ("ped_hi",     &ped_hi);
     m_tree->SetBranchAddress ("ped_lo",     &ped_lo);
     m_tree->GetEntry (wk()->treeEntry());
+
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -86,9 +101,12 @@ namespace TD
 		else      sval = samples_lo[pmt][sample];
 		if (sval < 4096 && sval >= 0 && ped != 0)
 		  {
+		    // observed / expected
 		    pedratio[gain][pmt][sample] = sval / ped;
 		  }
 		else pedratio[gain][pmt][sample] = -1;
+
+		// check if value exceeds range
 		if (pedratio[gain][pmt][sample] < pedratio_min[gain][pmt])
 		  {
 		    pedratio_min[gain][pmt] = pedratio[gain][pmt][sample];
@@ -105,6 +123,7 @@ namespace TD
 
   EL::StatusCode PedratioRatio :: finalize ()
   {
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -112,12 +131,14 @@ namespace TD
 	  {
 	    pmt = channels[i];
 
+            // error state: min is still greater than max
 	    if (pedratio_min[gain][pmt] > pedratio_max[gain][pmt])
 	      {
 		pedratio_min[gain][pmt] = -1;
 		pedratio_max[gain][pmt] = -1;
 	      }
 
+            // set min-max bin contents in histograms
 	    if (gain)
 	      {
 		m_pedratio_hi->Fill (pmt, 0, pedratio_min[gain][pmt]);

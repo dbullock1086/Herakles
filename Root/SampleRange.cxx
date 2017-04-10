@@ -19,36 +19,10 @@ namespace TD
 
   EL::StatusCode SampleRange :: initialize ()
   {
+    // label buffer
     char buffer[5];
 
-    m_sample_lo_min = new TH1D ("SampleRange_lo_min", "Sample Range Low",
-				48, 0, 48);
-    m_sample_lo_max = new TH1D ("SampleRange_lo_max", "Sample Range Low",
-				48, 0, 48);
-    m_sample_hi_min = new TH1D ("SampleRange_hi_min", "Sample Range High",
-				48, 0, 48);
-    m_sample_hi_max = new TH1D ("SampleRange_hi_max", "Sample Range High",
-				48, 0, 48);
-
-    wk()->addOutput (m_sample_lo_min);
-    wk()->addOutput (m_sample_lo_max);
-    wk()->addOutput (m_sample_hi_min);
-    wk()->addOutput (m_sample_hi_max);
-
-    m_sample_lo_min->SetYTitle ("Min");
-    m_sample_lo_max->SetYTitle ("Max");
-    m_sample_hi_min->SetYTitle ("Min");
-    m_sample_hi_max->SetYTitle ("Max");
-
-    for (pmt=1; pmt<49; pmt++)
-      {
-	sprintf (buffer, "PMT%d", pmt);
-	m_sample_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_sample_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_sample_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_sample_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
-      } // end pmt
-    
+    // initialize with inverted min-max
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -60,11 +34,42 @@ namespace TD
 	  } // end pmt
       } // end gain
 
+    // histogram contains min and max in separate bins
+    m_sample_lo_min = new TH1D ("SampleRange_lo_min", "Sample Range Low",
+				48, 0, 48);
+    m_sample_lo_max = new TH1D ("SampleRange_lo_max", "Sample Range Low",
+				48, 0, 48);
+    m_sample_hi_min = new TH1D ("SampleRange_hi_min", "Sample Range High",
+				48, 0, 48);
+    m_sample_hi_max = new TH1D ("SampleRange_hi_max", "Sample Range High",
+				48, 0, 48);
+
+    m_sample_lo_min->SetYTitle ("Min");
+    m_sample_lo_max->SetYTitle ("Max");
+    m_sample_hi_min->SetYTitle ("Min");
+    m_sample_hi_max->SetYTitle ("Max");
+
+    for (pmt=1; pmt<49; pmt++) // notice number convention
+      {
+	sprintf (buffer, "PMT%d", pmt);
+	m_sample_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_sample_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_sample_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_sample_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+      } // end pmt
+    
+    // add the histograms to EL output
+    wk()->addOutput (m_sample_lo_min);
+    wk()->addOutput (m_sample_lo_max);
+    wk()->addOutput (m_sample_hi_min);
+    wk()->addOutput (m_sample_hi_max);
+
     return EL::StatusCode::SUCCESS;
   }
 
   EL::StatusCode SampleRange :: changeInput (bool firstFile)
   {
+    // refresh the TTree reference
     m_tree = wk()->tree();
     m_tree->ResetBit (TTree::kForceRead);
     return EL::StatusCode::SUCCESS;
@@ -72,9 +77,12 @@ namespace TD
 
   EL::StatusCode SampleRange :: execute ()
   {
+    // refresh the variable reference per algorithm
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->GetEntry (wk()->treeEntry());
+
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -87,6 +95,7 @@ namespace TD
 		else      sval = samples_lo[pmt][sample];
 		if (sval < 4096 && sval >= 0)
 		  {
+		    // check if value exceeds range
 		    if (sval < samples_min[gain][pmt])
 		      {
 			samples_min[gain][pmt] = sval;
@@ -104,6 +113,7 @@ namespace TD
 
   EL::StatusCode SampleRange :: finalize ()
   {
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -111,12 +121,14 @@ namespace TD
 	  {
 	    pmt = channels[i];
 
+            // error state: min is still greater than max
 	    if (sample_min[gain][pmt] > sample_max[gain][pmt])
 	      {
 		sample_min[gain][pmt] = -1;
 		sample_max[gain][pmt] = -1;
 	      }
 
+            // set min-max bin contents in histograms
             if (gain)
 	      {
 		m_sample_hi_min->Fill (pmt, sample_min[gain][pmt]);

@@ -20,8 +20,10 @@ namespace TD
 
   EL::StatusCode PulseFit :: initialize ()
   {
+    // label buffer
     char buffer[5];
 
+    // new branch added to raw data
     ntuple = EL::getNTupleSvc (wk(), "ntuple");
     ntuple->tree()->Branch ("pedestal", &pedestal, "pedestal[2][48]/D");
     ntuple->tree()->Branch ("height",   &height,   "height[2][48]/D");
@@ -31,6 +33,38 @@ namespace TD
     ntuple->tree()->Branch ("ndf",      &ndf,      "ndf[2][48]/S");
     ntuple->tree()->Branch ("chgratio", &chgratio, "chgratio[2][48]/D");
 
+    // initialize with inverted min-max
+    for (i=0; i<sizeof(gains); i++)
+      {
+	gain = gains[i];
+	for (j=0; j<sizeof(channels); j++)
+	  {
+	    pmt = channels[j];
+
+	    pedestal_min[gain][pmt] = 4096;
+	    pedestal_max[gain][pmt] = -1;
+
+	    height_min[gain][pmt] = 10e10;
+	    height_max[gain][pmt] = -10e10;
+
+	    phase_min[gain][pmt] = 129;
+	    phase_max[gain][pmt] = -1;
+
+	    width_min[gain][pmt] = 129;
+	    width_max[gain][pmt] = -1;
+
+	    chisqr_min[gain][pmt] = 10e10;
+	    chisqr_max[gain][pmt] = -1;
+
+	    ndf_min[gain][pmt] = 129;
+	    ndf_max[gain][pmt] = -1;
+
+	    chgratio_min[gain][pmt] = 10e10;
+	    chgratio_max[gain][pmt] = -10e10;
+	  } // end pmt
+      } // end gain
+
+    // histogram contains min and max in separate bins
     m_pedestal_lo_min = new TH1D ("PulseFit_pedestal_lo_min",
 				  "Pulse Pedestal Low", 48, 0, 48);
     m_pedestal_lo_max = new TH1D ("PulseFit_pedestal_lo_max",
@@ -94,41 +128,6 @@ namespace TD
     m_chgratio_hi_max = new TH1D ("PulseFit_chgratio_hi_max",
 				  "Pulse Height/Charge High", 48, 0, 48);
 
-    wk()->addOutput (m_pedestal_lo_min);
-    wk()->addOutput (m_pedestal_lo_max);
-    wk()->addOutput (m_pedestal_hi_min);
-    wk()->addOutput (m_pedestal_hi_max);
-
-    wk()->addOutput (m_height_lo_min);
-    wk()->addOutput (m_height_lo_max);
-    wk()->addOutput (m_height_hi_min);
-    wk()->addOutput (m_height_hi_max);
-
-    wk()->addOutput (m_phase_lo_min);
-    wk()->addOutput (m_phase_lo_max);
-    wk()->addOutput (m_phase_hi_min);
-    wk()->addOutput (m_phase_hi_max);
-
-    wk()->addOutput (m_width_lo_min);
-    wk()->addOutput (m_width_lo_max);
-    wk()->addOutput (m_width_hi_min);
-    wk()->addOutput (m_width_hi_max);
-
-    wk()->addOutput (m_chisqr_lo_min);
-    wk()->addOutput (m_chisqr_lo_max);
-    wk()->addOutput (m_chisqr_hi_min);
-    wk()->addOutput (m_chisqr_hi_max);
-
-    wk()->addOutput (m_ndf_lo_min);
-    wk()->addOutput (m_ndf_lo_max);
-    wk()->addOutput (m_ndf_hi_min);
-    wk()->addOutput (m_ndf_hi_max);
-
-    wk()->addOutput (m_chgratio_lo_min);
-    wk()->addOutput (m_chgratio_lo_max);
-    wk()->addOutput (m_chgratio_hi_min);
-    wk()->addOutput (m_chgratio_hi_max);
-
     m_pedestal_lo_min->SetYTitle ("Min");
     m_pedestal_lo_max->SetYTitle ("Max");
     m_pedestal_hi_min->SetYTitle ("Min");
@@ -164,7 +163,7 @@ namespace TD
     m_chgratio_hi_min->SetYTitle ("Min");
     m_chgratio_hi_max->SetYTitle ("Max");
 
-    for (pmt=1; pmt<49; pmt++)
+    for (pmt=1; pmt<49; pmt++) // notice number convention
       {
 	sprintf (buffer, "PMT%d", pmt);
 
@@ -203,37 +202,44 @@ namespace TD
 	m_chgratio_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
 	m_chgratio_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
       }
-    
-    for (i=0; i<sizeof(gains); i++)
-      {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
-	  {
-	    pmt = channels[j];
 
-	    pedestal_min[gain][pmt] = 4096;
-	    pedestal_max[gain][pmt] = -1;
+    // add the histograms to EL output
+    wk()->addOutput (m_pedestal_lo_min);
+    wk()->addOutput (m_pedestal_lo_max);
+    wk()->addOutput (m_pedestal_hi_min);
+    wk()->addOutput (m_pedestal_hi_max);
 
-	    height_min[gain][pmt] = 10e10;
-	    height_max[gain][pmt] = -10e10;
+    wk()->addOutput (m_height_lo_min);
+    wk()->addOutput (m_height_lo_max);
+    wk()->addOutput (m_height_hi_min);
+    wk()->addOutput (m_height_hi_max);
 
-	    phase_min[gain][pmt] = 129;
-	    phase_max[gain][pmt] = -1;
+    wk()->addOutput (m_phase_lo_min);
+    wk()->addOutput (m_phase_lo_max);
+    wk()->addOutput (m_phase_hi_min);
+    wk()->addOutput (m_phase_hi_max);
 
-	    width_min[gain][pmt] = 129;
-	    width_max[gain][pmt] = -1;
+    wk()->addOutput (m_width_lo_min);
+    wk()->addOutput (m_width_lo_max);
+    wk()->addOutput (m_width_hi_min);
+    wk()->addOutput (m_width_hi_max);
 
-	    chisqr_min[gain][pmt] = 10e10;
-	    chisqr_max[gain][pmt] = -1;
+    wk()->addOutput (m_chisqr_lo_min);
+    wk()->addOutput (m_chisqr_lo_max);
+    wk()->addOutput (m_chisqr_hi_min);
+    wk()->addOutput (m_chisqr_hi_max);
 
-	    ndf_min[gain][pmt] = 129;
-	    ndf_max[gain][pmt] = -1;
+    wk()->addOutput (m_ndf_lo_min);
+    wk()->addOutput (m_ndf_lo_max);
+    wk()->addOutput (m_ndf_hi_min);
+    wk()->addOutput (m_ndf_hi_max);
 
-	    chgratio_min[gain][pmt] = 10e10;
-	    chgratio_max[gain][pmt] = -10e10;
-	  }
-      }
+    wk()->addOutput (m_chgratio_lo_min);
+    wk()->addOutput (m_chgratio_lo_max);
+    wk()->addOutput (m_chgratio_hi_min);
+    wk()->addOutput (m_chgratio_hi_max);
 
+    // temporary histogram and function for event-by-event fit
     hist_temp = new TH1D ("htemp", "htemp",
 			  highcut-lowcut, lowcut, highcut);
     hist_temp->SetDirectory (0);
@@ -250,6 +256,7 @@ namespace TD
 
   EL::StatusCode PulseFit :: changeInput (bool firstFile)
   {
+    // refresh the TTree reference
     m_tree = wk()->tree();
     m_tree->ResetBit (TTree::kForceRead);
     return EL::StatusCode::SUCCESS;
@@ -257,10 +264,13 @@ namespace TD
 
   EL::StatusCode PulseFit :: execute ()
   {
+    // refresh the variable reference per algorithm
     m_tree->SetBranchAddress ("charge",     &charge);
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->GetEntry (wk()->treeEntry());
+
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -268,6 +278,7 @@ namespace TD
 	  {
 	    pmt = channels[j];
 
+	    // default values are invalid (or error states)
 	    pedestal[gain][pmt] = -1;
 	    height  [gain][pmt] =  0;
 	    phase   [gain][pmt] = -1;
@@ -276,6 +287,7 @@ namespace TD
 	    ndf     [gain][pmt] = -1;
 	    chgratio[gain][pmt] = -1;
 
+	    // fill a histogram with samples
 	    hist_temp->Reset ("icesm");
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
@@ -287,6 +299,7 @@ namespace TD
 		  }
 	      } // end sample
 
+	    // fit that histogram with a pulse shape
 	    if (hist_temp->GetEntries())
 	      {
 		// is the pulse positive or negative?
@@ -335,6 +348,7 @@ namespace TD
 		    fit_temp->SetParameter (2, binmin-1);
 		  }
 
+		// get parameters from the fit
 		hist_temp->Fit (fit_temp, "ww0qS");
 		fitRes = hist_temp->GetFunction ("ftemp");
 		pedestal[gain][pmt] = fitRes->GetParameter (0);
@@ -345,6 +359,7 @@ namespace TD
 		ndf     [gain][pmt] = fitRes->GetNDF ();
 		chgratio[gain][pmt] = height[gain][pmt] / charge;
 
+                // check if value exceeds range
 		if (pedestal[gain][pmt] < pedestal_min[gain][pmt])
 		  {
 		    pedestal_min[gain][pmt] = pedestal[gain][pmt];
@@ -409,6 +424,7 @@ namespace TD
 
   EL::StatusCode PulseFit :: finalize ()
   {
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -416,6 +432,7 @@ namespace TD
 	  {
 	    pmt = channels[j];
 
+            // error state: min is still greater than max
 	    if (pedestal_min[gain][pmt] > pedestal_max[gain][pmt])
 	      {
 		pedestal_min[gain][pmt] = -1;
@@ -452,6 +469,7 @@ namespace TD
 		chgratio_max[gain][pmt] = -1;
 	      }
 
+            // set min-max bin contents in histograms
             if (gain)
 	      {
 		m_pedestal_hi_min->Fill (pmt, pedestal_min[gain][pmt]);

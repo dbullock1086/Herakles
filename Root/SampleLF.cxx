@@ -21,8 +21,33 @@ namespace TD
 
   EL::StatusCode SampleLF :: initialize ()
   {
+    // label buffer
     char buffer[9];
 
+    /*
+     * Variance: E[(x-mux)^2] = std[x]^2
+                 = E[x^2 - 2*x*mux + mux^2]
+                 = E[x^2] - 2*E[x]*mux + (mux)^2
+                 = E[x^2] - (mux)^2
+     * Therefore we need to calculate sum(x) and sum(x^2)
+     */
+    
+    for (i=0; i<sizeof(gains); i++)
+      {
+	gain = gains[i];
+	for (j=0; j<sizeof(channels); j++)
+	  {
+	    pmt = channels[j];
+	    for (sample=window[0]; sample<window[1]; sample++)
+	      {
+		xval  [gain][pmt][sample] = 0;
+		x2val [gain][pmt][sample] = 0;
+		nonCRC[gain][pmt][sample] = 0;
+	      }
+	  }
+      }
+
+    // histograms contain min-max of high-frequency mean and standard deviation
     m_lfmean_lo = new TH2D ("SampleLF_mean_lo",
 			    "SampleLF_mean_lo",
 			    128, 0, 128, 48, 0, 48);
@@ -35,11 +60,6 @@ namespace TD
     m_lfstd_hi = new TH2D ("SampleLF_std_hi",
 			   "SampleLF_std_hi",
 			   128, 0, 128, 48, 0, 48);
-
-    wk()->addOutput (m_lfmean_lo);
-    wk()->addOutput (m_lfmean_hi);
-    wk()->addOutput (m_lfstd_lo);
-    wk()->addOutput (m_lfstd_hi);
 
     for (pmt=1; pmt<49; pmt++)
       {
@@ -58,26 +78,18 @@ namespace TD
 	m_lfstd_hi ->GetXaxis()->SetBinLabel (sample + 1, buffer);
       }
 
-    for (i=0; i<sizeof(gains); i++)
-      {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
-	  {
-	    pmt = channels[j];
-	    for (sample=window[0]; sample<window[1]; sample++)
-	      {
-		xval  [gain][pmt][sample] = 0;
-		x2val [gain][pmt][sample] = 0;
-		nonCRC[gain][pmt][sample] = 0;
-	      }
-	  }
-      }
+    // add the histograms to EL output
+    wk()->addOutput (m_lfmean_lo);
+    wk()->addOutput (m_lfmean_hi);
+    wk()->addOutput (m_lfstd_lo);
+    wk()->addOutput (m_lfstd_hi);
 
     return EL::StatusCode::SUCCESS;
   }
 
   EL::StatusCode SampleLF :: changeInput (bool firstFile)
   {
+    // refresh the TTree reference
     m_tree = wk()->tree();
     m_tree->ResetBit (TTree::kForceRead);
     return EL::StatusCode::SUCCESS;
@@ -85,16 +97,19 @@ namespace TD
 
   EL::StatusCode SampleLF :: execute ()
   {
+    // refresh the variable reference per algorithm
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->GetEntry (wk()->treeEntry());
 
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
 	for (j=0; j<sizeof(channels); j++)
 	  {
 	    pmt = channels[i];
+	    // sum(x) and sum(x^2)
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
 		if (gain) sval = samples_hi[pmt][sample];
@@ -113,8 +128,10 @@ namespace TD
 
   EL::StatusCode SampleLF :: finalize ()
   {
+    // readability variables
     Double_t mean, std;
 
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
@@ -123,11 +140,13 @@ namespace TD
 	    pmt = channels[j];
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
+
 		if (nonCRC[gain][pmt][sample])
 		  {
 		    mean = xval[gain][pmt][sample] / nonCRC[gain][pmt][sample];
 		  }
 		else mean = -1;
+
 		if (nonCRC[gain][pmt][sample] > 1)
 		  {
 		    x2  = x2val[gain][pmt][sample] / \
@@ -139,6 +158,7 @@ namespace TD
 		  }
 		else std = -1;
 
+		// set bin contents based on sample and pmt
 		if (gain)
 		  {
 		    m_lfmean_hi->Fill (sample, pmt, mean);

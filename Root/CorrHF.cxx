@@ -20,11 +20,27 @@ namespace TD
 
   EL::StatusCode CorrHF :: initialize ()
   {
+    // label buffer
     char buffer[11];
     
+    // histogram contains linear correlation between all PMTs (2 gains)
     m_hfcorr = new TH2D ("CorrHF", "CorrHF", 96, 0, 96, 96, 0, 96);
-    wk()->addOutput (m_hfcorr);
     m_hfcorr_>GetZaxis()->SetRangeUser (0, 1);
+
+    /*
+     * Covariance: E[(x-mux)*(y-muy)]
+     * This can be expanded: E[xy - 2*mux*muy + mux*mu]
+                             = E[xy - mux*muy]
+                             = E[xy] - mux*muy
+     * Therefore, we need to calculate sum(x), sum(y) and sum(x*y),
+     * then divide my the number of events.
+     * But we want correlation: Cov[x,y] / (std[x] * std[y])
+     * Variance: E[(x-mux)^2] = std[x]^2
+                 = E[x^2 - 2*x*mux + mux^2]
+		 = E[x^2] - 2*E[x]*mux + (mux)^2
+		 = E[x^2] - (mux)^2
+     * Therefore we also need to calculate sum(x^2) and sum(y^2)
+     */
 
     for (gain=0; gain<2; gain++)
       {
@@ -44,11 +60,15 @@ namespace TD
 	  }
       }
 
+    // add the histograms to EL output
+    wk()->addOutput (m_hfcorr);
+
     return EL::StatusCode::SUCCESS;
   }
 
   EL::StatusCode CorrHF :: changeInput (bool firstFile)
   {
+    // refresh the TTree reference
     m_tree = wk()->tree();
     m_tree->ResetBit (TTree::kForceRead);
     return EL::StatusCode::SUCCESS;
@@ -56,16 +76,19 @@ namespace TD
 
   EL::StatusCode CorrHF :: execute ()
   {
+    // refresh the variable reference per algorithm
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->GetEntry (wk()->treeEntry());
 
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
 	for (j1=0; j1<sizeof(channels); j1++)
 	  {
 	    pmt1 = channels[j1];
+	    // sum(x) and sum(x^2), which are also used as sum(y) and sum(y^2)
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
 		if (gain) sval1 = samples_hi[pmt1][sample];
@@ -77,6 +100,8 @@ namespace TD
 		    x2sum[gain][pmt1] += sval1 * sval1;
 		  }
 	      } // end sample
+
+	    // full correlation matrix has triangular symmetry
 	    for (j2=0; j2<j1; j2++)
 	      {
 		pmt2 = channels[j2];
@@ -95,6 +120,7 @@ namespace TD
 		    if (sval1 < 4096 && sval1 >= 0
 			&& sval2 < 4096 && sval2 >= 0)
 		      {
+			// sum(x*y)
 			numXY[gain][pmt1][pmt2] ++;
 			xysum[gain][pmt1][pmt2] += sval1 * sval2;
 		      }
@@ -108,17 +134,19 @@ namespace TD
 
   EL::StatusCode CorrHF :: finalize ()
   {
+    // readability variables
     Double xsqr, meanx, xmsqr, meanx2, stdX;
     Double ysqr, meany, ymsqr, meany2, stdY;
     Double meanxy, corr;
 
+    // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
       {
 	gain = gains[i];
 	for (j1=0; j1<sizeof(channels); j1++)
 	  {
 	    pmt1 = channels[j1];
-	    xval = pmt1 + 48*gain;
+	    xval = pmt1 + 48*gain; // x-value of bin to fill
 
 	    xsqr = x2sum[gain][pmt1] / numX[gain][pmt1];
 	    meanx = xsum[gain][pmt1] / numX[gain][pmt1];
@@ -129,7 +157,7 @@ namespace TD
 	    for (j2=0; j2<j1; j2++)
 	      {
 		pmt2 = channels[j2];
-		yval = pmt2 + 48*gain;
+		yval = pmt2 + 48*gain; // y-value of bin to fill
 
 		ysqr = x2sum[gain][pmt2] / numX[gain][pmt2];
 		meany = xsum[gain][pmt2] / numX[gain][pmt2];
