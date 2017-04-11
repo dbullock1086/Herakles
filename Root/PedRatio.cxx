@@ -141,13 +141,21 @@ namespace TD
             // set min-max bin contents in histograms
 	    if (gain)
 	      {
-		m_pedratio_hi->Fill (pmt, 0, pedratio_min[gain][pmt]);
-		m_pedratio_hi->Fill (pmt, 1, pedratio_max[gain][pmt]);
+		m_pedratio_hi_min->SetBinContent (pmt+1,
+						  pedratio_min[gain][pmt]);
+		m_pedratio_hi_min->SetBinError (pmt+1, 0);
+		m_pedratio_hi_max->SetBinContent (pmt+1,
+						  pedratio_max[gain][pmt]);
+		m_pedratio_hi_max->SetBinError (pmt+1, 0);
 	      }
 	    else
 	      {
-		m_pedratio_lo->Fill (pmt, 0, pedratio_min[gain][pmt]);
-		m_pedratio_lo->Fill (pmt, 1, pedratio_max[gain][pmt]);
+		m_pedratio_lo_min->SetBinContent (pmt+1,
+						  pedratio_min[gain][pmt]);
+		m_pedratio_lo_min->SetBinError (pmt+1, 0);
+		m_pedratio_lo_max->SetBinContent (pmt+1,
+						  pedratio_max[gain][pmt]);
+		m_pedratio_lo_max->SetBinError (pmt+1, 0);
 	      }
 	  } // end pmt
       } // end gain

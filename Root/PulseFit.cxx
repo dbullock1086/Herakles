@@ -472,50 +472,86 @@ namespace TD
             // set min-max bin contents in histograms
             if (gain)
 	      {
-		m_pedestal_hi_min->Fill (pmt, pedestal_min[gain][pmt]);
-		m_pedestal_hi_max->Fill (pmt, pedestal_max[gain][pmt]);
+		m_pedestal_hi_min->SetBinContent (pmt+1,
+						  pedestal_min[gain][pmt]);
+		m_pedestal_hi_min->SetBinError (pmt+1, 0);
+		m_pedestal_hi_max->SetBinContent (pmt+1,
+						  pedestal_max[gain][pmt]);
+		m_pedestal_hi_max->SetBinError (pmt+1, 0);
 
-		m_height_hi_min->Fill (pmt, height_min[gain][pmt]);
-		m_height_hi_max->Fill (pmt, height_max[gain][pmt]);
+		m_height_hi_min->SetBinContent (pmt+1, height_min[gain][pmt]);
+		m_height_hi_min->SetBinError (pmt+1, 0);
+		m_height_hi_max->SetBinContent (pmt+1, height_max[gain][pmt]);
+		m_height_hi_max->SetBinError (pmt+1, 0);
 
-		m_phase_hi_min->Fill (pmt, phase_min[gain][pmt]);
-		m_phase_hi_max->Fill (pmt, phase_max[gain][pmt]);
+		m_phase_hi_min->SetBinContent (pmt+1, phase_min[gain][pmt]);
+		m_phase_hi_min->SetBinError (pmt+1, 0);
+		m_phase_hi_max->SetBinContent (pmt+1, phase_max[gain][pmt]);
+		m_phase_hi_max->SetBinError (pmt+1, 0);
 
-		m_width_hi_min->Fill (pmt, width_min[gain][pmt]);
-		m_width_hi_max->Fill (pmt, width_max[gain][pmt]);
+		m_width_hi_min->SetBinContent (pmt+1, width_min[gain][pmt]);
+		m_width_hi_min->SetBinError (pmt+1, 0);
+		m_width_hi_max->SetBinContent (pmt+1, width_max[gain][pmt]);
+		m_width_hi_max->SetBinError (pmt+1, 0);
 
-		m_chisqr_hi_min->Fill (pmt, chisqr_min[gain][pmt]);
-		m_chisqr_hi_max->Fill (pmt, chisqr_max[gain][pmt]);
+		m_chisqr_hi_min->SetBinContent (pmt+1, chisqr_min[gain][pmt]);
+		m_chisqr_hi_min->SetBinError (pmt+1, 0);
+		m_chisqr_hi_max->SetBinContent (pmt+1, chisqr_max[gain][pmt]);
+		m_chisqr_hi_max->SetBinError (pmt+1, 0);
 
-		m_ndf_hi_min->Fill (pmt, ndf_min[gain][pmt]);
-		m_ndf_hi_max->Fill (pmt, ndf_max[gain][pmt]);
+		m_ndf_hi_min->SetBinContent (pmt+1, ndf_min[gain][pmt]);
+		m_ndf_hi_min->SetBinError (pmt+1, 0);
+		m_ndf_hi_max->SetBinContent (pmt+1, ndf_max[gain][pmt]);
+		m_ndf_hi_max->SetBinError (pmt+1, 0);
 
-		m_chgratio_hi_min->Fill (pmt, chgratio_min[gain][pmt]);
-		m_chgratio_hi_max->Fill (pmt, chgratio_max[gain][pmt]);
+		m_chgratio_hi_min->SetBinContent (pmt+1,
+						  chgratio_min[gain][pmt]);
+		m_chgratio_hi_min->SetBinError (pmt+1, 0);
+		m_chgratio_hi_max->SetBinContent (pmt+1,
+						  chgratio_max[gain][pmt]);
+		m_chgratio_hi_max->SetBinError (pmt+1, 0);
 	      }
 
             else
 	      {
-		m_pedestal_lo_min->Fill (pmt, pedestal_min[gain][pmt]);
-		m_pedestal_lo_max->Fill (pmt, pedestal_max[gain][pmt]);
+		m_pedestal_lo_min->SetBinContent (pmt+1,
+						  pedestal_min[gain][pmt]);
+		m_pedestal_lo_min->SetBinError (pmt+1, 0);
+		m_pedestal_lo_max->SetBinContent (pmt+1,
+						  pedestal_max[gain][pmt]);
+		m_pedestal_lo_max->SetBinError (pmt+1, 0);
 
-		m_height_lo_min->Fill (pmt, height_min[gain][pmt]);
-		m_height_lo_max->Fill (pmt, height_max[gain][pmt]);
+		m_height_lo_min->SetBinContent (pmt+1, height_min[gain][pmt]);
+		m_height_lo_min->SetBinError (pmt+1, 0);
+		m_height_lo_max->SetBinContent (pmt+1, height_max[gain][pmt]);
+		m_height_lo_max->SetBinError (pmt+1, 0);
 
-		m_phase_lo_min->Fill (pmt, phase_min[gain][pmt]);
-		m_phase_lo_max->Fill (pmt, phase_max[gain][pmt]);
+		m_phase_lo_min->SetBinContent (pmt+1, phase_min[gain][pmt]);
+		m_phase_lo_min->SetBinError (pmt+1, 0);
+		m_phase_lo_max->SetBinContent (pmt+1, phase_max[gain][pmt]);
+		m_phase_lo_max->SetBinError (pmt+1, 0);
 
-		m_width_lo_min->Fill (pmt, width_min[gain][pmt]);
-		m_width_lo_max->Fill (pmt, width_max[gain][pmt]);
+		m_width_lo_min->SetBinContent (pmt+1, width_min[gain][pmt]);
+		m_width_lo_min->SetBinError (pmt+1, 0);
+		m_width_lo_max->SetBinContent (pmt+1, width_max[gain][pmt]);
+		m_width_lo_max->SetBinError (pmt+1, 0);
 
-		m_chisqr_lo_min->Fill (pmt, chisqr_min[gain][pmt]);
-		m_chisqr_lo_max->Fill (pmt, chisqr_max[gain][pmt]);
+		m_chisqr_lo_min->SetBinContent (pmt+1, chisqr_min[gain][pmt]);
+		m_chisqr_lo_min->SetBinError (pmt+1, 0);
+		m_chisqr_lo_max->SetBinContent (pmt+1, chisqr_max[gain][pmt]);
+		m_chisqr_lo_max->SetBinError (pmt+1, 0);
 
-		m_ndf_lo_min->Fill (pmt, ndf_min[gain][pmt]);
-		m_ndf_lo_max->Fill (pmt, ndf_max[gain][pmt]);
+		m_ndf_lo_min->SetBinContent (pmt+1, ndf_min[gain][pmt]);
+		m_ndf_lo_min->SetBinError (pmt+1, 0);
+		m_ndf_lo_max->SetBinContent (pmt+1, ndf_max[gain][pmt]);
+		m_ndf_lo_max->SetBinError (pmt+1, 0);
 
-		m_chgratio_lo_min->Fill (pmt, chgratio_min[gain][pmt]);
-		m_chgratio_lo_max->Fill (pmt, chgratio_max[gain][pmt]);
+		m_chgratio_lo_min->SetBinContent (pmt+1,
+						  chgratio_min[gain][pmt]);
+		m_chgratio_lo_min->SetBinError (pmt+1, 0);
+		m_chgratio_lo_max->SetBinContent (pmt+1,
+						  chgratio_max[gain][pmt]);
+		m_chgratio_lo_max->SetBinError (pmt+1, 0);
 	      }
 	  }
       }

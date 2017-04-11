@@ -104,7 +104,10 @@ namespace TD
 	      {
 		if (gain) sval = samples_hi[pmt][sample];
 		else      sval = samples_lo[pmt][sample];
-		if (sval < 4096 && sval >= 0) fastfit[gain][pmt] += sval - ped;
+		if (sval < 4096 && sval >= 0)
+		  {
+		    fastfit[gain][pmt] += sval - ped;
+		  }
 	      } // end sample
 
             // check if value exceeds range
@@ -141,14 +144,22 @@ namespace TD
             // set min-max bin contents in histograms
             if (gain)
 	      {
-		m_fastfit_hi_min->Fill (pmt, fastfit_min[gain][pmt]);
-		m_fastfit_hi_max->Fill (pmt, fastfit_max[gain][pmt]);
+		m_fastfit_hi_min->SetBinContent (pmt+1,
+						 fastfit_min[gain][pmt]);
+		m_fastfit_hi_min->SetBinError (pmt+1, 0);
+		m_fastfit_hi_max->SetBinContent (pmt+1,
+						 fastfit_max[gain][pmt]);
+		m_fastfit_hi_max->SetBinError (pmt+1, 0);
 	      }
 
             else
 	      {
-		m_fastfit_lo_min->Fill (pmt, fastfit_min[gain][pmt]);
-		m_fastfit_lo_max->Fill (pmt, fastfit_max[gain][pmt]);
+		m_fastfit_lo_min->SetBinContent (pmt+1,
+						 fastfit_min[gain][pmt]);
+		m_fastfit_lo_min->SetBinError (pmt+1, 0);
+		m_fastfit_lo_max->SetBinContent (pmt+1,
+						 fastfit_max[gain][pmt]);
+		m_fastfit_lo_max->SetBinError (pmt+1, 0);
 	      }
 	  } // end pmt
       } // end gain

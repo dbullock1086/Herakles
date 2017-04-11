@@ -127,16 +127,22 @@ namespace TD
 	    // set min-max bin contents in histograms
 	    if (gain)
 	      {
-		m_ped_hi_min->Fill (pmt, ped_min[gain][pmt]);
-		m_ped_hi_max->Fill (pmt, ped_max[gain][pmt]);
-		m_pedsteps_hi->Fill (pmt, ped_steps[gain][pmt];
+		m_ped_hi_min->SetBinContent (pmt+1, ped_min[gain][pmt]);
+		m_ped_hi_min->SetBinError (pmt+1, 0);
+		m_ped_hi_max->SetBinContent (pmt+1, ped_max[gain][pmt]);
+		m_ped_hi_max->SetBinError (pmt+1, 0);
+		m_pedsteps_hi->SetBinContent (pmt+1, ped_steps[gain][pmt]);
+		m_pedsteps_hi->SetBinError (pmt+1, 0);
 	      }
 
 	    else
 	      {
-		m_ped_lo_min->Fill (pmt, ped_min[gain][pmt]);
-		m_ped_lo_max->Fill (pmt, ped_max[gain][pmt]);
-		m_pedsteps_lo->Fill (pmt, ped_steps[gain][pmt];
+		m_ped_lo_min->SetBinContent (pmt+1, ped_min[gain][pmt]);
+		m_ped_lo_min->SetBinError (pmt+1, 0);
+		m_ped_lo_max->SetBinContent (pmt+1, ped_max[gain][pmt]);
+		m_ped_lo_max->SetBinError (pmt+1, 0);
+		m_pedsteps_lo->SetBinContent (pmt+1, ped_steps[gain][pmt]);
+		m_pedsteps_lo->SetBinError (pmt+1, 0);
 	      }
 	  } // end pmt
       } // end gain
