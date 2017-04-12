@@ -110,13 +110,13 @@ namespace TD
     m_chisqr_hi_max = new TH1D ("PulseFit_chisqr_hi_max",
 				"Pulse Chi2 High", 48, 0, 48);
 
-    m_ndf_lo_min = new TH1S ("PulseFit_ndf_lo_min", "Pulse NDF Low",
+    m_ndf_lo_min = new TH1D ("PulseFit_ndf_lo_min", "Pulse NDF Low",
 			     48, 0, 48);
-    m_ndf_lo_max = new TH1S ("PulseFit_ndf_lo_max", "Pulse NDF Low",
+    m_ndf_lo_max = new TH1D ("PulseFit_ndf_lo_max", "Pulse NDF Low",
 			     48, 0, 48);
-    m_ndf_hi_min = new TH1S ("PulseFit_ndf_hi_min", "Pulse NDF High",
+    m_ndf_hi_min = new TH1D ("PulseFit_ndf_hi_min", "Pulse NDF High",
 			     48, 0, 48);
-    m_ndf_hi_max = new TH1S ("PulseFit_ndf_hi_max", "Pulse NDF High",
+    m_ndf_hi_max = new TH1D ("PulseFit_ndf_hi_max", "Pulse NDF High",
 			     48, 0, 48);
 
     m_chgratio_lo_min = new TH1D ("PulseFit_chgratio_lo_min",
@@ -241,11 +241,11 @@ namespace TD
 
     // temporary histogram and function for event-by-event fit
     hist_temp = new TH1D ("htemp", "htemp",
-			  highcut-lowcut, lowcut, highcut);
+			  window[1]-window[0], window[0], window[1]);
     hist_temp->SetDirectory (0);
 
     fit_temp = new TF1 ("ftemp", PulseShape,
-			lowcut, highcut, 4);
+			window[0], window[1], 4);
     // the width should be fairly stable
     // (fit success is also sensitive to constraining this parameter)
     fit_temp->SetParLimits (3, 0.9, 1.0);
@@ -355,7 +355,7 @@ namespace TD
 		height  [gain][pmt] = fitRes->GetParameter (1);
 		phase   [gain][pmt] = fitRes->GetParameter (2);
 		width   [gain][pmt] = fitRes->GetParameter (3);
-		chisqr  [gain][pmt] = fitRes->GetChiSquare ();
+		chisqr  [gain][pmt] = fitRes->GetChisquare ();
 		ndf     [gain][pmt] = fitRes->GetNDF ();
 		chgratio[gain][pmt] = height[gain][pmt] / charge;
 
@@ -380,7 +380,7 @@ namespace TD
 		  {
 		    phase_min[gain][pmt] = phase[gain][pmt];
 		  }
-		if (phase[gain][pmt] > phasemax[gain][pmt])
+		if (phase[gain][pmt] > phase_max[gain][pmt])
 		  {
 		    phase_max[gain][pmt] = phase[gain][pmt];
 		  }

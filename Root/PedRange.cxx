@@ -147,6 +147,6 @@ namespace TD
 	  } // end pmt
       } // end gain
 
-    return EL::::StatusCode::SUCCESS;
+    return EL::StatusCode::SUCCESS;
   }
 }

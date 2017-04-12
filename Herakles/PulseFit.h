@@ -19,13 +19,9 @@ namespace TD
   class PulseFit : public EL::Algorithm
   {
   public:
-    UChar_t gains = {0, 1};
-    UChar_t channels = { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
-			10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-			20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-			30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-			40, 41, 42, 43, 44, 45, 46, 47};
-    UChar_t window[2] = {0, 128};
+    UShort_t gains[];
+    UShort_t channels[];
+    UShort_t window[2];
     
     PulseFit ();
     ~PulseFit ();
@@ -77,6 +73,7 @@ namespace TD
     TH1D *m_chgratio_hi_min; //!
     TH1D *m_chgratio_hi_max; //!
 
+    Float_t charge; //!
     Float_t samples_hi[48][128]; //!
     Float_t samples_lo[48][128]; //!
     Float_t ped_hi[48]; //!
@@ -84,11 +81,11 @@ namespace TD
     Float_t sval; //!
     Float_t ped; //!
 
-    UChar_t i; //!
-    UChar_t j; //!
-    UChar_t gain; //!
-    UChar_t pmt; //!
-    UShort sample; //!
+    UShort_t i; //!
+    UShort_t j; //!
+    UShort_t gain; //!
+    UShort_t pmt; //!
+    UShort_t sample; //!
 
     Double_t pedestal[2][48]; //!
     Double_t pedestal_min[2][48]; //!
@@ -117,6 +114,15 @@ namespace TD
     Double_t chgratio[2][48]; //!
     Double_t chgratio_min[2][48]; //!
     Double_t chgratio_max[2][48]; //!
+
+    UShort_t binrange;
+    UShort_t binmin;
+    UShort_t binmax;
+    Double_t approx;
+    UShort_t xbin;
+    Double_t minval;
+    Double_t maxval;
+    Bool_t pos;
 
     ClassDef(PulseFit, 1);
   };

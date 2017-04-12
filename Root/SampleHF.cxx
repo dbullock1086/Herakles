@@ -121,7 +121,7 @@ namespace TD
 	gain = gains[i];
 	for (j=0; j<sizeof(channels); j++)
 	  {
-	    pmt = channels[j]
+	    pmt = channels[j];
 	    xval  = 0;
 	    x2val = 0;
 	    CRC   = 0;
@@ -198,18 +198,28 @@ namespace TD
 	    // set min-max bin contents in histograms
 	    if (gain)
 	      {
-		m_hfmean_hi_min->Fill (pmt, hfmean_min[gain][pmt]);
-		m_hfmean_hi_max->Fill (pmt, hfmean_max[gain][pmt]);
-		m_hfstd_hi_min->Fill (pmt, hfstd_min[gain][pmt]);
-		m_hfstd_hi_max->Fill (pmt, hfstd_max[gain][pmt]);
+		m_hfmean_hi_min->SetBinContent (pmt+1, hfmean_min[gain][pmt]);
+		m_hfmean_hi_min->SetBinContent (pmt+1, 0);
+		m_hfmean_hi_max->SetBinContent (pmt+1, hfmean_max[gain][pmt]);
+		m_hfmean_hi_max->SetBinContent (pmt+1, 0);
+
+		m_hfstd_hi_min->SetBinContent (pmt+1, hfstd_min[gain][pmt]);
+		m_hfstd_hi_min->SetBinContent (pmt+1, 0);
+		m_hfstd_hi_max->SetBinContent (pmt+1, hfstd_max[gain][pmt]);
+		m_hfstd_hi_max->SetBinContent (pmt+1, 0);
 	      }
 
 	    else
 	      {
-		m_hfmean_lo->Fill (pmt, 0, hfmean_min[gain][pmt]);
-		m_hfmean_lo->Fill (pmt, 1, hfmean_max[gain][pmt]);
-		m_hfstd_lo ->Fill (pmt, 0, hfstd_min[gain][pmt]);
-		m_hfstd_lo ->Fill (pmt, 1, hfstd_max[gain][pmt]);
+		m_hfmean_lo_min->SetBinContent (pmt+1, hfmean_min[gain][pmt]);
+		m_hfmean_lo_min->SetBinContent (pmt+1, 0);
+		m_hfmean_lo_max->SetBinContent (pmt+1, hfmean_max[gain][pmt]);
+		m_hfmean_lo_max->SetBinContent (pmt+1, 0);
+
+		m_hfstd_lo_min->SetBinContent (pmt+1, hfstd_min[gain][pmt]);
+		m_hfstd_lo_min->SetBinContent (pmt+1, 0);
+		m_hfstd_lo_max->SetBinContent (pmt+1, hfstd_max[gain][pmt]);
+		m_hfstd_lo_max->SetBinContent (pmt+1, 0);
 	      }
 	  } // end pmt
       } // end gain

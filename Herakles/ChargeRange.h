@@ -29,11 +29,15 @@ namespace TD
     TTree *m_tree; //!
 
     TH1D *m_charge; //!
-
+    TH1D *m_chargesteps; //!
+    
     Int_t charge; //!
 
     Int_t charge_min;
     Int_t charge_max; //!
+
+    Int_t charge_prev; //!
+    UShort_t charge_steps; //!
 
     ClassDef(ChargeRange, 1);
   };

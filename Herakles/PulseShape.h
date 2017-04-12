@@ -9,9 +9,6 @@
 
 #include <Herakles/Global.h>
 
-namespace TD
-{
-  Double_t PulseShape(Double_t *x, Double_t *par);
-}
+Double_t PulseShape(Double_t *x, Double_t *par);
 
 #endif

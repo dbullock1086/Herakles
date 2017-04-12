@@ -29,40 +29,40 @@ namespace TD
 	for (j=0; j<sizeof(channels); j++)
 	  {
 	    pmt = channels[j];
-	    sample_min[gain][pmt] = 4096;
-	    sample_max[gain][pmt] = -1;
+	    samples_min[gain][pmt] = 4096;
+	    samples_max[gain][pmt] = -1;
 	  } // end pmt
       } // end gain
 
     // histogram contains min and max in separate bins
-    m_sample_lo_min = new TH1D ("SampleRange_lo_min", "Sample Range Low",
-				48, 0, 48);
-    m_sample_lo_max = new TH1D ("SampleRange_lo_max", "Sample Range Low",
-				48, 0, 48);
-    m_sample_hi_min = new TH1D ("SampleRange_hi_min", "Sample Range High",
-				48, 0, 48);
-    m_sample_hi_max = new TH1D ("SampleRange_hi_max", "Sample Range High",
-				48, 0, 48);
+    m_samples_lo_min = new TH1D ("SampleRange_lo_min", "Sample Range Low",
+				 48, 0, 48);
+    m_samples_lo_max = new TH1D ("SampleRange_lo_max", "Sample Range Low",
+				 48, 0, 48);
+    m_samples_hi_min = new TH1D ("SampleRange_hi_min", "Sample Range High",
+				 48, 0, 48);
+    m_samples_hi_max = new TH1D ("SampleRange_hi_max", "Sample Range High",
+				 48, 0, 48);
 
-    m_sample_lo_min->SetYTitle ("Min");
-    m_sample_lo_max->SetYTitle ("Max");
-    m_sample_hi_min->SetYTitle ("Min");
-    m_sample_hi_max->SetYTitle ("Max");
+    m_samples_lo_min->SetYTitle ("Min");
+    m_samples_lo_max->SetYTitle ("Max");
+    m_samples_hi_min->SetYTitle ("Min");
+    m_samples_hi_max->SetYTitle ("Max");
 
     for (pmt=1; pmt<49; pmt++) // notice number convention
       {
 	sprintf (buffer, "PMT%d", pmt);
-	m_sample_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_sample_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_sample_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_sample_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_samples_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_samples_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_samples_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_samples_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
       } // end pmt
     
     // add the histograms to EL output
-    wk()->addOutput (m_sample_lo_min);
-    wk()->addOutput (m_sample_lo_max);
-    wk()->addOutput (m_sample_hi_min);
-    wk()->addOutput (m_sample_hi_max);
+    wk()->addOutput (m_samples_lo_min);
+    wk()->addOutput (m_samples_lo_max);
+    wk()->addOutput (m_samples_hi_min);
+    wk()->addOutput (m_samples_hi_max);
 
     return EL::StatusCode::SUCCESS;
   }
@@ -122,27 +122,27 @@ namespace TD
 	    pmt = channels[i];
 
             // error state: min is still greater than max
-	    if (sample_min[gain][pmt] > sample_max[gain][pmt])
+	    if (samples_min[gain][pmt] > samples_max[gain][pmt])
 	      {
-		sample_min[gain][pmt] = -1;
-		sample_max[gain][pmt] = -1;
+		samples_min[gain][pmt] = -1;
+		samples_max[gain][pmt] = -1;
 	      }
 
             // set min-max bin contents in histograms
             if (gain)
 	      {
-		m_sample_hi_min->Fill (pmt, sample_min[gain][pmt]);
-		m_sample_hi_max->Fill (pmt, sample_max[gain][pmt]);
+		m_samples_hi_min->Fill (pmt, samples_min[gain][pmt]);
+		m_samples_hi_max->Fill (pmt, samples_max[gain][pmt]);
 	      }
 
 	    else
 	      {
-		m_sample_lo_min->Fill (pmt, sample_min[gain][pmt]);
-		m_sample_lo_max->Fill (pmt, sample_max[gain][pmt]);
+		m_samples_lo_min->Fill (pmt, samples_min[gain][pmt]);
+		m_samples_lo_max->Fill (pmt, samples_max[gain][pmt]);
 	      }
 	  } // end pmt
       } // end gain
 
-    return EL::::StatusCode::SUCCESS;
+    return EL::StatusCode::SUCCESS;
   }
 }

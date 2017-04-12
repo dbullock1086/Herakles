@@ -18,7 +18,7 @@ namespace TD
 
   PedRatio :: ~PedRatio () {}
 
-  EL::StatusCode SampleHF :: initialize ()
+  EL::StatusCode PedRatio :: initialize ()
   {
     // label buffer
     char buffer[5];
@@ -34,8 +34,8 @@ namespace TD
 	for (j=0; j<sizeof(channels); j++)
 	  {
 	    pmt = channels[j];
-	    ped_min[gain][pmt] = 4096;
-	    ped_max[gain][pmt] = -1;
+	    pedratio_min[gain][pmt] = 4096;
+	    pedratio_max[gain][pmt] = -1;
 	  } // end pmt
       } // end gain
 
@@ -63,8 +63,10 @@ namespace TD
       } // end pmt
 
     // add the histograms to EL output
-    wk()->addOutput (m_pedratio_lo);
-    wk()->addOutput (m_pedratio_hi);
+    wk()->addOutput (m_pedratio_lo_min);
+    wk()->addOutput (m_pedratio_lo_max);
+    wk()->addOutput (m_pedratio_hi_min);
+    wk()->addOutput (m_pedratio_hi_max);
     
     return EL::StatusCode::SUCCESS;
   }
@@ -106,6 +108,8 @@ namespace TD
 		  }
 		else pedratio[gain][pmt][sample] = -1;
 
+		// ERROR pedratio[gain][pmt][sample]
+
 		// check if value exceeds range
 		if (pedratio[gain][pmt][sample] < pedratio_min[gain][pmt])
 		  {
@@ -121,7 +125,7 @@ namespace TD
     return EL::StatusCode::SUCCESS;
   }
 
-  EL::StatusCode PedratioRatio :: finalize ()
+  EL::StatusCode PedRatio :: finalize ()
   {
     // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)

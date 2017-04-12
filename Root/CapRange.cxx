@@ -87,6 +87,6 @@ namespace TD
     m_capsteps->SetBinContent (1, cap_steps);
     m_capsteps->SetBinError (1, 0);
 
-    return EL::::StatusCode::SUCCESS;
+    return EL::StatusCode::SUCCESS;
   }
 }

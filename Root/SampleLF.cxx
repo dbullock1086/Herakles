@@ -129,7 +129,7 @@ namespace TD
   EL::StatusCode SampleLF :: finalize ()
   {
     // readability variables
-    Double_t mean, std;
+    Double_t x2, xm, m2, mean, std;
 
     // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)

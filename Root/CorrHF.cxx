@@ -25,7 +25,7 @@ namespace TD
     
     // histogram contains linear correlation between all PMTs (2 gains)
     m_hfcorr = new TH2D ("CorrHF", "CorrHF", 96, 0, 96, 96, 0, 96);
-    m_hfcorr_>GetZaxis()->SetRangeUser (0, 1);
+    m_hfcorr->GetZaxis()->SetRangeUser (0, 1);
 
     /*
      * Covariance: E[(x-mux)*(y-muy)]
@@ -46,7 +46,7 @@ namespace TD
       {
 	for (pmt1=0; pmt1<48; pmt1++)
 	  {
-	    sprintf (buffer, "Gain%d_PMT%d", gain, pmt);
+	    sprintf (buffer, "Gain%d_PMT%d", gain, pmt1);
 	    m_hfcorr->GetXaxis()->SetBinLabel (pmt1 + 48*gain + 1, buffer);
 	    m_hfcorr->GetYaxis()->SetBinLabel (pmt1 + 48*gain + 1, buffer);
 	    numX [gain][pmt1] = 0;
@@ -135,9 +135,9 @@ namespace TD
   EL::StatusCode CorrHF :: finalize ()
   {
     // readability variables
-    Double xsqr, meanx, xmsqr, meanx2, stdX;
-    Double ysqr, meany, ymsqr, meany2, stdY;
-    Double meanxy, corr;
+    Double_t xval, xsqr, meanx, xmsqr, meanx2, stdX;
+    Double_t yval, ysqr, meany, ymsqr, meany2, stdY;
+    Double_t meanxy, corr;
 
     // loop through gain and PMT
     for (i=0; i<sizeof(gains); i++)
@@ -165,7 +165,9 @@ namespace TD
 		meany2 = meany * meany / numX[gain][pmt2];
 		stdY = TMath::Sqrt (ysqr - 2*ymsqr + meany2);
 
+		// ERROR
 		meanxy = xysum[gain][pmt2] / numX[gain][pmt2];
+		//
 		corr = (meanxy - meanx*meany) / (stdX * stdY);
 		m_hfcorr->Fill (xval, yval, corr);
 	      }

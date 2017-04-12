@@ -1,5 +1,4 @@
 #include <Herakles/EvtRange.h>
-#include <Herakles/EvtimeRange.h>
 #include <Herakles/CapRange.h>
 #include <Herakles/ChargeRange.h>
 #include <Herakles/PedRatio.h>
@@ -20,7 +19,6 @@
 #pragma link C++ namespace TD;
 
 #pragma link C++ class EvtRange+;
-#pragma link C++ class EvtimeRange+;
 #pragma link C++ class CapRange+;
 #pragma link C++ class ChargeRange+;
 #pragma link C++ class PedRange+;
@@ -32,6 +30,7 @@
 #pragma link C++ class SampleLF+;
 #pragma link C++ class CorrHF+;
 #pragma link C++ class PulseFit+;
-#pragma link C++ class PulseShape+;
+
+#pragma link C++ function PulseShape+;
 
 #endif

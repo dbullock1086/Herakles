@@ -29,11 +29,15 @@ namespace TD
     TTree *m_tree; //!
 
     TH1D *m_cap; //!
+    TH1D *m_capsteps; //!
 
     Int_t cap; //!
 
     Int_t cap_min; //!
     Int_t cap_max; //!
+
+    Int_t cap_prev; //!
+    UShort_t cap_steps; //!
 
     ClassDef(CapRange, 1);
   };

@@ -17,10 +17,10 @@ namespace TD
 
   EvtRange :: ~EvtRange () {}
 
-  EL::StatusCode EvtRange :: histInitialize ()
+  EL::StatusCode EvtRange :: initialize ()
   {
     // initialize with inverted min-max
-    evt_min = 10e10;
+    evt_min = 2147483647;
     evt_max = -1;
 
     // histogram contains min and max in separate bins
@@ -70,6 +70,6 @@ namespace TD
     m_evt->SetBinContent (2, evt_max);
     m_evt->SetBinError (2, 0);
 
-    return EL::::StatusCode::SUCCESS;
+    return EL::StatusCode::SUCCESS;
   }
 }

@@ -87,6 +87,6 @@ namespace TD
     m_chargesteps->SetBinContent (1, charge_steps);
     m_chargesteps->SetBinError (1, 0);
     
-    return EL::::StatusCode::SUCCESS;
+    return EL::StatusCode::SUCCESS;
   }
 }
