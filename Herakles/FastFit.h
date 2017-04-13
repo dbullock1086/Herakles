@@ -19,8 +19,8 @@ namespace TD
   class FastFit : public EL::Algorithm
   {
   public:
-    UShort_t gains[];
-    UShort_t channels[];
+    Bool_t gains[2];
+    Bool_t channels[48];
     UShort_t window[2];
     
     FastFit ();
@@ -56,8 +56,6 @@ namespace TD
     Float_t sval; //!
     Float_t ped; //!
 
-    UShort_t i; //!
-    UShort_t j; //!
     UShort_t gain; //!
     UShort_t pmt; //!
     UShort_t sample; //!

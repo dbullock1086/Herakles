@@ -82,12 +82,12 @@ namespace TD
     m_tree->GetEntry (wk()->treeEntry());
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j1=0; j1<sizeof(channels); j1++)
+	if (!gains[gain]) continue;
+	for (pmt1=0; pmt1<48; pmt1++)
 	  {
-	    pmt1 = channels[j1];
+	    if (!channels[pmt1]) continue;
 	    // sum(x) and sum(x^2), which are also used as sum(y) and sum(y^2)
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
@@ -102,9 +102,9 @@ namespace TD
 	      } // end sample
 
 	    // full correlation matrix has triangular symmetry
-	    for (j2=0; j2<j1; j2++)
+	    for (pmt2=0; pmt2<pmt1; pmt2++)
 	      {
-		pmt2 = channels[j2];
+		if (!channels[pmt2]) continue;
 		for (sample=window[0]; sample<window[1]; sample++)
 		  {
 		    if (gain)
@@ -140,12 +140,12 @@ namespace TD
     Double_t meanxy, corr;
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j1=0; j1<sizeof(channels); j1++)
+	if (!gains[gain]) continue;
+	for (pmt1=0; pmt1<48; pmt1++)
 	  {
-	    pmt1 = channels[j1];
+	    if (!channels[pmt1]) continue;
 	    xval = pmt1 + 48*gain; // x-value of bin to fill
 
 	    xsqr = x2sum[gain][pmt1] / numX[gain][pmt1];
@@ -154,9 +154,9 @@ namespace TD
 	    meanx2 = meanx * meanx / numX[gain][pmt1];
 	    stdX = TMath::Sqrt (xsqr - 2*xmsqr + meanx2);
 
-	    for (j2=0; j2<j1; j2++)
+	    for (pmt2=0; pmt2<pmt1; pmt2++)
 	      {
-		pmt2 = channels[j2];
+		if (!channels[pmt2]) continue;
 		yval = pmt2 + 48*gain; // y-value of bin to fill
 
 		ysqr = x2sum[gain][pmt2] / numX[gain][pmt2];
@@ -166,7 +166,7 @@ namespace TD
 		stdY = TMath::Sqrt (ysqr - 2*ymsqr + meany2);
 
 		// ERROR
-		meanxy = xysum[gain][pmt2] / numX[gain][pmt2];
+		meanxy = xysum[gain][pmt1][pmt2] / numXY[gain][pmt1][pmt2];
 		//
 		corr = (meanxy - meanx*meany) / (stdX * stdY);
 		m_hfcorr->Fill (xval, yval, corr);

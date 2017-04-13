@@ -28,12 +28,12 @@ namespace TD
     ntuple->tree()->Branch ("pedratio", &pedratio, "pedratio[2][48][128]/D");
 
     // initialize with inverted min-max
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    pedratio_min[gain][pmt] = 4096;
 	    pedratio_max[gain][pmt] = -1;
 	  } // end pmt
@@ -89,12 +89,12 @@ namespace TD
     m_tree->GetEntry (wk()->treeEntry());
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    if (gain) ped = ped_hi[pmt];
 	    else      ped = ped_lo[pmt];
 	    for (sample=window[0]; sample<window[1]; sample++)
@@ -128,12 +128,12 @@ namespace TD
   EL::StatusCode PedRatio :: finalize ()
   {
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[i];
+	    if (!channels[pmt]) continue;
 
             // error state: min is still greater than max
 	    if (pedratio_min[gain][pmt] > pedratio_max[gain][pmt])

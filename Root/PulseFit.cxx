@@ -34,12 +34,12 @@ namespace TD
     ntuple->tree()->Branch ("chgratio", &chgratio, "chgratio[2][48]/D");
 
     // initialize with inverted min-max
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 
 	    pedestal_min[gain][pmt] = 4096;
 	    pedestal_max[gain][pmt] = -1;
@@ -271,12 +271,12 @@ namespace TD
     m_tree->GetEntry (wk()->treeEntry());
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 
 	    // default values are invalid (or error states)
 	    pedestal[gain][pmt] = -1;
@@ -425,12 +425,12 @@ namespace TD
   EL::StatusCode PulseFit :: finalize ()
   {
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 
             // error state: min is still greater than max
 	    if (pedestal_min[gain][pmt] > pedestal_max[gain][pmt])

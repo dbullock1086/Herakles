@@ -17,8 +17,8 @@ namespace TD
   class CorrHF : public EL::Algorithm
   {
   public:
-    UShort_t gains[];
-    UShort_t channels[];
+    Bool_t gains[2];
+    Bool_t channels[48];
     UShort_t window[2];
     
     CorrHF ();
@@ -46,9 +46,6 @@ namespace TD
     Float_t samples_hi[48][128]; //!
     Float_t samples_lo[48][128]; //!
 
-    UShort_t i; //!
-    UShort_t j1; //!
-    UShort_t j2; //!
     UShort_t sample; //!
     Float_t sval1; //!
     Float_t sval2; //!

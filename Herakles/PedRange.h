@@ -17,8 +17,8 @@ namespace TD
   class PedRange : public EL::Algorithm
   {
   public:
-    UShort_t gains[];
-    UShort_t channels[];
+    Bool_t gains[2];
+    Bool_t channels[48];
     
     PedRange ();
     ~PedRange ();
@@ -44,8 +44,6 @@ namespace TD
     Float_t ped_min[2][48]; //!
     Float_t ped_max[2][48]; //!
 
-    UShort_t i; //!
-    UShort_t j; //!
     UShort_t gain; //!
     UShort_t pmt; //!
 

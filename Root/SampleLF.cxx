@@ -32,12 +32,12 @@ namespace TD
      * Therefore we need to calculate sum(x) and sum(x^2)
      */
     
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
 		xval  [gain][pmt][sample] = 0;
@@ -103,12 +103,12 @@ namespace TD
     m_tree->GetEntry (wk()->treeEntry());
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<48; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[i];
+	    if (!channels[pmt]) continue;
 	    // sum(x) and sum(x^2)
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
@@ -132,12 +132,12 @@ namespace TD
     Double_t x2, xm, m2, mean, std;
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<48; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
 

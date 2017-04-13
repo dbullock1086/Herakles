@@ -23,12 +23,12 @@ namespace TD
     char buffer[5];
 
     // initialize with inverted min-max
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    ped_min[gain][pmt] = 4096;
 	    ped_max[gain][pmt] = -1;
 	    ped_prev[gain][pmt] = -1;
@@ -89,12 +89,12 @@ namespace TD
     m_tree->GetEntry (wk()->treeEntry());
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    if (gain) ped = ped_hi[pmt];
 	    else ped = ped_lo[pmt];
 	    // check if value exceeds range
@@ -110,12 +110,12 @@ namespace TD
   EL::StatusCode PedRange :: finalize ()
   {
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[i];
+	    if (!channels[pmt]) continue;
 
 	    // error state: min is still greater than max
 	    if (ped_min[gain][pmt] > ped_max[gain][pmt])

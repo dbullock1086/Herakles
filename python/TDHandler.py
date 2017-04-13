@@ -8,10 +8,8 @@ from ROOTBase import *
 
 class TDHandler:
     def __init__ (self, gains, channels, window):
-        # these might seem redundant, but this allows python to access xrange
-        # while C++ reads a list rather than a python class
-        self.gains = [ gain for gain in gains ]
-        self.channels = [ pmt for pmt in channels ]
+        self.gains = [ (i in gains) for i in xrange(2) ]
+        self.channels = [ (i in channels) for i in xrange(48) ]
         self.window = [ index for index in window ]
         pass
 

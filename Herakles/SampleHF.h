@@ -18,8 +18,8 @@ namespace TD
   class SampleHF : public EL::Algorithm
   {
   public:
-    UShort_t gains[];
-    UShort_t channels[];
+    Bool_t gains[2];
+    Bool_t channels[48];
     UShort_t window[2];
     
     SampleHF ();
@@ -55,11 +55,10 @@ namespace TD
     Double_t hfstd_min[2][48]; //!
     Double_t hfstd_max[2][48]; //!
 
-    UShort_t i; //!
-    UShort_t j; //!
     UShort_t gain; //!
     UShort_t pmt; //!
     UShort_t sample; //!
+
     Double_t xval; //!
     Double_t x2val; //!
     Double_t mean; //!

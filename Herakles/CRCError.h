@@ -18,8 +18,8 @@ namespace TD
   class CRCError : public EL::Algorithm
   {
   public:
-    UShort_t gains[];
-    UShort_t channels[];
+    Bool_t gains[2];
+    Bool_t channels[48];
     UShort_t window[2];
     
     CRCError ();
@@ -47,8 +47,6 @@ namespace TD
     Short_t crc_min[2][48]; //!
     Short_t crc_max[2][48]; //!
 
-    UShort_t i; //!
-    UShort_t j; //!
     UShort_t gain; //!
     UShort_t pmt; //!
     UShort_t sample; //!

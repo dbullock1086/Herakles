@@ -24,12 +24,12 @@ namespace TD
     char buffer[5];
 
     // initialize with inverted min-max
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[i];
+	    if (!channels[pmt]) continue;
 	    hfmean_min[gain][pmt] = 4096;
 	    hfmean_max[gain][pmt] = -1;
 	    hfstd_min [gain][pmt] = 4096;
@@ -116,12 +116,12 @@ namespace TD
     m_tree->GetEntry (wk()->treeEntry());
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    xval  = 0;
 	    x2val = 0;
 	    CRC   = 0;
@@ -176,12 +176,12 @@ namespace TD
   EL::StatusCode SampleHF :: finalize ()
   {
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[i];
+	    if (!channels[pmt]) continue;
 
             // error state: min is still greater than max
 	    if (hfmean_min[gain][pmt] > hfmean_max[gain][pmt])

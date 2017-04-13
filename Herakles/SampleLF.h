@@ -17,8 +17,8 @@ namespace TD
   class SampleLF : public EL::Algorithm
   {
   public:
-    UChar_t gains[];
-    UChar_t channels[];
+    Bool_t gains[2];
+    Bool_t channels[48];
     UShort_t window[2];
     
     SampleLF ();
@@ -41,8 +41,6 @@ namespace TD
     Float_t samples_lo[48][128]; //!
     Float_t sval; //!
 
-    UChar_t i; //!
-    UChar_t j; //!
     UChar_t gain; //!
     UChar_t pmt; //!
     UShort_t sample; //!

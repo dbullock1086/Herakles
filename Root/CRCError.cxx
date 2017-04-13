@@ -28,12 +28,12 @@ namespace TD
     ntuple->tree()->Branch ("crc", &crc, "crc[2][48]/s");
 
     // initialize with inverted min-max
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    crc_min[gain][pmt] = 129;
 	    crc_max[gain][pmt] = -1;
 	  } // end pmt
@@ -89,12 +89,12 @@ namespace TD
     m_tree->GetEntry (wk()->treeEntry());
 
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[j];
+	    if (!channels[pmt]) continue;
 	    crc[gain][pmt] = 0;
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
@@ -121,12 +121,12 @@ namespace TD
   EL::StatusCode CRCError :: finalize ()
   {
     // loop through gain and PMT
-    for (i=0; i<sizeof(gains); i++)
+    for (gain=0; gain<2; gain++)
       {
-	gain = gains[i];
-	for (j=0; j<sizeof(channels); j++)
+	if (!gains[gain]) continue;
+	for (pmt=0; pmt<48; pmt++)
 	  {
-	    pmt = channels[i];
+	    if (!channels[pmt]) continue;
 
             // error state: min is still greater than max
 	    if (crc_min[gain][pmt] > crc_max[gain][pmt])
