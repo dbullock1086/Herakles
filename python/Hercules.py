@@ -4,14 +4,16 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+#### configure the test from the command line
 from ArgParse import *
 
+#### load supports
 import os, subprocess, json
-
 from ELHandler import ELHandler
 from TDHandler import TDHandler
 from Module import Module
 
+#### get environment variables
 WorkDir = os.environ['WorkDir']
 DataDir = os.environ['DataDir']
 HistDir = os.environ['HistDir']
@@ -19,6 +21,7 @@ LogDir  = os.environ['LogDir']
 EOSDir  = os.environ['EOSDir']
 TMPDIR  = os.environ['TMPDIR']
 
+#### load a historical log of jobs that have been attempted
 execfile (WorkDir + '/history.json')
 if args.name not in history:
     history[args.name] = {'eventloop': 0,
@@ -26,14 +29,22 @@ if args.name not in history:
                           'hist': 0}
     pass
 
+#### main interface
 class Hercules (object):
     def __init__ (self):
-        self.elalgs = set ()
+        #### This class is used to control the flow of the test. The "job" of a
+        #    test is divided into three sub-routines. Therefore, each routine
+        #    may require a different set of objects. This class should only be
+        #    used for storing string references to those objects, and the
+        #    sub-routines cause other classes to load those objects into
+        #    memory.
+        self.elalgs     = set (['EvtRange'])
         self.mdhists    = []
         self.mdhists2d  = []
         self.mdprofiles = []
-        self.cpybr = set ()
-        self.tree = 'dataTree'
+        self.cpybr      = set ()
+        self.tree       = 'dataTree'
+        self.owned      = set ()
         pass
 
     def SetTree (self, tree):
@@ -57,6 +68,7 @@ class Hercules (object):
 
     def AddMDHist (self, xvar):
         #### add a MultiDraw algorithm class (string reference)
+        assert xvar != 'evt', 'evt not allowed as a 1D histogram'
         self.mdhists.append (xvar)
         pass
 
@@ -70,19 +82,35 @@ class Hercules (object):
         self.mdprofiles.append ([xvar, yvar])
         pass
 
-    def MDProfile (self, xvar, yvar): self.module.MDHistProfile (xvar, yvar)
+    def OwnHist (self, name):
+        #### save a histogram from the EventLoop routine for final output
+        assert name not in ['evt', 'cap', 'charge'], \
+            'evt, cap, and charge are not summary histograms'
+        self.owned.add (name)
+        pass
 
     def Run (self):
+        #### execute the test
+
+        # run a single routine (i.e. batch)
         if args.routine: self._run (args.routine)
-        for routine in ['eventloop', 'multidraw', 'hist']:
-            if args.submit: self._submit (routine)
-            else: self._run (routine)
+
+        # loop through routines
+        else:
+            for routine in ['eventloop', 'multidraw', 'hist']:
+                # submit to batch
+                if args.submit: self._submit (routine)
+                else: self._run (routine)
+                pass
             pass
         pass
 
     def _run (self, routine):
-        #### run a single routine
+        #### instructions for each routine
 
+        # limit the number of test attempts
+        if history[args.name][routine] >= 10: return
+        
         # update the history log
         history[args.name][routine] += 1
         log = json.dumps(history, sort_keys=True,
@@ -94,14 +122,14 @@ class Hercules (object):
         if routine == 'eventloop':
             # build event loop and add Herakles algorithms
             self._copyinit ()
-            el = ELHandler (self.name, self.tree)
-            ###################################################################
-            ###################################################################
-            el.SH (scandir, sname)
-            ###################################################################
-            ###################################################################
+            el = ELHandler (args.name, self.tree)
+            el.SH (DataDir + '/' + args.name, args.name + '.root')
             el.EL ()
-            el.NTuple (self.cpybr)
+
+            # copy branches from raw data to the derived set
+            if self.cpybr: el.NTuple (self.cpybr)
+
+            # get the algorithm objects
             td = TDHandler (args.gains, args.channels, args.window)
             for alg in self.algs:
                 Alg = td.GetAlg (alg)
@@ -110,15 +138,25 @@ class Hercules (object):
             el.Submit ()
             pass
         elif routine == 'multidraw':
-            # build event loop and add multidraw algorithms
-            el = ELHandler (self.name, 'tree')
-            ###################################################################
-            ###################################################################
-            el.SH (scandir, sname)
-            ###################################################################
-            ###################################################################
+            # build event loop
+            el = ELHandler (self.name, 'ntuple')
+            el.SH (TMPDIR + '/' + args.name, 'multidraw.root')
             el.EL ()
+
+            # stage the MD algorithms to each channel
             self.module = Module (args.name, args.gains, args.channels)
+            self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))
+            self.module.InitRange ()
+            for xvar in self.mdhists: self.module.AddMDHist (xvar)
+            for [xvar, yvar] in self.mdhists2d:
+                self.module.AddMDHist2D (xvar, yvar)
+                pass
+            for [xvar, yvar] in self.mdprofiles:
+                self.module.AddMDProfile (xvar, yvar)
+                pass
+            self.module.CloseFile ()
+
+            # add MD algorithms to EventLoop job
             for gain in args.gains:
                 for pmt in args.channels:
                     for alg in self.module.members[gain][pmt].algs:
@@ -185,6 +223,9 @@ class Hercules (object):
                   (HistDir, args.name, args.hist)
             pass
         self._bash (cmd)
+        pass
+
+    def OwnHist (self):
         pass
 
     pass

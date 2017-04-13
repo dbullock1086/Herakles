@@ -65,67 +65,67 @@ namespace TD
       } // end gain
 
     // histogram contains min and max in separate bins
-    m_pedestal_lo_min = new TH1D ("PulseFit_pedestal_lo_min",
+    m_pedestal_lo_min = new TH1D ("Pedestal_lo_min",
 				  "Pulse Pedestal Low", 48, 0, 48);
-    m_pedestal_lo_max = new TH1D ("PulseFit_pedestal_lo_max",
+    m_pedestal_lo_max = new TH1D ("Pedestal_lo_max",
 				  "Pulse Pedestal Low", 48, 0, 48);
-    m_pedestal_hi_min = new TH1D ("PulseFit_pedestal_hi_min",
+    m_pedestal_hi_min = new TH1D ("Pedestal_hi_min",
 				  "Pulse Pedestal High", 48, 0, 48);
-    m_pedestal_hi_max = new TH1D ("PulseFit_pedestal_hi_max",
+    m_pedestal_hi_max = new TH1D ("Pedestal_hi_max",
 				  "Pulse Pedestal High", 48, 0, 48);
 
-    m_height_lo_min = new TH1D ("PulseFit_height_lo_min",
+    m_height_lo_min = new TH1D ("Height_lo_min",
 				"Pulse Height Low", 48, 0, 48);
-    m_height_lo_max = new TH1D ("PulseFit_height_lo_max",
+    m_height_lo_max = new TH1D ("Height_lo_max",
 				"Pulse Height Low", 48, 0, 48);
-    m_height_hi_min = new TH1D ("PulseFit_height_hi_min",
+    m_height_hi_min = new TH1D ("Height_hi_min",
 				"Pulse Height High", 48, 0, 48);
-    m_height_hi_max = new TH1D ("PulseFit_height_hi_max",
+    m_height_hi_max = new TH1D ("Height_hi_max",
 				"Pulse Height High", 48, 0, 48);
 
-    m_phase_lo_min = new TH1D ("PulseFit_phase_lo_min",
+    m_phase_lo_min = new TH1D ("Phase_lo_min",
 			       "Pulse Phase Low", 48, 0, 48);
-    m_phase_lo_max = new TH1D ("PulseFit_phase_lo_max",
+    m_phase_lo_max = new TH1D ("Phase_lo_max",
 			       "Pulse Phase Low", 48, 0, 48);
-    m_phase_hi_min = new TH1D ("PulseFit_phase_hi_min",
+    m_phase_hi_min = new TH1D ("Phase_hi_min",
 			       "Pulse Phase High", 48, 0, 48);
-    m_phase_hi_max = new TH1D ("PulseFit_phase_hi_max",
+    m_phase_hi_max = new TH1D ("Phase_hi_max",
 			       "Pulse Phase High", 48, 0, 48);
 
-    m_width_lo_min = new TH1D ("PulseFit_width_lo_min",
+    m_width_lo_min = new TH1D ("Width_lo_min",
 			       "Pulse Width Low", 48, 0, 48);
-    m_width_lo_max = new TH1D ("PulseFit_width_lo_max",
+    m_width_lo_max = new TH1D ("Width_lo_max",
 			       "Pulse Width Low", 48, 0, 48);
-    m_width_hi_min = new TH1D ("PulseFit_width_hi_min",
+    m_width_hi_min = new TH1D ("Width_hi_min",
 			       "Pulse Width High", 48, 0, 48);
-    m_width_hi_max = new TH1D ("PulseFit_width_hi_max",
+    m_width_hi_max = new TH1D ("Width_hi_max",
 			       "Pulse Width High", 48, 0, 48);
 
-    m_chisqr_lo_min = new TH1D ("PulseFit_chisqr_lo_min",
+    m_chisqr_lo_min = new TH1D ("ChiSqr_lo_min",
 				"Pulse Chi2 Low", 48, 0, 48);
-    m_chisqr_lo_max = new TH1D ("PulseFit_chisqr_lo_max",
+    m_chisqr_lo_max = new TH1D ("ChiSqr_lo_max",
 				"Pulse Chi2_Low", 48, 0, 48);
-    m_chisqr_hi_min = new TH1D ("PulseFit_chisqr_hi_min",
+    m_chisqr_hi_min = new TH1D ("ChiSqr_hi_min",
 				"Pulse Chi2 High", 48, 0, 48);
-    m_chisqr_hi_max = new TH1D ("PulseFit_chisqr_hi_max",
+    m_chisqr_hi_max = new TH1D ("ChiSqr_hi_max",
 				"Pulse Chi2 High", 48, 0, 48);
 
-    m_ndf_lo_min = new TH1D ("PulseFit_ndf_lo_min", "Pulse NDF Low",
+    m_ndf_lo_min = new TH1D ("NDF_lo_min", "Pulse NDF Low",
 			     48, 0, 48);
-    m_ndf_lo_max = new TH1D ("PulseFit_ndf_lo_max", "Pulse NDF Low",
+    m_ndf_lo_max = new TH1D ("NDF_lo_max", "Pulse NDF Low",
 			     48, 0, 48);
-    m_ndf_hi_min = new TH1D ("PulseFit_ndf_hi_min", "Pulse NDF High",
+    m_ndf_hi_min = new TH1D ("NDF_hi_min", "Pulse NDF High",
 			     48, 0, 48);
-    m_ndf_hi_max = new TH1D ("PulseFit_ndf_hi_max", "Pulse NDF High",
+    m_ndf_hi_max = new TH1D ("NDF_hi_max", "Pulse NDF High",
 			     48, 0, 48);
 
-    m_chgratio_lo_min = new TH1D ("PulseFit_chgratio_lo_min",
+    m_chgratio_lo_min = new TH1D ("ChgRatio_lo_min",
 				  "Pulse Height/Charge Low", 48, 0, 48);
-    m_chgratio_lo_max = new TH1D ("PulseFit_chgratio_lo_max",
+    m_chgratio_lo_max = new TH1D ("ChgRatio_lo_max",
 				  "Pulse Height/Charge Low", 48, 0, 48);
-    m_chgratio_hi_min = new TH1D ("PulseFit_chgratio_hi_min",
+    m_chgratio_hi_min = new TH1D ("ChgRatio_hi_min",
 				  "Pulse Height/Charge High", 48, 0, 48);
-    m_chgratio_hi_max = new TH1D ("PulseFit_chgratio_hi_max",
+    m_chgratio_hi_max = new TH1D ("ChgRatio_hi_max",
 				  "Pulse Height/Charge High", 48, 0, 48);
 
     m_pedestal_lo_min->SetYTitle ("Min");

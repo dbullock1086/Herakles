@@ -43,22 +43,22 @@ namespace TD
     ntuple->tree()->Branch ("hfstd",  &hfstd,  "hfstd[2][48]/D");
 
     // histogram contains min and max in separate bins
-    m_hfmean_lo_min = new TH1D ("SampleHF_mean_lo_min", "Sample HF Mean Low",
+    m_hfmean_lo_min = new TH1D ("HFMean_lo_min", "Sample HF Mean Low",
 				48, 0, 48);
-    m_hfmean_lo_max = new TH1D ("SampleHF_mean_lo_max", "Sample HF Mean Low",
+    m_hfmean_lo_max = new TH1D ("HFMean_lo_max", "Sample HF Mean Low",
 				48, 0, 48);
-    m_hfmean_hi_min = new TH1D ("SampleHF_mean_hi_min", "Sample HF Mean High",
+    m_hfmean_hi_min = new TH1D ("HFMean_hi_min", "Sample HF Mean High",
 				48, 0, 48);
-    m_hfmean_hi_max = new TH1D ("SampleHF_mean_hi_max", "Sample HF Mean High",
+    m_hfmean_hi_max = new TH1D ("HFMean_hi_max", "Sample HF Mean High",
 				48, 0, 48);
 
-    m_hfstd_lo_min = new TH1D ("SampleHF_std_lo_min", "Sample HF StdDev Low",
+    m_hfstd_lo_min = new TH1D ("HFStd_lo_min", "Sample HF StdDev Low",
 			       48, 0, 48);
-    m_hfstd_lo_max = new TH1D ("SampleHF_std_lo_max", "Sample HF StdDev Low",
+    m_hfstd_lo_max = new TH1D ("HFStd_lo_max", "Sample HF StdDev Low",
 			       48, 0, 48);
-    m_hfstd_hi_min = new TH1D ("SampleHF_std_hi_min", "Sample HF StdDev High",
+    m_hfstd_hi_min = new TH1D ("HFStd_hi_min", "Sample HF StdDev High",
 			       48, 0, 48);
-    m_hfstd_hi_max = new TH1D ("SampleHF_std_hi_max", "Sample HF StdDev High",
+    m_hfstd_hi_max = new TH1D ("HFStd_hi_max", "Sample HF StdDev High",
 			       48, 0, 48);
 
     m_hfmean_lo_min->SetYTitle ("Min");

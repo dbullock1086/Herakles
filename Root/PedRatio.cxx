@@ -108,8 +108,6 @@ namespace TD
 		  }
 		else pedratio[gain][pmt][sample] = -1;
 
-		// ERROR pedratio[gain][pmt][sample]
-
 		// check if value exceeds range
 		if (pedratio[gain][pmt][sample] < pedratio_min[gain][pmt])
 		  {

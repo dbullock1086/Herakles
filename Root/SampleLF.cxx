@@ -48,17 +48,13 @@ namespace TD
       }
 
     // histograms contain min-max of high-frequency mean and standard deviation
-    m_lfmean_lo = new TH2D ("SampleLF_mean_lo",
-			    "SampleLF_mean_lo",
+    m_lfmean_lo = new TH2D ("LFMean_lo", "LF Mean Low",
 			    128, 0, 128, 48, 0, 48);
-    m_lfmean_hi = new TH2D ("SampleLF_mean_hi",
-			    "SampleLF_mean_hi",
+    m_lfmean_hi = new TH2D ("LFMean_hi", "LF Mean High",
 			    128, 0, 128, 48, 0, 48);
-    m_lfstd_lo = new TH2D ("SampleLF_std_lo",
-			   "SampleLF_std_lo",
+    m_lfstd_lo = new TH2D ("LFStd_lo", "LF Std Low",
 			   128, 0, 128, 48, 0, 48);
-    m_lfstd_hi = new TH2D ("SampleLF_std_hi",
-			   "SampleLF_std_hi",
+    m_lfstd_hi = new TH2D ("LFStd_hi", "LF Std High",
 			   128, 0, 128, 48, 0, 48);
 
     for (pmt=1; pmt<49; pmt++)

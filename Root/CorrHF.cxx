@@ -24,7 +24,8 @@ namespace TD
     char buffer[11];
     
     // histogram contains linear correlation between all PMTs (2 gains)
-    m_hfcorr = new TH2D ("CorrHF", "CorrHF", 96, 0, 96, 96, 0, 96);
+    m_hfcorr = new TH2D ("CorrHF", "High-Frequency Correlation",
+			 96, 0, 96, 96, 0, 96);
     m_hfcorr->GetZaxis()->SetRangeUser (0, 1);
 
     /*
@@ -165,9 +166,7 @@ namespace TD
 		meany2 = meany * meany / numX[gain][pmt2];
 		stdY = TMath::Sqrt (ysqr - 2*ymsqr + meany2);
 
-		// ERROR
 		meanxy = xysum[gain][pmt1][pmt2] / numXY[gain][pmt1][pmt2];
-		//
 		corr = (meanxy - meanx*meany) / (stdX * stdY);
 		m_hfcorr->Fill (xval, yval, corr);
 	      }
