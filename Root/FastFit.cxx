@@ -8,7 +8,6 @@
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
 #include <Herakles/FastFit.h>
-#include <Herakles/PulseShape.h>
 
 ClassImp(TD::FastFit)
 

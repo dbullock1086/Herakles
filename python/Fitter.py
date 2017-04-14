@@ -134,9 +134,10 @@ class Fitter (object):
         pass
 
     def _pulse (self):
+        if not hasattr (self, 'pulsefit'): self.pulsefit = ROOT.TD.PulseFit ()
         #### fit to a pulse model
         self.model = ROOT.TF1 (self.hists[name].GetName() + '_fit',
-                               ROOT.TD.PulseShape,
+                               self.pulsefit.PulseShape,
                                self.par['minx'], self.par['maxx'])
         # Is the pulse positive or negative?
         # ignore the maximum and minimum values then determine if

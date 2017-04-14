@@ -1,11 +1,16 @@
 #include <Herakles/EvtRange.h>
 #include <Herakles/CapRange.h>
 #include <Herakles/ChargeRange.h>
-#include <Herakles/PedRatio.h>
 #include <Herakles/PedRange.h>
+#include <Herakles/SampleRange.h>
+
+#include <Herakles/CRCError.h>
+#include <Herakles/PedRatio.h>
 #include <Herakles/SampleHF.h>
 #include <Herakles/SampleLF.h>
-#include <Herakles/SampleRange.h>
+#include <Herakles/CorrHF.h>
+#include <Herakles/PulseFit.h>
+#include <Herakles/FastFit.h>
 
 #ifdef __CINT__
 
@@ -13,8 +18,6 @@
 #pragma link off all classes;
 #pragma link off all functions;
 #pragma link C++ nestedclass;
-
-#pragma link C++ function PulseShape+;
 
 #pragma link C++ namespace TD;
 
@@ -30,7 +33,6 @@
 #pragma link C++ class SampleLF+;
 #pragma link C++ class CorrHF+;
 #pragma link C++ class PulseFit+;
-
-#pragma link C++ function PulseShape+;
+#pragma link C++ class FastFit+;
 
 #endif

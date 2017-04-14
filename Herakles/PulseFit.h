@@ -25,6 +25,7 @@ namespace TD
     
     PulseFit ();
     ~PulseFit ();
+    static Double_t PulseShape (Double_t *x, Double_t *par);
 
   private:
     virtual EL::StatusCode initialize ();

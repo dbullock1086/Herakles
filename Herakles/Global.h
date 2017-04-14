@@ -4,13 +4,18 @@
 namespace TD
 {
   class EvtRange;
-  class EvtimeRange;
   class CapRange;
   class ChargeRange;
   class PedRange;
+  class SampleRange;
+
+  class CRCError;
+  class PedRatio;
   class SampleHF;
   class SampleLF;
-  class SampleRange;
+  class CorrHF;
+  class PulseFit;
+  class FastFit;
 }
 
 #endif

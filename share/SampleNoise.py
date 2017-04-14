@@ -14,6 +14,7 @@ class SampleNoise (Hercules):
         self.AddTDAlg ('SampleRange')
         self.CopyBranch ('samples')
         self.AddMDHist ('evt', 'samples')
+        self.OwnHist ('samples')
         pass
     pass
 

@@ -6,15 +6,16 @@
 
 from Hercules import Hercules
 
-class SampleStability (Hercules):
+class CRCCount (Hercules):
     def __init__ (self):
-        super (SampleStability, self).__init__ ()
+        super (CRCCount, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('EvtRange')
+        self.AddTDAlg ('EventRange')
+        self.AddTDAlg ('CRCError')
         self.CopyBranch ('evt')
-        self.CopyBranch ('samples')
-        self.AddMDProfile ('evt', 'samples')
-        self.OwnHist ('samples')
+        self.AddMDHist ('crc')
+        self.AddMDHist2D ('evt', 'crc')
+        self.OwnHist ('crc')
         pass
     pass
 

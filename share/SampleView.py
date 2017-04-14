@@ -15,6 +15,7 @@ class SampleView (Hercules):
         self.CopyBranch ('evt')
         self.CopyBranch ('samples')
         self.AddMDHist2D ('evt', 'samples')
+        self.OwnHist ('samples')
         pass
     pass
 
