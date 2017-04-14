@@ -33,10 +33,13 @@ mkdir PrometeoTest
 cd PrometeoTest
 ```
 
-Copy all shared files from the source directory into this new area:
+Copy some files from the source directory into this new area:
 
 ```
-cp ~/PrometeoSource/Herakles/share/* .
+cp ~/PrometeoSource/Herakles/share/setup.sh .
+cp ~/PrometeoSource/Herakles/share/batch.sh .
+cp ~/PrometeoSource/Herakles/share/history.json .
+cp ~/PrometeoSource/Herakles/share/hourly_cronjob.py .
 ```
 
 Edit the `setup.sh` file to ensure that
@@ -46,7 +49,7 @@ Edit the `setup.sh` file to ensure that
 
 Source `setup.sh` and it should build RootCore in your user area, then it will return to your working directory before defining other environment variables. Always start from your working directory and source this setup file for each session on lxplus.
 
-**Note:** You probably also want to copy `batch.sh` from the same directory and modify it, which is useful for streamlining the lxbatch submission. Also, there are also several test scripts (e.g. `SampleNoise.py`) that should be executable. (Try `chmod +x SampleNoise.py` if they are not.)
+**Note:** You probably also want to edit `batch.sh`, which is useful for streamlining the lxbatch submission.
 
 ### Running
 

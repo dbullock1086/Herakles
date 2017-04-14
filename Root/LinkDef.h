@@ -20,19 +20,17 @@
 #pragma link C++ nestedclass;
 
 #pragma link C++ namespace TD;
+#pragma link C++ class TD::EvtRange+;
+#pragma link C++ class TD::CapRange+;
+#pragma link C++ class TD::ChargeRange+;
+#pragma link C++ class TD::PedRange+;
+#pragma link C++ class TD::SampleRange+;
 
-#pragma link C++ class EvtRange+;
-#pragma link C++ class CapRange+;
-#pragma link C++ class ChargeRange+;
-#pragma link C++ class PedRange+;
-#pragma link C++ class SampleRange+;
-
-#pragma link C++ class PedRatio+;
-#pragma link C++ class CRCError+;
-#pragma link C++ class SampleHF+;
-#pragma link C++ class SampleLF+;
-#pragma link C++ class CorrHF+;
-#pragma link C++ class PulseFit+;
-#pragma link C++ class FastFit+;
-
+#pragma link C++ class TD::CRCError+;
+#pragma link C++ class TD::PedRatio+;
+#pragma link C++ class TD::SampleHF+;
+#pragma link C++ class TD::SampleLF+;
+#pragma link C++ class TD::CorrHF+;
+#pragma link C++ class TD::PulseFit+;
+#pragma link C++ class TD::FastFit+;
 #endif

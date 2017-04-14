@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PrometeoSource=/afs/cern.ch/user/d/dbullock/public/PrometeoSource
+export PrometeoSource=/afs/cern.ch/user/d/dbullock/public/NewHerakles
 cd $PrometeoSource
 
 if [ -z $ATLASLOCAL_ROOT ]; then
@@ -20,11 +20,11 @@ fi
 
 export HERAKLES=$PrometeoSource/Herakles
 export PYTHONPATH=$HERAKLES/python:$PYTHONPATH
-export PATH=$HERAKLES/bin:$PATH
+export PATH=$HERAKLES/share:$PATH
 
 export EOSDir=/eos/atlas/atlascerngroupdisk/det-tile/demonstrator/2017
 
-export WorkDir=/afs/cern.ch/work/d/dbullock/public/PrometeoTest
+export WorkDir=/afs/cern.ch/work/d/dbullock/public/NewHerakles
 cd $WorkDir
 
 export DataDir=$WorkDir/data

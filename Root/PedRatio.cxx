@@ -41,11 +41,11 @@ namespace TD
 
     // histogram contains min and max in separate bins
     m_pedratio_lo_min = new TH1D ("PedRatio_lo_min", "Pedestal Ratio Low",
-				  48, 0, 48);
+    				  48, 0, 48);
     m_pedratio_lo_max = new TH1D ("PedRatio_lo_max", "Pedestal Ratio Low",
-				  48, 0, 48);
+    				  48, 0, 48);
     m_pedratio_hi_min = new TH1D ("PedRatio_hi_min", "Pedestal Ratio High",
-				  48, 0, 48);
+    				  48, 0, 48);
     m_pedratio_hi_max = new TH1D ("PedRatio_hi_max", "Pedestal Ratio High",
 				  48, 0, 48);
     m_pedratio_lo_min->SetYTitle ("Min");
@@ -55,11 +55,11 @@ namespace TD
 
     for (pmt=1; pmt<49; pmt++) // notice number convention
       {
-	sprintf (buffer, "PMT%d", pmt);
-	m_pedratio_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_pedratio_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_pedratio_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_pedratio_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+    	sprintf (buffer, "PMT%d", pmt);
+    	m_pedratio_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+    	m_pedratio_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+    	m_pedratio_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+    	m_pedratio_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
       } // end pmt
 
     // add the histograms to EL output
@@ -143,21 +143,21 @@ namespace TD
             // set min-max bin contents in histograms
 	    if (gain)
 	      {
-		m_pedratio_hi_min->SetBinContent (pmt+1,
-						  pedratio_min[gain][pmt]);
-		m_pedratio_hi_min->SetBinError (pmt+1, 0);
-		m_pedratio_hi_max->SetBinContent (pmt+1,
-						  pedratio_max[gain][pmt]);
-		m_pedratio_hi_max->SetBinError (pmt+1, 0);
+	    	m_pedratio_hi_min->SetBinContent (pmt + 1,
+	    					  pedratio_min[gain][pmt]);
+	    	m_pedratio_hi_min->SetBinError (pmt + 1, 0);
+	    	m_pedratio_hi_max->SetBinContent (pmt + 1,
+	    					  pedratio_max[gain][pmt]);
+	    	m_pedratio_hi_max->SetBinError (pmt + 1, 0);
 	      }
 	    else
 	      {
-		m_pedratio_lo_min->SetBinContent (pmt+1,
-						  pedratio_min[gain][pmt]);
-		m_pedratio_lo_min->SetBinError (pmt+1, 0);
-		m_pedratio_lo_max->SetBinContent (pmt+1,
-						  pedratio_max[gain][pmt]);
-		m_pedratio_lo_max->SetBinError (pmt+1, 0);
+	    	m_pedratio_lo_min->SetBinContent (pmt + 1,
+	    					  pedratio_min[gain][pmt]);
+	    	m_pedratio_lo_min->SetBinError (pmt + 1, 0);
+	    	m_pedratio_lo_max->SetBinContent (pmt + 1,
+	    					  pedratio_max[gain][pmt]);
+	    	m_pedratio_lo_max->SetBinError (pmt + 1, 0);
 	      }
 	  } // end pmt
       } // end gain

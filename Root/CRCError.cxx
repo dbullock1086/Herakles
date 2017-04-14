@@ -138,17 +138,17 @@ namespace TD
             // set min-max bin contents in histograms
 	    if (gain)
 	      {
-		m_crc_hi_min->SetBinContent (pmt+1, crc_min[gain][pmt]);
-		m_crc_hi_min->SetBinError (pmt+1, 0);
-		m_crc_hi_max->SetBinContent (pmt+1, crc_max[gain][pmt]);
-		m_crc_hi_max->SetBinError (pmt+1, 0);
+		m_crc_hi_min->SetBinContent (pmt + 1, crc_min[gain][pmt]);
+		m_crc_hi_min->SetBinError (pmt + 1, 0);
+		m_crc_hi_max->SetBinContent (pmt + 1, crc_max[gain][pmt]);
+		m_crc_hi_max->SetBinError (pmt + 1, 0);
 	      }
 	    else
 	      {
-		m_crc_lo_min->SetBinContent (pmt+1, crc_min[gain][pmt]);
-		m_crc_lo_min->SetBinError (pmt+1, 0);
-		m_crc_lo_max->SetBinContent (pmt+1, crc_max[gain][pmt]);
-		m_crc_lo_max->SetBinError (pmt+1, 0);
+		m_crc_lo_min->SetBinContent (pmt + 1, crc_min[gain][pmt]);
+		m_crc_lo_min->SetBinError (pmt + 1, 0);
+		m_crc_lo_max->SetBinContent (pmt + 1, crc_max[gain][pmt]);
+		m_crc_lo_max->SetBinError (pmt + 1, 0);
 	      }
 	  } // end pmt
       } // end gain
