@@ -36,4 +36,4 @@ mkdir -p $LogDir
 export TMPDIR=$WorkDir/TMPDir
 mkdir -p $TMPDIR
 
-source $Herakles/share/herakles_scripts.sh
+source $HERAKLES/share/herakles_scripts.sh

@@ -12,7 +12,7 @@ class SampleCorr (Hercules):
         self.SetTree ('dataTree')
         self.AddTDAlg ('SampleCorr')
         self.CopyBranch ('samples')
-        self.OwnHist ('hfcorr')
+        self.OwnELHist ('hfcorr')
         pass
     pass
 

@@ -10,10 +10,10 @@ class TDHandler:
     def __init__ (self, gains, channels, window):
         self.gains = [ (i in gains) for i in xrange(2) ]
         self.channels = [ (i in channels) for i in xrange(48) ]
-        self.window = [ index for index in window ]
+        self.window = window
         pass
 
-    def GetAlg (self, name):
+    def GetAlg (self, name, gain=0, pmt=0):
         #### get a configured Herakles algorithm
         if name == 'EvtRange':      alg = ROOT.TD.EvtRange ()
         elif name == 'CapRange':    alg = ROOT.TD.CapRange ()

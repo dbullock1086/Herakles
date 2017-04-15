@@ -14,7 +14,7 @@ class SampleStability (Hercules):
         self.CopyBranch ('evt')
         self.CopyBranch ('samples')
         self.AddMDProfile ('evt', 'samples')
-        self.OwnHist ('samples')
+        self.OwnELHist ('samples')
         pass
     pass
 

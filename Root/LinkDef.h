@@ -20,6 +20,7 @@
 #pragma link C++ nestedclass;
 
 #pragma link C++ namespace TD;
+
 #pragma link C++ class TD::EvtRange+;
 #pragma link C++ class TD::CapRange+;
 #pragma link C++ class TD::ChargeRange+;
@@ -33,4 +34,5 @@
 #pragma link C++ class TD::CorrHF+;
 #pragma link C++ class TD::PulseFit+;
 #pragma link C++ class TD::FastFit+;
+
 #endif

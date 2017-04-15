@@ -15,7 +15,7 @@ class CRCCount (Hercules):
         self.CopyBranch ('evt')
         self.AddMDHist ('crc')
         self.AddMDHist2D ('evt', 'crc')
-        self.OwnHist ('crc')
+        self.OwnELHist ('crc')
         pass
     pass
 

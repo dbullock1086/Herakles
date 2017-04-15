@@ -21,30 +21,37 @@ class Module (HistReader):
                 self.members[gain][pmt] = Channel (self.name, gain, pmt)
                 pass
             pass
-        self.owned = {}
+        self.hists = {}
         pass
 
-    def _arrayloop (self, var, gain, pmt):
-        name = var
-        if var in ['ped', 'samples']:
-            if gain: name += '_hi'
-            else: name += '_lo'
-            name += '[%i]' % pmt
+    def Clear (self):
+        for gain in self.gains:
+            for pmt in self.channels:
+                self.members[gain][pmt].Clear ()
+                pass
             pass
-        elif var in ['crc', 'fastfit', 'fastratio', 'pedratio',
-                     'pedestal', 'height', 'phase', 'width',
-                     'chisqr', 'ndf', 'chgratio',
-                     'hfmean', 'hfstd']:
-            name += '[%i][%i]' % (gain, pmt)
+        for name in self.hists:
+            self.hists[name].IsA().Destructor (self.hists[name])
+            del self.hists[name]
             pass
-        return name
+        pass
 
     def AddMDHist (self, xvar):
         for gain in self.gains:
             for pmt in self.channels:
-                xname = self._arrayloop (xvar, gain, pmt)
-                #xbins, xmin, xmax = self.rf.GetRange (xvar, gain, pmt)
+                xname = self.ArrName (xvar, gain, pmt)
+                xbins, xmin, xmax = self.GetRange (xvar, gain, pmt)
                 self.members[gain][pmt].MDHist (xname, xbins, xmin, xmax)
+                pass
+            pass
+        pass
+
+    def OwnMDHist (self, xvar):
+        for gain in self.gains:
+            for pmt in self.channels:
+                name = self.members[gain][pmt].NameHist (xvar)
+                hist = self.rfile.Get (name)
+                self.members[gain][pmt].OwnHist (hist)
                 pass
             pass
         pass
@@ -52,12 +59,22 @@ class Module (HistReader):
     def AddMDHist2D (self, xvar, yvar):
         for gain in self.gains:
             for pmt in self.channels:
-                xname = self._arrayloop (xvar, gain, pmt)
-                #xbins, xmin, xmax = self.()
-                yname = self._arrayloop (yvar, gain, pmt)
-                #ybins, ymin, ymax = self.()
+                xname = self.ArrName (xvar, gain, pmt)
+                xbins, xmin, xmax = self.GetRange (xvar, gain, pmt)
+                yname = self.ArrName (yvar, gain, pmt)
+                ybins, ymin, ymax = self.GetRange (yvar, gain, pmt)
                 self.members[gain][pmt].MDHist2D (xname, xbins, xmin, xmax,
                                                   yname, ybins, ymin, ymax)
+                pass
+            pass
+        pass
+
+    def OwnMDHist2D (self, xvar, yvar):
+        for gain in self.gains:
+            for pmt in self.channels:
+                name = self.members[gain][pmt].NameHist2D (xvar, yvar)
+                hist = self.rfile.Get (name)
+                self.members[gain][pmt].OwnHist2D (hist)
                 pass
             pass
         pass
@@ -65,12 +82,34 @@ class Module (HistReader):
     def AddMDProfile (self, xvar, yvar):
         for gain in self.gains:
             for pmt in self.channels:
-                xname = self._arrayloop (xvar, gain, pmt)
-                #xbins, xmin, xmax = self.()
-                yname = self._arrayloop (yvar, gain, pmt)
-                #ybins, ymin, ymax = self.()
+                xname = self.ArrName (xvar, gain, pmt)
+                xbins, xmin, xmax = self.GetRange (xvar, gain, pmt)
+                yname = self.ArrName (yvar, gain, pmt)
+                ybins, ymin, ymax = self.GetRange (yvar, gain, pmt)
                 self.members[gain][pmt].MDProfile (xname, xbins, xmin, xmax,
                                                    yname)
+                pass
+            pass
+        pass
+
+    def OwnMDProfile (self, xvar, yvar):
+        for gain in self.gains:
+            for pmt in self.channels:
+                name = self.members[gain][pmt].NameProfile (xvar, yvar)
+                hist = self.rfile.Get (name)
+                self.members[gain][pmt].OwnProfile (hist)
+                pass
+            pass
+        pass
+
+    def GetAlgs (self, gain, pmt):
+        algs = self.members[gain][pmt].GetAlgs ()
+        return algs
+
+    def DoFit (self):
+        for gain in self.gains:
+            for pmt in self.channels:
+                self.members[gain][pmt].DoFit ()
                 pass
             pass
         pass

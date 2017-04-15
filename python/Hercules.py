@@ -44,7 +44,7 @@ class Hercules (object):
         self.mdprofiles = []
         self.cpybr      = set ()
         self.tree       = 'dataTree'
-        self.owned      = set ()
+        self.ownel      = set ()
         pass
 
     def SetTree (self, tree):
@@ -82,11 +82,11 @@ class Hercules (object):
         self.mdprofiles.append ([xvar, yvar])
         pass
 
-    def OwnHist (self, name):
+    def OwnELHist (self, name):
         #### save a histogram from the EventLoop routine for final output
         assert name not in ['evt', 'cap', 'charge'], \
-            'evt, cap, and charge are not summary histograms'
-        self.owned.add (name)
+            'evt, cap, and charge do not have summary histograms'
+        self.ownel.add (name)
         pass
 
     def Run (self):
@@ -159,15 +159,36 @@ class Hercules (object):
             # add MD algorithms to EventLoop job
             for gain in args.gains:
                 for pmt in args.channels:
-                    for alg in self.module.members[gain][pmt].algs:
-                        el.AddAlg (alg)
-                        pass
+                    algs = self.module.GetAlgs ()
+                    for alg in algs: el.AddAlg (alg)
                     pass
                 pass
             pass
         elif routine == 'hist':
             # collect and summarize hists
-            self.module = Module (args.name, args.gains, args.channels)
+            if hasattr (self, 'module') self.module.Clear ()
+            else: self.module = Module (args.name, args.gains, args.channels)
+
+            self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))
+            for name in self.ownel: self.module.OwnELHist (name)
+            self.module.CloseFile ()
+
+            self.module.OpenFile ('%s/%s/multidraw.root' % (TMPDIR, args.name))
+            for xvar in self.mdhists: self.module.OwnMDHist (xvar)
+            for [xvar, yvar] in self.mdhists2d:
+                self.module.OwnMDHist2D (xvar, yvar)
+                pass
+            for [xvar, yvar] in self.mdprofiles:
+                self.module.OwnMDProfile (xvar, yvar)
+                pass
+            self.module.CloseFile ()
+
+            self.module.DoFit ()
+
+            self.module.OpenFile ('%s/%s/final.root' % (HistDir, args.name))
+            self.module.Write ()
+            self.module.CloseFile ()
+
             self._copyfinal ()
             pass
         pass
@@ -219,9 +240,15 @@ class Hercules (object):
                   (HistDir, args.name, args.hist)
             pass
         else:
-            cmd = 'cp %s/%s/summary.root %s' % \
+            cmd = 'cp %s/%s/final.root %s' % \
                   (HistDir, args.name, args.hist)
             pass
+        self._bash (cmd)
+        cmd = 'rm -rf %s/%s/' % (DataDir, args.name)
+        self._bash (cmd)
+        cmd = 'rm -rf %s/%s/' % (TMPDIR, args.name)
+        self._bash (cmd)
+        cmd = 'rm -rf %s/%s/' % (HistDir, args.name)
         self._bash (cmd)
         pass
 

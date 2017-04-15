@@ -14,8 +14,8 @@ class SampleLinearity (Hercules):
         self.CopyBranch ('ped')
         self.CopyBranch ('samples')
         self.AddMDProfile ('ped', 'samples')
-        self.OwnHist ('ped')
-        self.OwnHist ('samples')
+        self.OwnELHist ('ped')
+        self.OwnELHist ('samples')
         pass
     pass
 
