@@ -319,6 +319,7 @@ namespace TD
 
     fit_temp = new TF1 ("ftemp", PulseShape,
 			window[0], window[1], 4);
+    fit_temp->SetNpx (10000);
     // the width should be fairly stable
     // (fit success is also sensitive to constraining this parameter)
     fit_temp->SetParLimits (3, 0.9, 1.0);
