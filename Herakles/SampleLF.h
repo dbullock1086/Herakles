@@ -10,6 +10,7 @@
 #include <Herakles/Global.h>
 #include <EventLoop/Algorithm.h>
 #include <TTree.h>
+#include <TProfile2D.h>
 #include <TH2D.h>
 
 namespace TD
@@ -32,8 +33,8 @@ namespace TD
 
     TTree *m_tree; //!
 
-    TH2D *m_lfmean_lo; //!
-    TH2D *m_lfmean_hi; //!
+    TProfile2D *m_lfmean_lo; //!
+    TProfile2D *m_lfmean_hi; //!
     TH2D *m_lfstd_lo;  //!
     TH2D *m_lfstd_hi;  //!
 
@@ -44,10 +45,6 @@ namespace TD
     UChar_t gain; //!
     UChar_t pmt; //!
     UShort_t sample; //!
-
-    Double_t xval[2][48][128]; //!
-    Double_t x2val[2][48][128]; //!
-    Double_t nonCRC[2][48][128]; //!
 
     ClassDef(SampleLF, 1);
   };

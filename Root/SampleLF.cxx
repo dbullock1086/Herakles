@@ -32,29 +32,14 @@ namespace TD
      * Therefore we need to calculate sum(x) and sum(x^2)
      */
     
-    for (gain=0; gain<2; gain++)
-      {
-	if (!gains[gain]) continue;
-	for (pmt=0; pmt<48; pmt++)
-	  {
-	    if (!channels[pmt]) continue;
-	    for (sample=window[0]; sample<window[1]; sample++)
-	      {
-		xval  [gain][pmt][sample] = 0;
-		x2val [gain][pmt][sample] = 0;
-		nonCRC[gain][pmt][sample] = 0;
-	      }
-	  }
-      }
-
     // histograms contain min-max of high-frequency mean and standard deviation
-    m_lfmean_lo = new TH2D ("LFMean_lo", "LF Mean Low",
-			    128, 0, 128, 48, 0, 48);
-    m_lfmean_hi = new TH2D ("LFMean_hi", "LF Mean High",
-			    128, 0, 128, 48, 0, 48);
-    m_lfstd_lo = new TH2D ("LFStd_lo", "LF Std Low",
+    m_lfmean_lo = new TProfile2D ("LFMean_lo", "LF Mean Low",
+				  128, 0, 128, 48, 0, 48, "S");
+    m_lfmean_hi = new TProfile2D ("LFMean_hi", "LF Mean High",
+				  128, 0, 128, 48, 0, 48, "S");
+    m_lfstd_lo = new TH2D ("LFStd_lo", "LF StdDev Low",
 			   128, 0, 128, 48, 0, 48);
-    m_lfstd_hi = new TH2D ("LFStd_hi", "LF Std High",
+    m_lfstd_hi = new TH2D ("LFStd_hi", "LF StdDev High",
 			   128, 0, 128, 48, 0, 48);
 
     for (pmt=1; pmt<49; pmt++)
@@ -112,9 +97,8 @@ namespace TD
 		else      sval = samples_lo[pmt][sample];
 		if (sval < 4096 && sval >= 0)
 		  {
-		    xval  [gain][pmt][sample] += sval;
-		    x2val [gain][pmt][sample] += sval * sval;
-		    nonCRC[gain][pmt][sample] += 1;
+		    if (gain) m_lfmean_hi->Fill (sample, pmt, sval);
+		    else m_lfmean_lo->Fill (sample, pmt, sval);
 		  }
 	      } // end sample
 	  } // end pmt
@@ -124,9 +108,10 @@ namespace TD
 
   EL::StatusCode SampleLF :: finalize ()
   {
-    // readability variables
-    Double_t x2, xm, m2, mean, std;
-
+    // readability variables;
+    Int_t binnum;
+    Double_t std;
+    
     // loop through gain and PMT
     for (gain=0; gain<48; gain++)
       {
@@ -136,35 +121,19 @@ namespace TD
 	    if (!channels[pmt]) continue;
 	    for (sample=window[0]; sample<window[1]; sample++)
 	      {
-
-		if (nonCRC[gain][pmt][sample])
-		  {
-		    mean = xval[gain][pmt][sample] / nonCRC[gain][pmt][sample];
-		  }
-		else mean = -1;
-
-		if (nonCRC[gain][pmt][sample] > 1)
-		  {
-		    x2  = x2val[gain][pmt][sample] / \
-		      (nonCRC[gain][pmt][sample] - 1);
-		    xm  = xval[gain][pmt][sample] * mean / \
-		      (nonCRC[gain][pmt][sample] - 1);
-		    m2  = mean * mean / (nonCRC[gain][pmt][sample] - 1);
-		    std = TMath::Sqrt(x2 - 2*xm + m2);
-		  }
-		else std = -1;
-
-		// set bin contents based on sample and pmt
 		if (gain)
 		  {
-		    m_lfmean_hi->Fill (sample, pmt, mean);
-		    m_lfstd_hi ->Fill (sample, pmt, std);
+		    binnum = m_lfmean_hi->FindBin (sample, pmt);
+		    std = m_lfmean_hi->GetBinError (binnum);
+		    m_lfstd_hi->SetBinContent (binnum, std);
+		    m_lfstd_hi->SetBinError (binnum, 0);
 		  }
-
 		else
 		  {
-		    m_lfmean_lo->Fill (sample, pmt, mean);
-		    m_lfstd_lo ->Fill (sample, pmt, std);
+		    binnum = m_lfmean_lo->FindBin (sample, pmt);
+		    std = m_lfmean_lo->GetBinError (binnum);
+		    m_lfstd_lo->SetBinContent (binnum, std);
+		    m_lfstd_lo->SetBinError (binnum, 0);
 		  }
 	      }
 	  }
