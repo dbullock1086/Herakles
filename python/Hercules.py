@@ -180,7 +180,7 @@ class Hercules (object):
                 pass
             self.module.CloseFile ()
 
-            self.module.DoFit ()
+            self.module.DoFit (args.fit)
             self.module.Summarize ()
 
             self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))

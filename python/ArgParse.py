@@ -19,6 +19,8 @@ p.add_argument ('--channels', type=int, nargs='+',
 p.add_argument ('--window', type=int, nargs=2,
                 choices=xrange(128), default=[0,127],
                 help='window of sample indices to run')
+p.add_argument ('--fit', choices=['gaus', 'dgaus'], default='gaus',
+                help='specify if noise histograms should be fit to a single or double gaussian')
 p.add_argument ('--submit', action='store_true', default=False,
                 help='submit jobs to lxbatch')
 p.add_argument ('--name', default='',

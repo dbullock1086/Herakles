@@ -51,14 +51,14 @@ class Fitter (object):
 	    val = self.hists[name].GetBinContent (xbin)
 	    if xmin:
                 # establish the upper bin limit
-		if val < 4096:
+		if val < 4095 and val > 0:
                     maxx = self.hists[name].GetXaxis().GetBinUpEdge (xbin)
                     pass
 		else: break
 		pass
 	    else:
                 # establish the lower bin limit
-		if val < 4096:
+		if val < 4095 and val > 0:
 		    minx = self.hists[name].GetXaxis().GetBinLowEdge (xbin)
 		    xmin = True
 		    pass
@@ -193,10 +193,4 @@ class Fitter (object):
         self.model.SetParLimits (3, 0.9, 1.0)
         self.model.SetParameter (3, 0.95)
         pass
-
-    def FitRes (self, name):
-        #### perform the fit
-        fitres = self.hists[name].GetFunction (self.hists[name].GetName() + \
-                                               '_fit')
-        return fitres
     pass

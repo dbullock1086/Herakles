@@ -50,9 +50,8 @@ class Module (HistReader):
     def OwnMDHist (self, xvar):
         for gain in self.gains:
             for pmt in self.channels:
-                name = self.members[gain][pmt].NameHist (xvar)
                 hist = self.rfile.Get (name)
-                self.members[gain][pmt].OwnHist (hist)
+                self.members[gain][pmt].OwnHist (hist, xvar)
                 pass
             pass
         if not self.summary.has_key (xvar): self.summary[xvar] = {}
@@ -74,9 +73,8 @@ class Module (HistReader):
     def OwnMDHist2D (self, xvar, yvar):
         for gain in self.gains:
             for pmt in self.channels:
-                name = self.members[gain][pmt].NameHist2D (xvar, yvar)
                 hist = self.rfile.Get (name)
-                self.members[gain][pmt].OwnHist2D (hist)
+                self.members[gain][pmt].OwnHist (hist, xvar, yvar)
                 pass
             pass
         pass
@@ -97,12 +95,11 @@ class Module (HistReader):
     def OwnMDProfile (self, xvar, yvar):
         for gain in self.gains:
             for pmt in self.channels:
-                name = self.members[gain][pmt].NameProfile (xvar, yvar)
                 hist = self.rfile.Get (name)
-                self.members[gain][pmt].OwnProfile (hist)
+                self.members[gain][pmt].OwnHist (hist, xvar, yvar)
                 pass
             pass
-        key = '%s_%s' % (xvar, yvar)
+        key = 'prf_%s_%s' % (xvar, yvar)
         if not self.summary.has_key (key): self.summary[key] = {}
         pass
 
@@ -110,10 +107,10 @@ class Module (HistReader):
         algs = self.members[gain][pmt].GetAlgs ()
         return algs
 
-    def DoFit (self):
+    def DoFit (self, mode):
         for gain in self.gains:
             for pmt in self.channels:
-                self.members[gain][pmt].DoFit ()
+                self.members[gain][pmt].DoFit (mode)
                 pass
             pass
         pass

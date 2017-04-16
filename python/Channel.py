@@ -35,12 +35,10 @@ class Channel (Fitter, Nomenclature):
             pass
         pass
 
-    def DoFit (self):
+    def DoFit (self, mode):
         for name in self.hists:
             cname = self.hists[name].Class().GetName ()
-            if cname == 'TH1D':
-                self.Fit (name, mode)
-                pass
+            if cname == 'TH1D': self.Fit (name, mode)
             elif cname == 'TProfile': self.Fit (name, 'linear')
 
             self.fitparams[name] = {}
@@ -51,8 +49,6 @@ class Channel (Fitter, Nomenclature):
                 pval  = fitres.GetParameter (i)
                 self.fitparams[name][pname] = pval
                 pass
-            self.fitparams[name]['chisqr'] = fitres.GetChisquare ()
-            self.fitparams[name]['ndf'] = fitres.GetNDF ()
             self.fitparams[name]['prob'] = fitres.GetProb ()
             pass
         pass
