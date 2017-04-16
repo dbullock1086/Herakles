@@ -22,6 +22,7 @@ class Module (HistReader):
                 pass
             pass
         self.hists = {}
+        self.summary = {}
         pass
 
     def Clear (self):
@@ -54,6 +55,7 @@ class Module (HistReader):
                 self.members[gain][pmt].OwnHist (hist)
                 pass
             pass
+        if not self.summary.has_key (xvar): self.summary[xvar] = {}
         pass
 
     def AddMDHist2D (self, xvar, yvar):
@@ -100,6 +102,8 @@ class Module (HistReader):
                 self.members[gain][pmt].OwnProfile (hist)
                 pass
             pass
+        key = '%s_%s' % (xvar, yvar)
+        if not self.summary.has_key (key): self.summary[key] = {}
         pass
 
     def GetAlgs (self, gain, pmt):
@@ -110,6 +114,47 @@ class Module (HistReader):
         for gain in self.gains:
             for pmt in self.channels:
                 self.members[gain][pmt].DoFit ()
+                pass
+            pass
+        pass
+
+    def Summarize (self):
+        for gain in self.gains:
+            for pmt in self.channels:
+                for name in self.summary:
+                    if gain:
+                        sbase = '%s_%s_hi' % (self.name, name)
+                        stitle = '%s %s High' % (self.name, name)
+                        pass
+                    else:
+                        sbase = '%s_%s_lo' % (self.name, name)
+                        stitle = '%s %s Low' % (self.name, name)
+                        pass
+
+                    namesplit = name.split('_')
+                    if len(namesplit) == 2:
+                        xvar = namesplit[0]
+                        yvar = namesplit[1]
+                        cname = self.members[gain][pmt].NameProfile (xvar,yvar)
+                        pass
+                    else:
+                        xvar = namesplit[0]
+                        cname = self.members[gain][pmt].NameHist (xvar)
+                        pass
+
+                    for pname in self.members[gain][pmt].fitparams[cname]:
+                        hname = '%s_fit_%s' % (sname, pname)
+                        if not self.hists.has_key (hname):
+                            htitle = '%s Fit %s' % (sname, pname)
+                            self.hists[hname] = ROOT.TH1D (hname, htitle,
+                                                           48, 0, 48)
+                            self.hists[hname].SetDirectory (0)
+                            pass
+                        pval = self.members[gain][pmt].fitparams[cname][pname]
+                        self.hists[hname].SetBinContent (pmt + 1, pval)
+                        self.hists[hname].SetBinError (pmt + 1, 0)
+                        pass
+                    pass
                 pass
             pass
         pass

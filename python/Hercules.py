@@ -163,15 +163,12 @@ class Hercules (object):
                     for alg in algs: el.AddAlg (alg)
                     pass
                 pass
+            el.Submit ()
             pass
         elif routine == 'hist':
             # collect and summarize hists
             if hasattr (self, 'module') self.module.Clear ()
             else: self.module = Module (args.name, args.gains, args.channels)
-
-            self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))
-            for name in self.ownel: self.module.OwnELHist (name)
-            self.module.CloseFile ()
 
             self.module.OpenFile ('%s/%s/multidraw.root' % (TMPDIR, args.name))
             for xvar in self.mdhists: self.module.OwnMDHist (xvar)
@@ -184,6 +181,11 @@ class Hercules (object):
             self.module.CloseFile ()
 
             self.module.DoFit ()
+            self.module.Summarize ()
+
+            self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))
+            for name in self.ownel: self.module.OwnELHist (name)
+            self.module.CloseFile ()
 
             self.module.OpenFile ('%s/%s/final.root' % (HistDir, args.name))
             self.module.Write ()

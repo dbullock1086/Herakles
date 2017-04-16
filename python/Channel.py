@@ -16,6 +16,8 @@ class Channel (Fitter, Nomenclature):
         self.title = '%s Gain%i PMT%i' % (mname, self.gain, self.pmt)
         self.hists = {}
         self.algs  = {}
+        self.summary = {}
+        self.fitparams = {}
         pass
 
     def GetAlgs (self):
@@ -40,7 +42,18 @@ class Channel (Fitter, Nomenclature):
                 self.Fit (name, mode)
                 pass
             elif cname == 'TProfile': self.Fit (name, 'linear')
+
+            self.fitparams[name] = {}
+            fitres = self.hists[name].GetFunction (name + '_fit')
+            npar = fitres.GetNumberFreeParameters ()
+            for i in xrange(npar):
+                pname = fitres.GetParName   (i)
+                pval  = fitres.GetParameter (i)
+                self.fitparams[name][pname] = pval
                 pass
+            self.fitparams[name]['chisqr'] = fitres.GetChisquare ()
+            self.fitparams[name]['ndf'] = fitres.GetNDF ()
+            self.fitparams[name]['prob'] = fitres.GetProb ()
             pass
         pass
 
@@ -68,14 +81,14 @@ class Channel (Fitter, Nomenclature):
 
     def NameHist2D (self, xvar, yvar):
         #### get a unique name for this histogram
-        name = '%s_%s_vs_%s' % (self.name, yvar, xvar)
+        name = '%s_scatter_%s_%s' % (self.name, yvar, xvar)
         return name
 
     def TitleHist2D (self, xvar, yvar):
         #### get a descriptive title for this histogram
         xtitle = self.VarTitle (xvar)
         ytitle = self.VarTitle (yvar)
-        title = '%s: %s vs %s' % (self.title, xtitle, ytitle)
+        title = '%s: Scatter %s vs %s' % (self.title, xtitle, ytitle)
         return title
 
     def MDHist2D (self, xvar, xbins, xmin, xmax,
@@ -93,14 +106,14 @@ class Channel (Fitter, Nomenclature):
 
     def NameProfile (self, xvar, yvar):
         #### get a unique name for this histogram
-        name = '%s_prf_%s_vs_%s' % (self.name, yvar, + xvar)
+        name = '%s_prf_%s_%s' % (self.name, yvar, + xvar)
         return name
 
     def TitleProfile (self, xvar, yvar):
         #### get a descriptive title for this histogram
         xtitle = self.VarTitle (xvar)
         ytitle = self.VarTitle (yvar)
-        title = '%s: Mean[%s] vs %s' % (self.title, xtitle, ytitle)
+        title = '%s: Profile %s vs %s' % (self.title, xtitle, ytitle)
         return title
 
     def MDProfile (self, xvar, xbins, xmin, xmax,
