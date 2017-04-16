@@ -9,6 +9,8 @@ namespace TD
   class PedRange;
   class SampleRange;
 
+  class Saturation;
+  class NullValue;
   class CRCError;
   class PedRatio;
   class SampleHF;

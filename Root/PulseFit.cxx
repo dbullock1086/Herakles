@@ -102,8 +102,7 @@ namespace TD
     ntuple->tree()->Branch ("height",   &height,   "height[2][48]/D");
     ntuple->tree()->Branch ("phase",    &phase,    "phase[2][48]/S");
     ntuple->tree()->Branch ("width",    &width,    "width[2][48]/D");
-    ntuple->tree()->Branch ("chisqr",   &chisqr,   "chisqr[2][48]/D");
-    ntuple->tree()->Branch ("ndf",      &ndf,      "ndf[2][48]/S");
+    ntuple->tree()->Branch ("prob",     &prob,     "prob[2][48]/D");
     ntuple->tree()->Branch ("chgratio", &chgratio, "chgratio[2][48]/D");
 
     // initialize with inverted min-max
@@ -126,11 +125,8 @@ namespace TD
 	    width_min[gain][pmt] = 129;
 	    width_max[gain][pmt] = -1;
 
-	    chisqr_min[gain][pmt] = 10e10;
-	    chisqr_max[gain][pmt] = -1;
-
-	    ndf_min[gain][pmt] = 129;
-	    ndf_max[gain][pmt] = -1;
+	    prob_min[gain][pmt] = 10e10;
+	    prob_max[gain][pmt] = -1;
 
 	    chgratio_min[gain][pmt] = 10e10;
 	    chgratio_max[gain][pmt] = -10e10;
@@ -174,23 +170,14 @@ namespace TD
     m_width_hi_max = new TH1D ("Width_hi_max",
 			       "Pulse Width High", 48, 0, 48);
 
-    m_chisqr_lo_min = new TH1D ("ChiSqr_lo_min",
-				"Pulse Chi2 Low", 48, 0, 48);
-    m_chisqr_lo_max = new TH1D ("ChiSqr_lo_max",
-				"Pulse Chi2_Low", 48, 0, 48);
-    m_chisqr_hi_min = new TH1D ("ChiSqr_hi_min",
-				"Pulse Chi2 High", 48, 0, 48);
-    m_chisqr_hi_max = new TH1D ("ChiSqr_hi_max",
-				"Pulse Chi2 High", 48, 0, 48);
-
-    m_ndf_lo_min = new TH1D ("NDF_lo_min", "Pulse NDF Low",
-			     48, 0, 48);
-    m_ndf_lo_max = new TH1D ("NDF_lo_max", "Pulse NDF Low",
-			     48, 0, 48);
-    m_ndf_hi_min = new TH1D ("NDF_hi_min", "Pulse NDF High",
-			     48, 0, 48);
-    m_ndf_hi_max = new TH1D ("NDF_hi_max", "Pulse NDF High",
-			     48, 0, 48);
+    m_prob_lo_min = new TH1D ("Prob_lo_min",
+			      "Pulse Probability Low", 48, 0, 48);
+    m_prob_lo_max = new TH1D ("Prob_lo_max",
+			      "Pulse Probability_Low", 48, 0, 48);
+    m_prob_hi_min = new TH1D ("Prob_hi_min",
+			      "Pulse Probability High", 48, 0, 48);
+    m_prob_hi_max = new TH1D ("Prob_hi_max",
+			      "Pulse Probability High", 48, 0, 48);
 
     m_chgratio_lo_min = new TH1D ("ChgRatio_lo_min",
 				  "Pulse Height/Charge Low", 48, 0, 48);
@@ -221,15 +208,10 @@ namespace TD
     m_width_hi_min->SetYTitle ("Min");
     m_width_hi_max->SetYTitle ("Max");
 
-    m_chisqr_lo_min->SetYTitle ("Min");
-    m_chisqr_lo_max->SetYTitle ("Max");
-    m_chisqr_hi_min->SetYTitle ("Min");
-    m_chisqr_hi_max->SetYTitle ("Max");
-
-    m_ndf_lo_min->SetYTitle ("Min");
-    m_ndf_lo_max->SetYTitle ("Max");
-    m_ndf_hi_min->SetYTitle ("Min");
-    m_ndf_hi_min->SetYTitle ("Max");
+    m_prob_lo_min->SetYTitle ("Min");
+    m_prob_lo_max->SetYTitle ("Max");
+    m_prob_hi_min->SetYTitle ("Min");
+    m_prob_hi_max->SetYTitle ("Max");
 
     m_chgratio_lo_min->SetYTitle ("Min");
     m_chgratio_lo_max->SetYTitle ("Max");
@@ -260,15 +242,10 @@ namespace TD
 	m_width_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
 	m_width_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
 
-	m_chisqr_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_chisqr_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_chisqr_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_chisqr_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
-
-	m_ndf_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_ndf_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_ndf_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_ndf_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_prob_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_prob_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_prob_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_prob_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
 
 	m_chgratio_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
 	m_chgratio_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
@@ -297,15 +274,10 @@ namespace TD
     wk()->addOutput (m_width_hi_min);
     wk()->addOutput (m_width_hi_max);
 
-    wk()->addOutput (m_chisqr_lo_min);
-    wk()->addOutput (m_chisqr_lo_max);
-    wk()->addOutput (m_chisqr_hi_min);
-    wk()->addOutput (m_chisqr_hi_max);
-
-    wk()->addOutput (m_ndf_lo_min);
-    wk()->addOutput (m_ndf_lo_max);
-    wk()->addOutput (m_ndf_hi_min);
-    wk()->addOutput (m_ndf_hi_max);
+    wk()->addOutput (m_prob_lo_min);
+    wk()->addOutput (m_prob_lo_max);
+    wk()->addOutput (m_prob_hi_min);
+    wk()->addOutput (m_prob_hi_max);
 
     wk()->addOutput (m_chgratio_lo_min);
     wk()->addOutput (m_chgratio_lo_max);
@@ -357,8 +329,7 @@ namespace TD
 	    height  [gain][pmt] =  0;
 	    phase   [gain][pmt] = -1;
 	    width   [gain][pmt] = -1;
-	    chisqr  [gain][pmt] = -1;
-	    ndf     [gain][pmt] = -1;
+	    prob    [gain][pmt] = -1;
 	    chgratio[gain][pmt] = -1;
 
 	    // fill a histogram with samples
@@ -367,7 +338,7 @@ namespace TD
 	      {
 		if (gain) sval = samples_hi[pmt][sample];
 		else      sval = samples_lo[pmt][sample];
-		if (sval < 4096 && sval >= 0)
+		if (sval <= 4095 && sval > 0)
 		  {
 		    hist_temp->Fill (sample, sval);
 		  }
@@ -429,8 +400,7 @@ namespace TD
 		height  [gain][pmt] = fitRes->GetParameter (1);
 		phase   [gain][pmt] = fitRes->GetParameter (2);
 		width   [gain][pmt] = fitRes->GetParameter (3);
-		chisqr  [gain][pmt] = fitRes->GetChisquare ();
-		ndf     [gain][pmt] = fitRes->GetNDF ();
+		prob    [gain][pmt] = fitRes->GetProb ();
 		chgratio[gain][pmt] = height[gain][pmt] / charge;
 
                 // check if value exceeds range
@@ -466,21 +436,13 @@ namespace TD
 		  {
 		    width_max[gain][pmt] = width[gain][pmt];
 		  }
-		if (chisqr[gain][pmt] < chisqr_min[gain][pmt])
+		if (prob[gain][pmt] < prob_min[gain][pmt])
 		  {
-		    chisqr_min[gain][pmt] = chisqr[gain][pmt];
+		    prob_min[gain][pmt] = prob[gain][pmt];
 		  }
-		if (chisqr[gain][pmt] > chisqr_max[gain][pmt])
+		if (prob[gain][pmt] > prob_max[gain][pmt])
 		  {
-		    chisqr_max[gain][pmt] = chisqr[gain][pmt];
-		  }
-		if (ndf[gain][pmt] < ndf_min[gain][pmt])
-		  {
-		    ndf_min[gain][pmt] = ndf[gain][pmt];
-		  }
-		if (ndf[gain][pmt] > ndf_max[gain][pmt])
-		  {
-		    ndf_max[gain][pmt] = ndf[gain][pmt];
+		    prob_max[gain][pmt] = prob[gain][pmt];
 		  }
 		if (chgratio[gain][pmt] < chgratio_min[gain][pmt])
 		  {
@@ -527,15 +489,10 @@ namespace TD
 		width_min[gain][pmt] = -1;
 		width_max[gain][pmt] = -1;
 	      }
-	    if (chisqr_min[gain][pmt] > chisqr_max[gain][pmt])
+	    if (prob_min[gain][pmt] > prob_max[gain][pmt])
 	      {
-		chisqr_min[gain][pmt] = -1;
-		chisqr_max[gain][pmt] = -1;
-	      }
-	    if (ndf_min[gain][pmt] > ndf_max[gain][pmt])
-	      {
-		ndf_min[gain][pmt] = -1;
-		ndf_max[gain][pmt] = -1;
+		prob_min[gain][pmt] = -1;
+		prob_max[gain][pmt] = -1;
 	      }
 	    if (chgratio_min[gain][pmt] > chgratio_max[gain][pmt])
 	      {
@@ -568,15 +525,10 @@ namespace TD
 		m_width_hi_max->SetBinContent (pmt+1, width_max[gain][pmt]);
 		m_width_hi_max->SetBinError (pmt+1, 0);
 
-		m_chisqr_hi_min->SetBinContent (pmt+1, chisqr_min[gain][pmt]);
-		m_chisqr_hi_min->SetBinError (pmt+1, 0);
-		m_chisqr_hi_max->SetBinContent (pmt+1, chisqr_max[gain][pmt]);
-		m_chisqr_hi_max->SetBinError (pmt+1, 0);
-
-		m_ndf_hi_min->SetBinContent (pmt+1, ndf_min[gain][pmt]);
-		m_ndf_hi_min->SetBinError (pmt+1, 0);
-		m_ndf_hi_max->SetBinContent (pmt+1, ndf_max[gain][pmt]);
-		m_ndf_hi_max->SetBinError (pmt+1, 0);
+		m_prob_hi_min->SetBinContent (pmt+1, prob_min[gain][pmt]);
+		m_prob_hi_min->SetBinError (pmt+1, 0);
+		m_prob_hi_max->SetBinContent (pmt+1, prob_max[gain][pmt]);
+		m_prob_hi_max->SetBinError (pmt+1, 0);
 
 		m_chgratio_hi_min->SetBinContent (pmt+1,
 						  chgratio_min[gain][pmt]);
@@ -610,15 +562,10 @@ namespace TD
 		m_width_lo_max->SetBinContent (pmt+1, width_max[gain][pmt]);
 		m_width_lo_max->SetBinError (pmt+1, 0);
 
-		m_chisqr_lo_min->SetBinContent (pmt+1, chisqr_min[gain][pmt]);
-		m_chisqr_lo_min->SetBinError (pmt+1, 0);
-		m_chisqr_lo_max->SetBinContent (pmt+1, chisqr_max[gain][pmt]);
-		m_chisqr_lo_max->SetBinError (pmt+1, 0);
-
-		m_ndf_lo_min->SetBinContent (pmt+1, ndf_min[gain][pmt]);
-		m_ndf_lo_min->SetBinError (pmt+1, 0);
-		m_ndf_lo_max->SetBinContent (pmt+1, ndf_max[gain][pmt]);
-		m_ndf_lo_max->SetBinError (pmt+1, 0);
+		m_prob_lo_min->SetBinContent (pmt+1, prob_min[gain][pmt]);
+		m_prob_lo_min->SetBinError (pmt+1, 0);
+		m_prob_lo_max->SetBinContent (pmt+1, prob_max[gain][pmt]);
+		m_prob_lo_max->SetBinError (pmt+1, 0);
 
 		m_chgratio_lo_min->SetBinContent (pmt+1,
 						  chgratio_min[gain][pmt]);

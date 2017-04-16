@@ -4,6 +4,8 @@
 #include <Herakles/PedRange.h>
 #include <Herakles/SampleRange.h>
 
+#include <Herakles/Saturation.h>
+#include <Herakles/NullValue.h>
 #include <Herakles/CRCError.h>
 #include <Herakles/PedRatio.h>
 #include <Herakles/SampleHF.h>
@@ -27,6 +29,8 @@
 #pragma link C++ class TD::PedRange+;
 #pragma link C++ class TD::SampleRange+;
 
+#pragma link C++ class TD::Saturation+;
+#pragma link C++ class TD::NullValue+;
 #pragma link C++ class TD::CRCError+;
 #pragma link C++ class TD::PedRatio+;
 #pragma link C++ class TD::SampleHF+;

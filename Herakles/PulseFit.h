@@ -59,15 +59,10 @@ namespace TD
     TH1D *m_width_hi_min; //!
     TH1D *m_width_hi_max; //!
 
-    TH1D *m_chisqr_lo_min; //!
-    TH1D *m_chisqr_lo_max; //!
-    TH1D *m_chisqr_hi_min; //!
-    TH1D *m_chisqr_hi_max; //!
-
-    TH1D *m_ndf_lo_min; //!
-    TH1D *m_ndf_lo_max; //!
-    TH1D *m_ndf_hi_min; //!
-    TH1D *m_ndf_hi_max; //!
+    TH1D *m_prob_lo_min; //!
+    TH1D *m_prob_lo_max; //!
+    TH1D *m_prob_hi_min; //!
+    TH1D *m_prob_hi_max; //!
 
     TH1D *m_chgratio_lo_min; //!
     TH1D *m_chgratio_lo_max; //!
@@ -102,13 +97,9 @@ namespace TD
     Double_t phase_min[2][48]; //!
     Double_t phase_max[2][48]; //!
 
-    Double_t chisqr[2][48]; //!
-    Double_t chisqr_min[2][48]; //!
-    Double_t chisqr_max[2][48]; //!
-
-    Short_t ndf[2][48]; //!
-    Short_t ndf_min[2][48]; //!
-    Short_t ndf_max[2][48]; //!
+    Double_t prob[2][48]; //!
+    Double_t prob_min[2][48]; //!
+    Double_t prob_max[2][48]; //!
 
     Double_t chgratio[2][48]; //!
     Double_t chgratio_min[2][48]; //!
