@@ -54,7 +54,6 @@ class Module (HistReader):
                 self.members[gain][pmt].OwnHist (hist, xvar)
                 pass
             pass
-        if not self.summary.has_key (xvar): self.summary[xvar] = {}
         pass
 
     def AddMDHist2D (self, xvar, yvar):
@@ -99,18 +98,17 @@ class Module (HistReader):
                 self.members[gain][pmt].OwnHist (hist, xvar, yvar)
                 pass
             pass
-        key = 'prf_%s_%s' % (xvar, yvar)
-        if not self.summary.has_key (key): self.summary[key] = {}
         pass
 
     def GetAlgs (self, gain, pmt):
         algs = self.members[gain][pmt].GetAlgs ()
         return algs
 
-    def DoFit (self, mode):
+    def DoFit (self, key, mode):
         for gain in self.gains:
             for pmt in self.channels:
-                self.members[gain][pmt].DoFit (mode)
+                self.members[gain][pmt].DoFit (vargs, mode)
+                if not self.summary.has_key (key): self.summary[key] = {}
                 pass
             pass
         pass

@@ -6,14 +6,15 @@
 
 from Hercules import Hercules
 
-class SampleCorr (Hercules):
+class PulseView (Hercules):
     def __init__ (self):
-        super (SampleCorr, self).__init__ ()
+        super (PulseView, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('SampleCorr')
-        self.OwnELHist ('hfcorr')
+        self.AddTDAlg ('SampleLF')
+        self.OwnELHist ('lfmean')
+        self.OwnELHist ('lfstd')
         pass
     pass
 
-test = SampleCorr ()
+test = PulseView ()
 test.Run ()

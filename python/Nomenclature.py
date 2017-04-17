@@ -11,16 +11,17 @@ class Nomenclature (object):
         elif var == 'charge': title = 'Charge'
         elif var == 'ped': title = 'Bias'
         elif var == 'samples': title = 'Samples'
+        elif var == 'saturation': title = 'Saturation Count'
+        elif var == 'null': title = 'Null Count'
         elif var == 'crc': title = 'Error Count'
         elif var == 'pedratio': title = 'Sample/Pedestal'
         elif var == 'hfmean': title = 'HF Mean'
         elif var == 'hfstd': title = 'HF Std'
-        elif var == 'pedestal': title = 'Pulse Pedestal'
-        elif var == 'height': title = 'Pulse Height'
-        elif var == 'phase': title = 'Pulse Phase'
-        elif var == 'width': title = 'Pulse Width'
-        elif var == 'chisqr': title = 'Pulse Chi2'
-        elif var == 'ndf': title = 'Pulse NDF'
+        elif var == 'pedestal': title = 'Pulse Fit Pedestal'
+        elif var == 'height': title = 'Pulse Fit Height'
+        elif var == 'phase': title = 'Pulse Fit Phase'
+        elif var == 'width': title = 'Pulse Fit Width'
+        elif var == 'prob': title = 'Pulse Fit Probability'
         elif var == 'chgratio': title = 'Pulse Height/Charge'
         elif var == 'fastfit': title = 'Fast Integral'
         elif var == 'fastratio': title = 'Fast Ratio'
@@ -32,6 +33,8 @@ class Nomenclature (object):
         elif var == 'charge': name = 'ChargeRange'
         elif var == 'ped': name = 'PedRange'
         elif var == 'samples': name = 'SampleRange'
+        elif var == 'saturation': name = 'Saturation'
+        elif var == 'null': name = 'NullValue'
         elif var == 'crc': name = 'CRCError'
         elif var == 'fastfit': name = 'FastFit'
         elif var == 'fastratio': name = 'FastRatio'
@@ -40,15 +43,14 @@ class Nomenclature (object):
         elif var == 'height': name = 'Height'
         elif var == 'phase': name = 'Phase'
         elif var == 'width': name = 'Width'
-        elif var == 'chisqr': name = 'ChiSqr'
-        elif var == 'ndf': name = 'NDF'
+        elif var == 'prob': name = 'Prob'
         elif var == 'chgratio': name = 'ChgRatio'
         elif var == 'hfmean': name = 'hfmean'
         elif var == 'hfstd': name = 'hfstd'
         pass
 
     def VarMinMax (self, var):
-        if var in ['cap', 'charge', 'hfcorr']: minmax = False
+        if var in ['cap', 'charge']: minmax = False
         else: minmax = True
         return minmax
 
@@ -68,7 +70,7 @@ class Nomenclature (object):
             pass
         elif var in ['crc', 'fastfit', 'fastratio', 'pedratio',
                      'pedestal', 'height', 'phase', 'width',
-                     'chisqr', 'ndf', 'chgratio',
+                     'prob', 'chgratio',
                      'hfmean', 'hfstd']:
             name += '[%i][%i]' % (gain, pmt)
             pass

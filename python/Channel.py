@@ -35,22 +35,18 @@ class Channel (Fitter, Nomenclature):
             pass
         pass
 
-    def DoFit (self, mode):
-        for name in self.hists:
-            cname = self.hists[name].Class().GetName ()
-            if cname == 'TH1D': self.Fit (name, mode)
-            elif cname == 'TProfile': self.Fit (name, 'linear')
-
-            self.fitparams[name] = {}
-            fitres = self.hists[name].GetFunction (name + '_fit')
-            npar = fitres.GetNumberFreeParameters ()
-            for i in xrange(npar):
-                pname = fitres.GetParName   (i)
-                pval  = fitres.GetParameter (i)
-                self.fitparams[name][pname] = pval
-                pass
-            self.fitparams[name]['prob'] = fitres.GetProb ()
+    def DoFit (self, vargs, mode):
+        name = '%s_%s' % (self.name, vargs)
+        self.Fit (name, mode)
+        self.fitparams[name] = {}
+        fitres = self.hists[name].GetFunction (name + '_fit')
+        npar = fitres.GetNumberFreeParameters ()
+        for i in xrange(npar):
+            pname = fitres.GetParName   (i)
+            pval  = fitres.GetParameter (i)
+            self.fitparams[name][pname] = pval
             pass
+        self.fitparams[name]['prob'] = fitres.GetProb ()
         pass
 
     def NameHist (self, xvar):

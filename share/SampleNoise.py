@@ -10,10 +10,9 @@ class SampleNoise (Hercules):
     def __init__ (self):
         super (SampleNoise, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('EvtRange')
         self.AddTDAlg ('SampleRange')
         self.CopyBranch ('samples')
-        self.AddMDHist ('evt', 'samples')
+        self.AddMDHist ('samples', fit='gaus')
         self.OwnELHist ('samples')
         pass
     pass

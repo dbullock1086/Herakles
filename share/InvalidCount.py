@@ -6,17 +6,19 @@
 
 from Hercules import Hercules
 
-class CRCCount (Hercules):
+class InvalidCount (Hercules):
     def __init__ (self):
-        super (CRCCount, self).__init__ ()
+        super (InvalidCount, self).__init__ ()
         self.SetTree ('dataTree')
         self.AddTDAlg ('EventRange')
-        self.AddTDAlg ('CRCError')
+        self.AddTDAlg ('Saturation')
+        self.AddTDAlg ('NullValue')
         self.CopyBranch ('evt')
-        self.AddMDHist2D ('evt', 'crc')
+        self.AddMDHist2D ('evt', 'saturation')
+        self.AddMDHist2D ('evt', 'null')
         self.OwnELHist ('crc')
         pass
     pass
 
-test = CRCCount ()
+test = InvalidCount ()
 test.Run ()

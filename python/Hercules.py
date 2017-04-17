@@ -42,6 +42,7 @@ class Hercules (object):
         self.mdhists    = []
         self.mdhists2d  = []
         self.mdprofiles = []
+        self.mdfits     = {}
         self.cpybr      = set ()
         self.tree       = 'dataTree'
         self.ownel      = set ()
@@ -66,10 +67,11 @@ class Hercules (object):
         else: self.cpybr.add (branch)
         pass
 
-    def AddMDHist (self, xvar):
+    def AddMDHist (self, xvar, fit=None):
         #### add a MultiDraw algorithm class (string reference)
         assert xvar != 'evt', 'evt not allowed as a 1D histogram'
         self.mdhists.append (xvar)
+        if fit: self.mdfits[xvar] = fit
         pass
 
     def AddMDHist2D (self, xvar, yvar):
@@ -77,9 +79,10 @@ class Hercules (object):
         self.mdhists2d.append ([xvar, yvar])
         pass
 
-    def AddMDProfile (self, xvar, yvar):
+    def AddMDProfile (self, xvar, yvar, fit=None):
         #### add a MultiDraw algorithm class (string reference)
         self.mdprofiles.append ([xvar, yvar])
+        if fit: self.mdfits['prf_%s_%s' % (xvar, yvar)] = fit
         pass
 
     def OwnELHist (self, name):
@@ -180,7 +183,7 @@ class Hercules (object):
                 pass
             self.module.CloseFile ()
 
-            self.module.DoFit (args.fit)
+            for a in self.mdfits: self.module.DoFit (a, self.mdfits[a])
             self.module.Summarize ()
 
             self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))

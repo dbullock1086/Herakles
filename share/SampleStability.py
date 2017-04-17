@@ -13,7 +13,7 @@ class SampleStability (Hercules):
         self.AddTDAlg ('EvtRange')
         self.CopyBranch ('evt')
         self.CopyBranch ('samples')
-        self.AddMDProfile ('evt', 'samples')
+        self.AddMDProfile ('evt', 'samples', fit='linear')
         self.OwnELHist ('samples')
         pass
     pass

@@ -13,7 +13,7 @@ class SampleLinearity (Hercules):
         self.AddTDAlg ('PedRange')
         self.CopyBranch ('ped')
         self.CopyBranch ('samples')
-        self.AddMDProfile ('ped', 'samples')
+        self.AddMDProfile ('ped', 'samples', fit='linear')
         self.OwnELHist ('ped')
         self.OwnELHist ('samples')
         pass
