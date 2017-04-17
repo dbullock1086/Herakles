@@ -53,12 +53,93 @@ Source `setup.sh` and it should build RootCore in your user area, then it will r
 
 ### Running
 
-As long as `$PATH` and `$PYTHONPATH` are defined to the appropriate locations in the source directory, you should be ready to run some tests. The basic commands will look like this:
+As long as `$PYTHONPATH` is defined to the appropriate location in the source directory, you should be ready to run some tests. The basic commands will look like this:
 
 ```
-herakles biasnoise Data_20170101_PedStability.root Hist_20170101_PedStability.root --fit gaus
+herakles SampleNoise Data_20170101_PedStability.root Hist_20170101_PedStability.root
 ```
 
 This will run a pre-defined test called `biasnoise`. The input data comes from the file `Data_20170101_PedNoise.root`. The test analyzes the "sample" branch from the input TTree by plotting a histogram and fitting to a (single) Gaussian for each channel. These histograms and fit parameters are also summarized into a full overview for the minidrawer. The histograms are output to a new file called `Hist_20170101_PedStability.root`.
 
 There are additional configurations for each test, so a familiarity with the flexibility of the code is encouraged.
+
+### Basic Overview
+
+This section is just an at-a-glance description of how the software analyses the data. If you are curious about the details of steps or what options are available, the comments in the source code are your best documentation.
+
+The basic flow is:
+
+1. Raw data is passed through EventLoop that runs a sequence of event-by-event algorithms. Your end result will be histograms, so some of these algorithms just determine minimum and maximum values and put them in a histogram that summarizes the state of individual channels (separated by gain). Other algorithms may be more derive new branches that will make it easier to study the data.
+
+2. The derived data is passed through MultiDraw algorithms to study each channel (gain and PMT) of the entire module. Once the histogram limits are determined, filling them with data ensures that you can see all of the events with a binning that makes sense. If an algorithm adds a new branch, you can also fill a histogram with values from that branch.
+
+3. Some of the histograms are fit to expected models. If a channel (gain and PMT) is fit to a particular model, a summary histogram of all PMTs is updated to include the values of each parameter for a comparison.
+
+Your first interaction with `Herakles` is probably the command line as shown in the previous section. The `SampleNoise` term is indicating a particular test routine (a series of configurations and control instructions) that are designed to investigate the performance of a particular subsystem in the TileDemo mini-drawer. This command is a particular case in `share/herakles_scripts.sh`, which points to a source code in `share/SampleNoise.py`.
+
+Within this file, you will find a class by the same name. In this file, you will find some configurations:
+
+- `self.SetTree ('dataTree')` -- The raw input probably contains `TTree` objects for the raw data, the parameters, and the DCS. This line indicates that `Herakles` should examine the one called "dataTree".
+- `self.AddTDAlg ('SampleRange')` -- This is a simple algorithm that determines the minimum and maximum values of the `samples_hi` and `samples_lo` branches. This will become important later.
+- `self.CopyBranch ('samples')` -- From raw data, we need to copy this branch from the raw data to the derived set. We will be making histograms from the derived set.
+- `self.AddMDHist ('samples', fit='gaus')` -- A 1D histogram will be drawn for each gain and PMT, and each histogram will later be fit to a (single) Gaussian distribution.
+- `self.OwnELHist ('samples')` -- It may be interesting to see if different PMTs have different minimum and maximum values, so we want to keep the output of the `SampleRange` algorithm and place it in the final output histogram.
+
+Such a script file is not limited to what you see here. You can have several instances of `AddTDAlg` in case you want more test information in the final analysis. In that case, you probably need more `CopyBranch` instructions and so on. Look at some of the other test scripts for more ideas.
+
+### EventLoop Algorithms
+
+If you are interested in testing the behavior of part of the mini-drawer, the algorithms in the `Herakles` source code are where you should look.
+
+**Caution:** If you think you need to write a new algorithm, please be mindful of the mess you might introduce. The algorithms are intended to be run in parallel and add as little as possible to the complexity of the EventLoop job. Therefore, algorithms should be cooperative, and no two algorithms should have an overlap in what they do.
+
+There are some very simple algorithms that just determine minimum and maximum values:
+
+- `EvtRange`
+- `CapRange`
+- `ChargeRange`
+- `PedRange`
+- `SampleRange`
+
+The first three return histograms that have two bins: the minimum value in bin 1 and the maximum value in bin 2. The pedestal values and sample values have four histograms (two gains times two max/min values) that have 48 bins (one for each PMT). Additionally, the capacitance, charge, and pedestal are independent variables, so they include histograms that count the number steps -- or changes in value, i.e. for a linearity test.
+
+Three algorithms just count the number of extreme values:
+
+- `CRCError`
+- `Saturation`
+- `NullValue`
+
+These algorithms look for certain values in the `samples_*` branches. CRC values are negative numbers or numbers that exceed the 12-bit range. Saturated values are numbers at the 12-bit ceiling of 4095. Null values are zero. These three are a good example of keeping algorithms simple; they are separate even though you probably want all three in one test.
+
+**Note:** Algorithms that analyze the `samples_*` branches will skip these values.
+
+There is an algorithm that studies the high-frequency response of the `samples_*` branch:
+
+- `SampleHF`
+
+Because there are 128 samples per event, the high-frequency algorithm determines the average value per event and the standard deviation of values. These are derived values, and therefore a new branch is created in the output.
+
+There is an algorithm that compares two branches:
+
+- `PedRatio`
+
+This calculates the `samples_*` value divided by the `ped_*` value, and adds it as a new branch in the output.
+
+There are algorithms for studying pulses:
+
+- `PulseFit`
+- `FastFit`
+
+The first one takes the 128 samples from each event and fits it to a calibrated pulse shape. The branches added by this algorithm include the parameters of the fit (pedestal, height, phase, width) and the probability of the fit (using chi-squared and the number of degrees of freedom). It also adds a height/charge branch. This algorithm can be a little slow, so the second algorithm makes a coarser approximation of the fit by subtracting the `ped_*` value and integrating.
+
+One more algorithm can also be useful for pulses:
+
+- `SampleLF`
+
+This algorithm looks separately at sample number and channel number (128 bin by 48 bin histograms), and displays the mean value and standard deviation of each. For example, it can show you the pulse shape for each PMT simulataneously over a large number of events.
+
+And one algorithm looks for systematic cross-talk:
+
+- `CorrHF`
+
+This calculates the linear correlation for all gains and channels. If the noise is really random, the values should tend toward zero. As the values tend to reach -1 or +1, a systematic link between channels may exist.

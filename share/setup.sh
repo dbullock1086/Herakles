@@ -20,7 +20,6 @@ fi
 
 export HERAKLES=$PrometeoSource/Herakles
 export PYTHONPATH=$HERAKLES/python:$PYTHONPATH
-export PATH=$HERAKLES/share:$PATH
 
 export EOSDir=/eos/atlas/atlascerngroupdisk/det-tile/demonstrator/2017
 

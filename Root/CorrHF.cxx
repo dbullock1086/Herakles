@@ -26,7 +26,7 @@ namespace TD
     // histogram contains linear correlation between all PMTs (2 gains)
     m_hfcorr = new TH2D ("CorrHF", "High-Frequency Correlation",
 			 96, 0, 96, 96, 0, 96);
-    m_hfcorr->GetZaxis()->SetRangeUser (0, 1);
+    m_hfcorr->GetZaxis()->SetRangeUser (-1, 1);
 
     /*
      * Covariance: E[(x-mux)*(y-muy)]

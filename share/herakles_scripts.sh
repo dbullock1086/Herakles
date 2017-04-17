@@ -5,11 +5,11 @@ function herakles ()
     case $1 in
 	SampleStability)
 	    shift
-	    $Herakles/bin/SampleStability.py $@
+	    $Herakles/share/SampleStability.py $@
 	    ;;
-	StampleCorr)
+	SampleCorr)
 	    shift
-	    $Herakles/bin/SampleCorr.py $@
+	    $Herakles/share/SampleCorr.py $@
 	    ;;
 	*)
 	    echo undefined Herakles test $1
