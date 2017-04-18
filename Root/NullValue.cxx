@@ -54,14 +54,13 @@ namespace TD
     m_null_hi_min->SetYTitle ("Min");
     m_null_hi_max->SetYTitle ("Max");
 
-    for (pmt=1; pmt<49; pmt++) // notice number convention
+    for (pmt=0; pmt<48; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
-
-	m_null_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_null_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_null_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_null_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_null_lo_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_null_lo_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_null_hi_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_null_hi_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
       }
     
     // add the histograms to EL output

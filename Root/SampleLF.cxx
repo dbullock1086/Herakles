@@ -42,13 +42,13 @@ namespace TD
     m_lfstd_hi = new TH2D ("LFStd_hi", "LF StdDev High",
 			   128, 0, 128, 48, 0, 48);
 
-    for (pmt=1; pmt<49; pmt++)
+    for (pmt=0; pmt<48; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
-	m_lfmean_lo->GetYaxis()->SetBinLabel (pmt, buffer);
-	m_lfmean_hi->GetYaxis()->SetBinLabel (pmt, buffer);
-	m_lfstd_lo ->GetYaxis()->SetBinLabel (pmt, buffer);
-	m_lfstd_hi ->GetYaxis()->SetBinLabel (pmt, buffer);
+	m_lfmean_lo->GetYaxis()->SetBinLabel (pmt + 1, buffer);
+	m_lfmean_hi->GetYaxis()->SetBinLabel (pmt + 1, buffer);
+	m_lfstd_lo ->GetYaxis()->SetBinLabel (pmt + 1, buffer);
+	m_lfstd_hi ->GetYaxis()->SetBinLabel (pmt + 1, buffer);
       }
     for (sample=0; sample<128; sample++)
       {

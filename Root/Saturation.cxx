@@ -54,14 +54,13 @@ namespace TD
     m_saturation_hi_min->SetYTitle ("Min");
     m_saturation_hi_max->SetYTitle ("Max");
 
-    for (pmt=1; pmt<49; pmt++) // notice number convention
+    for (pmt=0; pmt<48; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
-
-	m_saturation_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_saturation_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_saturation_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_saturation_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_saturation_lo_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_saturation_lo_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_saturation_hi_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_saturation_hi_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
       }
     
     // add the histograms to EL output

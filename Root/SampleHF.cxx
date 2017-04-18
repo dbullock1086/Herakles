@@ -71,19 +71,19 @@ namespace TD
     m_hfstd_hi_min->SetYTitle ("Min");
     m_hfstd_hi_max->SetYTitle ("Max");
 
-    for (pmt=1; pmt<49; pmt++)
+    for (pmt=0; pmt<48; pmt++)
       {
 	sprintf (buffer, "PMT%d", pmt);
 
-	m_hfmean_lo_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfmean_lo_max->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfmean_hi_min->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfmean_hi_max->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfmean_lo_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_hfmean_lo_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_hfmean_hi_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_hfmean_hi_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
 
-	m_hfstd_lo_min ->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfstd_lo_max ->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfstd_hi_min ->GetXaxis()->SetBinLabel (pmt, buffer);
-	m_hfstd_hi_max ->GetXaxis()->SetBinLabel (pmt, buffer);
+	m_hfstd_lo_min ->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_hfstd_lo_max ->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_hfstd_hi_min ->GetXaxis()->SetBinLabel (pmt + 1, buffer);
+	m_hfstd_hi_max ->GetXaxis()->SetBinLabel (pmt + 1, buffer);
       }
 
     // add the histograms to EL output
