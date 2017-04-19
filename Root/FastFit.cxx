@@ -25,7 +25,6 @@ namespace TD
     // new branch added to raw data
     ntuple = EL::getNTupleSvc (wk(), "ntuple");
     ntuple->tree()->Branch ("fastfit", &fastfit, "fastfit[2][48]/D");
-    ntuple->tree()->Branch ("fastratio", &fastratio, "fastratio[2][48]/D");
 
     // initialize with inverted min-max
     for (gain=0; gain<2; gain++)
@@ -36,8 +35,6 @@ namespace TD
 	    if (!channels[pmt]) continue;
 	    fastfit_min[gain][pmt] = 4096;
 	    fastfit_max[gain][pmt] = -4096;
-	    fastratio_min[gain][pmt] = 4096;
-	    fastratio_max[gain][pmt] = -4096;
 	  }
       }
 
@@ -47,34 +44,18 @@ namespace TD
     m_fastfit_hi_min = new TH1D ("FastFit_hi_min", "FF High", 48, 0, 48);
     m_fastfit_hi_max = new TH1D ("FastFit_hi_max", "FF High", 48, 0, 48);
 
-    m_fastfit_lo_min = new TH1D ("FastRatio_lo_min", "FF Low", 48, 0, 48);
-    m_fastfit_lo_max = new TH1D ("FastRatio_lo_max", "FF Low", 48, 0, 48);
-    m_fastfit_hi_min = new TH1D ("FastRatio_hi_min", "FF High", 48, 0, 48);
-    m_fastfit_hi_max = new TH1D ("FastRatio_hi_max", "FF High", 48, 0, 48);
-
     m_fastfit_lo_min->SetYTitle ("Min");
     m_fastfit_lo_max->SetYTitle ("Max");
     m_fastfit_hi_min->SetYTitle ("Min");
     m_fastfit_hi_max->SetYTitle ("Max");
 
-    m_fastratio_lo_min->SetYTitle ("Min");
-    m_fastratio_lo_max->SetYTitle ("Max");
-    m_fastratio_hi_min->SetYTitle ("Min");
-    m_fastratio_hi_max->SetYTitle ("Max");
-
     for (pmt=0; pmt<48; pmt++) // notice number convention
       {
 	sprintf (buffer, "PMT%d", pmt);
-
 	m_fastfit_lo_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
 	m_fastfit_lo_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
 	m_fastfit_hi_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
 	m_fastfit_hi_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-
-	m_fastratio_lo_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-	m_fastratio_lo_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-	m_fastratio_hi_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-	m_fastratio_hi_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
       }
     
     // add the histograms to EL output
@@ -82,11 +63,6 @@ namespace TD
     wk()->addOutput (m_fastfit_lo_max);
     wk()->addOutput (m_fastfit_hi_min);
     wk()->addOutput (m_fastfit_hi_max);
-
-    wk()->addOutput (m_fastratio_lo_min);
-    wk()->addOutput (m_fastratio_lo_max);
-    wk()->addOutput (m_fastratio_hi_min);
-    wk()->addOutput (m_fastratio_hi_max);
 
     return EL::StatusCode::SUCCESS;
   }
@@ -102,7 +78,6 @@ namespace TD
   EL::StatusCode FastFit :: execute ()
   {
     // refresh the variable reference per algorithm
-    m_tree->SetBranchAddress ("charge",     &charge);
     m_tree->SetBranchAddress ("ped_hi",     &ped_hi);
     m_tree->SetBranchAddress ("ped_lo",     &ped_lo);
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
@@ -133,7 +108,6 @@ namespace TD
 		    fastfit[gain][pmt] += sval - ped;
 		  }
 	      } // end sample
-	    fastratio[gain][pmt] = fastfit[gain][pmt] / charge;
 
             // check if value exceeds range
 	    if (fastfit[gain][pmt] < fastfit_min[gain][pmt])
@@ -143,15 +117,6 @@ namespace TD
 	    if (fastfit[gain][pmt] > fastfit_max[gain][pmt])
 	      {
 		fastfit_max[gain][pmt] = fastfit[gain][pmt];
-	      }
-
-	    if (fastratio[gain][pmt] < fastratio_min[gain][pmt])
-	      {
-		fastratio_min[gain][pmt] = fastratio[gain][pmt];
-	      }
-	    if (fastratio[gain][pmt] > fastratio_max[gain][pmt])
-	      {
-		fastratio_max[gain][pmt] = fastratio[gain][pmt];
 	      }
 	  } // end pmt
       } // end gain
@@ -174,11 +139,6 @@ namespace TD
 		fastfit_min[gain][pmt] = -1;
 		fastfit_max[gain][pmt] = -1;
 	      }
-	    if (fastratio_min[gain][pmt] > fastratio_max[gain][pmt])
-	      {
-		fastratio_min[gain][pmt] = -1;
-		fastratio_max[gain][pmt] = -1;
-	      }
 
             // set min-max bin contents in histograms
             if (gain)
@@ -189,13 +149,6 @@ namespace TD
 		m_fastfit_hi_max->SetBinContent (pmt+1,
 						 fastfit_max[gain][pmt]);
 		m_fastfit_hi_max->SetBinError (pmt+1, 0);
-
-		m_fastratio_hi_min->SetBinContent (pmt+1,
-						   fastratio_min[gain][pmt]);
-		m_fastratio_hi_min->SetBinError (pmt+1, 0);
-		m_fastratio_hi_max->SetBinContent (pmt+1,
-						   fastratio_max[gain][pmt]);
-		m_fastratio_hi_max->SetBinError (pmt+1, 0);
 	      }
 
             else
@@ -206,13 +159,6 @@ namespace TD
 		m_fastfit_lo_max->SetBinContent (pmt+1,
 						 fastfit_max[gain][pmt]);
 		m_fastfit_lo_max->SetBinError (pmt+1, 0);
-
-		m_fastratio_lo_min->SetBinContent (pmt+1,
-						   fastratio_min[gain][pmt]);
-		m_fastratio_lo_min->SetBinError (pmt+1, 0);
-		m_fastratio_lo_max->SetBinContent (pmt+1,
-						   fastratio_max[gain][pmt]);
-		m_fastratio_lo_max->SetBinError (pmt+1, 0);
 	      }
 	  } // end pmt
       } // end gain

@@ -64,12 +64,6 @@ namespace TD
     TH1D *m_prob_hi_min; //!
     TH1D *m_prob_hi_max; //!
 
-    TH1D *m_chgratio_lo_min; //!
-    TH1D *m_chgratio_lo_max; //!
-    TH1D *m_chgratio_hi_min; //!
-    TH1D *m_chgratio_hi_max; //!
-
-    Float_t charge; //!
     Float_t samples_hi[48][128]; //!
     Float_t samples_lo[48][128]; //!
     Float_t ped_hi[48]; //!
@@ -100,10 +94,6 @@ namespace TD
     Double_t prob[2][48]; //!
     Double_t prob_min[2][48]; //!
     Double_t prob_max[2][48]; //!
-
-    Double_t chgratio[2][48]; //!
-    Double_t chgratio_min[2][48]; //!
-    Double_t chgratio_max[2][48]; //!
 
     UShort_t binrange;
     UShort_t binmin;

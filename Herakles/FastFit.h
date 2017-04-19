@@ -43,12 +43,6 @@ namespace TD
     TH1D *m_fastfit_hi_min; //!
     TH1D *m_fastfit_hi_max; //!
 
-    TH1D *m_fastratio_lo_min; //!
-    TH1D *m_fastratio_lo_max; //!
-    TH1D *m_fastratio_hi_min; //!
-    TH1D *m_fastratio_hi_max; //!
-
-    Int_t charge; //!
     Float_t ped_hi[48]; //!
     Float_t ped_lo[48]; //!
     Float_t samples_hi[48][128]; //!
@@ -63,10 +57,6 @@ namespace TD
     Double_t fastfit[2][48];
     Double_t fastfit_min[2][48];
     Double_t fastfit_max[2][48];
-    
-    Double_t fastratio[2][48];
-    Double_t fastratio_min[2][48];
-    Double_t fastratio_max[2][48];
     
     ClassDef(FastFit, 1);
   };

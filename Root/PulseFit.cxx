@@ -103,7 +103,6 @@ namespace TD
     ntuple->tree()->Branch ("phase",    &phase,    "phase[2][48]/S");
     ntuple->tree()->Branch ("width",    &width,    "width[2][48]/D");
     ntuple->tree()->Branch ("prob",     &prob,     "prob[2][48]/D");
-    ntuple->tree()->Branch ("chgratio", &chgratio, "chgratio[2][48]/D");
 
     // initialize with inverted min-max
     for (gain=0; gain<2; gain++)
@@ -127,9 +126,6 @@ namespace TD
 
 	    prob_min[gain][pmt] = 10e10;
 	    prob_max[gain][pmt] = -1;
-
-	    chgratio_min[gain][pmt] = 10e10;
-	    chgratio_max[gain][pmt] = -10e10;
 	  } // end pmt
       } // end gain
 
@@ -179,15 +175,6 @@ namespace TD
     m_prob_hi_max = new TH1D ("Prob_hi_max",
 			      "Pulse Probability High", 48, 0, 48);
 
-    m_chgratio_lo_min = new TH1D ("ChgRatio_lo_min",
-				  "Pulse Height/Charge Low", 48, 0, 48);
-    m_chgratio_lo_max = new TH1D ("ChgRatio_lo_max",
-				  "Pulse Height/Charge Low", 48, 0, 48);
-    m_chgratio_hi_min = new TH1D ("ChgRatio_hi_min",
-				  "Pulse Height/Charge High", 48, 0, 48);
-    m_chgratio_hi_max = new TH1D ("ChgRatio_hi_max",
-				  "Pulse Height/Charge High", 48, 0, 48);
-
     m_pedestal_lo_min->SetYTitle ("Min");
     m_pedestal_lo_max->SetYTitle ("Max");
     m_pedestal_hi_min->SetYTitle ("Min");
@@ -212,11 +199,6 @@ namespace TD
     m_prob_lo_max->SetYTitle ("Max");
     m_prob_hi_min->SetYTitle ("Min");
     m_prob_hi_max->SetYTitle ("Max");
-
-    m_chgratio_lo_min->SetYTitle ("Min");
-    m_chgratio_lo_max->SetYTitle ("Max");
-    m_chgratio_hi_min->SetYTitle ("Min");
-    m_chgratio_hi_max->SetYTitle ("Max");
 
     for (pmt=0; pmt<48; pmt++)
       {
@@ -246,11 +228,6 @@ namespace TD
 	m_prob_lo_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
 	m_prob_hi_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
 	m_prob_hi_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-
-	m_chgratio_lo_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-	m_chgratio_lo_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-	m_chgratio_hi_min->GetXaxis()->SetBinLabel (pmt + 1, buffer);
-	m_chgratio_hi_max->GetXaxis()->SetBinLabel (pmt + 1, buffer);
       }
 
     // add the histograms to EL output
@@ -279,11 +256,6 @@ namespace TD
     wk()->addOutput (m_prob_hi_min);
     wk()->addOutput (m_prob_hi_max);
 
-    wk()->addOutput (m_chgratio_lo_min);
-    wk()->addOutput (m_chgratio_lo_max);
-    wk()->addOutput (m_chgratio_hi_min);
-    wk()->addOutput (m_chgratio_hi_max);
-
     // temporary histogram and function for event-by-event fit
     hist_temp = new TH1D ("htemp", "htemp",
 			  window[1]-window[0], window[0], window[1]);
@@ -311,7 +283,6 @@ namespace TD
   EL::StatusCode PulseFit :: execute ()
   {
     // refresh the variable reference per algorithm
-    m_tree->SetBranchAddress ("charge",     &charge);
     m_tree->SetBranchAddress ("samples_hi", &samples_hi);
     m_tree->SetBranchAddress ("samples_lo", &samples_lo);
     m_tree->GetEntry (wk()->treeEntry());
@@ -330,7 +301,6 @@ namespace TD
 	    phase   [gain][pmt] = -1;
 	    width   [gain][pmt] = -1;
 	    prob    [gain][pmt] = -1;
-	    chgratio[gain][pmt] = -1;
 
 	    // fill a histogram with samples
 	    hist_temp->Reset ("icesm");
@@ -401,7 +371,6 @@ namespace TD
 		phase   [gain][pmt] = fitRes->GetParameter (2);
 		width   [gain][pmt] = fitRes->GetParameter (3);
 		prob    [gain][pmt] = fitRes->GetProb ();
-		chgratio[gain][pmt] = height[gain][pmt] / charge;
 
                 // check if value exceeds range
 		if (pedestal[gain][pmt] < pedestal_min[gain][pmt])
@@ -443,14 +412,6 @@ namespace TD
 		if (prob[gain][pmt] > prob_max[gain][pmt])
 		  {
 		    prob_max[gain][pmt] = prob[gain][pmt];
-		  }
-		if (chgratio[gain][pmt] < chgratio_min[gain][pmt])
-		  {
-		    chgratio_min[gain][pmt] = chgratio[gain][pmt];
-		  }
-		if (chgratio[gain][pmt] > chgratio_max[gain][pmt])
-		  {
-		    chgratio_max[gain][pmt] = chgratio[gain][pmt];
 		  }
 	      }
 	  } // end pmt
@@ -494,11 +455,6 @@ namespace TD
 		prob_min[gain][pmt] = -1;
 		prob_max[gain][pmt] = -1;
 	      }
-	    if (chgratio_min[gain][pmt] > chgratio_max[gain][pmt])
-	      {
-		chgratio_min[gain][pmt] = -1;
-		chgratio_max[gain][pmt] = -1;
-	      }
 
             // set min-max bin contents in histograms
             if (gain)
@@ -529,13 +485,6 @@ namespace TD
 		m_prob_hi_min->SetBinError (pmt+1, 0);
 		m_prob_hi_max->SetBinContent (pmt+1, prob_max[gain][pmt]);
 		m_prob_hi_max->SetBinError (pmt+1, 0);
-
-		m_chgratio_hi_min->SetBinContent (pmt+1,
-						  chgratio_min[gain][pmt]);
-		m_chgratio_hi_min->SetBinError (pmt+1, 0);
-		m_chgratio_hi_max->SetBinContent (pmt+1,
-						  chgratio_max[gain][pmt]);
-		m_chgratio_hi_max->SetBinError (pmt+1, 0);
 	      }
 
             else
@@ -566,13 +515,6 @@ namespace TD
 		m_prob_lo_min->SetBinError (pmt+1, 0);
 		m_prob_lo_max->SetBinContent (pmt+1, prob_max[gain][pmt]);
 		m_prob_lo_max->SetBinError (pmt+1, 0);
-
-		m_chgratio_lo_min->SetBinContent (pmt+1,
-						  chgratio_min[gain][pmt]);
-		m_chgratio_lo_min->SetBinError (pmt+1, 0);
-		m_chgratio_lo_max->SetBinContent (pmt+1,
-						  chgratio_max[gain][pmt]);
-		m_chgratio_lo_max->SetBinError (pmt+1, 0);
 	      }
 	  }
       }

@@ -4,6 +4,11 @@
 # by Daniel Bullock, 2013-2017
 # https://github.comdbullock1086/Herakles
 
+# Nomenclature.py
+# This class is used to consolidate all of the name references into a single
+# location. It is intended to remove a lot of clutter from the other scripts
+# whenever new algorithms are added.
+
 class Nomenclature (object):
     def VarTitle (self, var):
         #### get a descriptive title for the variable
@@ -22,9 +27,7 @@ class Nomenclature (object):
         elif var == 'phase': title = 'Pulse Fit Phase'
         elif var == 'width': title = 'Pulse Fit Width'
         elif var == 'prob': title = 'Pulse Fit Probability'
-        elif var == 'chgratio': title = 'Pulse Height/Charge'
         elif var == 'fastfit': title = 'Fast Integral'
-        elif var == 'fastratio': title = 'Fast Ratio'
         pass
 
     def VarELName (self, var, gain, pmt):
@@ -36,17 +39,15 @@ class Nomenclature (object):
         elif var == 'saturation': name = 'Saturation'
         elif var == 'null': name = 'NullValue'
         elif var == 'crc': name = 'CRCError'
-        elif var == 'fastfit': name = 'FastFit'
-        elif var == 'fastratio': name = 'FastRatio'
+        elif var == 'hfmean': name = 'hfmean'
+        elif var == 'hfstd': name = 'hfstd'
         elif var == 'pedratio': name = 'PedRatio'
-        elif var == 'Pedestal': name = 'Pedestal'
+        elif var == 'pedestal': name = 'Pedestal'
         elif var == 'height': name = 'Height'
         elif var == 'phase': name = 'Phase'
         elif var == 'width': name = 'Width'
         elif var == 'prob': name = 'Prob'
-        elif var == 'chgratio': name = 'ChgRatio'
-        elif var == 'hfmean': name = 'hfmean'
-        elif var == 'hfstd': name = 'hfstd'
+        elif var == 'fastfit': name = 'FastFit'
         pass
 
     def VarMinMax (self, var):
@@ -68,10 +69,9 @@ class Nomenclature (object):
             else: name += '_lo'
             name += '[%i]' % pmt
             pass
-        elif var in ['crc', 'fastfit', 'fastratio', 'pedratio',
-                     'pedestal', 'height', 'phase', 'width',
-                     'prob', 'chgratio',
-                     'hfmean', 'hfstd']:
+        elif var in ['crc', 'hfmean', 'hfstd', 'pedratio',
+                     'pedestal', 'height', 'phase', 'width', 'prob',
+                     'fastfit', 'fastratio']:
             name += '[%i][%i]' % (gain, pmt)
             pass
         return name
