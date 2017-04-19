@@ -26,6 +26,7 @@ class Module (HistReader):
         pass
 
     def Clear (self):
+        #### clear histograms and algorithms from instances
         for gain in self.gains:
             for pmt in self.channels:
                 self.members[gain][pmt].Clear ()
@@ -38,6 +39,7 @@ class Module (HistReader):
         pass
 
     def AddMDHist (self, xvar):
+        #### add a 1D histogram to each channel
         for gain in self.gains:
             for pmt in self.channels:
                 xname = self.ArrName (xvar, gain, pmt)
@@ -48,6 +50,7 @@ class Module (HistReader):
         pass
 
     def OwnMDHist (self, xvar):
+        #### get a 1D histogram and assign to each channel
         for gain in self.gains:
             for pmt in self.channels:
                 hist = self.rfile.Get (name)
@@ -57,6 +60,7 @@ class Module (HistReader):
         pass
 
     def AddMDHist2D (self, xvar, yvar):
+        #### add a 2D histogram to each channel
         for gain in self.gains:
             for pmt in self.channels:
                 xname = self.ArrName (xvar, gain, pmt)
@@ -70,6 +74,7 @@ class Module (HistReader):
         pass
 
     def OwnMDHist2D (self, xvar, yvar):
+        #### get a 2D histogram and assign to each channel
         for gain in self.gains:
             for pmt in self.channels:
                 hist = self.rfile.Get (name)
@@ -79,6 +84,7 @@ class Module (HistReader):
         pass
 
     def AddMDProfile (self, xvar, yvar):
+        #### add a profile to each channel
         for gain in self.gains:
             for pmt in self.channels:
                 xname = self.ArrName (xvar, gain, pmt)
@@ -92,6 +98,7 @@ class Module (HistReader):
         pass
 
     def OwnMDProfile (self, xvar, yvar):
+        #### get a profile and assign to each channel
         for gain in self.gains:
             for pmt in self.channels:
                 hist = self.rfile.Get (name)
@@ -101,13 +108,18 @@ class Module (HistReader):
         pass
 
     def GetAlgs (self, gain, pmt):
-        algs = self.members[gain][pmt].GetAlgs ()
+        #### get the algorithms from each channel
+        algs = self.members[gain][pmt].algs.values ()
         return algs
 
     def DoFit (self, key, mode):
+        #### perform a particular fit (mode) on histograms (key) for each gain
+        #    and PMT
         for gain in self.gains:
             for pmt in self.channels:
                 self.members[gain][pmt].DoFit (vargs, mode)
+
+                # if a fit is performed, add it to summary
                 if not self.summary.has_key (key): self.summary[key] = {}
                 pass
             pass

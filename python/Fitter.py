@@ -9,7 +9,7 @@ from ROOTBase import *
 class Fitter (object):
     def Fit (self, name, mode):
         self.par = {}
-        # number of entires in the histogram
+        # number of entries in the histogram
         self.par['num'] = self.hists[name].GetEntries ()
         # number of bins in the histogram
         self.par['binx'] = self.hists[name].GetNbinsX ()
@@ -36,16 +36,19 @@ class Fitter (object):
         # standard deviation of the histogram
         self.par['std'] = self.hists[name].GetStdDev ()
 
+        # mode-specific fit modeling
         if   mode == 'linear': self._linear ()
         elif mode == 'gaus':   self._gaus ()
         elif mode == 'dgaus':  self._dgaus ()
         elif mode == 'pulse':  self._pulse ()
+
+        # perform fit to model
         self.hists[name].Fit (self.model, 'ww0qRS')
         pass
 
     def _linear (self):
         #### fit to a linear model
-        # note: restrict function range to non-saturated values
+        # note: restrict function range to non-saturated and non-null values
 	xmin = False
 	for xbin in xrange (1, self.par['binx']+1):
 	    val = self.hists[name].GetBinContent (xbin)
@@ -70,12 +73,7 @@ class Fitter (object):
                                minx. maxx)
 
         self.model.SetParName   (0, 'slope')
-        #self.model.SetParLimits (0, ?, ?)
-        #self.model.SetParameter (0, ?)
-
         self.model.SetParName   (1, 'intercept')
-        #self.model.SetParLimits (1, ?, ?)
-        #self.model.SetParameter (1, ?)
         pass
 
     def _gaus (self):
@@ -154,23 +152,26 @@ class Fitter (object):
             pass
         else: pos = False
 
+        # these three will depend on whether the pulse is positive or negative
         self.model.SetParName (0, 'pedestal')
         self.model.SetParName (1, 'height')
         self.model.SetParName (2, 'phase')
+
         if pos: # the pulse is positive
             # pedestal should be in the lower half of the range
             self.hists[name].SetParLimits (0, self.par['minval'],
                                            self.par['valr']/2)
             self.hists[name].SetParameter (0, self.par['minval'] + \
                                            self.par['valr']/8)
-            # height can be actually be larger than the range
+            # height can actually be larger than the range
             self.hists[name].SetParLimits (1, self.par['valr']/2,
                                            2*self.par['valr'])
             self.hists[name].SetParameter (1, self.par['valr'])
             # phase is somewhere near the maximum
-            self.hists[name].SetParLimits (2, self.par['maxbin']-3,
-                                           self.par['maxbin']+1)
-            self.hists[name].SetParameter (2, self.par['maxbin'] - 1)
+            # note: this could fail if the pulse is clipped
+            self.hists[name].SetParLimits (2, self.par['maxbin']-5,
+                                           self.par['maxbin']+5)
+            self.hists[name].SetParameter (2, self.par['maxbin'])
             pass
         else: # the pulse is negative
             # pedestal should be in the upper half of the range
@@ -183,9 +184,9 @@ class Fitter (object):
                                            2*self.par['valr'])
             self.hists[name].SetParameter (1, self.par['valr'])
             # phase is somewhere near the minimum
-            self.hists[name].SetParLimits (2, self.par['minbin'] - 3,
-                                           self.par['minbin'] + 1)
-            self.hists[name].SetParameter (2, self.par['minbin'] - 1)
+            self.hists[name].SetParLimits (2, self.par['minbin'] - 5,
+                                           self.par['minbin'] + 5)
+            self.hists[name].SetParameter (2, self.par['minbin'])
             pass
         # the width should be fairly stable
         # (fit success is also sensitive to constraining this parameter)

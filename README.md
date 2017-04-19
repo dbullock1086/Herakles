@@ -61,7 +61,13 @@ herakles SampleNoise Data_20170101_PedStability.root Hist_20170101_PedStability.
 
 This will run a pre-defined test called `biasnoise`. The input data comes from the file `Data_20170101_PedNoise.root`. The test analyzes the "sample" branch from the input TTree by plotting a histogram and fitting to a (single) Gaussian for each channel. These histograms and fit parameters are also summarized into a full overview for the minidrawer. The histograms are output to a new file called `Hist_20170101_PedStability.root`.
 
-There are additional configurations for each test, so a familiarity with the flexibility of the code is encouraged.
+There are three command-line options that you may find useful:
+
+- `--gains` -- The module returns data with a high-gain amplification and a low-gain amplification. If you want just the low gain, use `--gains 0`. Conversely, use `--gains 1` for just the high gain. By default, both gains are used, which can also be ensured by typing `--gains 0 1`. The only valid choices are zero and one.
+
+- `--channels` -- Each module has 48 PMTs. If you want a subset of them, just add them to the channels option list. Remember that Herakles uses a zero-based numbering convention, so the option `--channels 0 1 2 3` selects the first four PMTs and `--channels 44 45 46 47` selects the last four PMTs. The only valid choices are zero through 47.
+
+- `--window` -- An event is sampled 128 times. You can study all 128 samples at a time, or you can limit the range to a window of indices. For example, `--window 0 32` will ignore anything after the 31st sample (since 32 is not inclusive to a lower-edge binning). **Note:** During the development of the sROD, the 32-sample window was copied 4 times to occupy the full 128 samples, which had severely misleading consequences for analyses that used the full window.
 
 ### Basic Overview
 
@@ -85,7 +91,7 @@ Within this file, you will find a class by the same name. In this file, you will
 - `self.AddMDHist ('samples', fit='gaus')` -- A 1D histogram will be drawn for each gain and PMT, and each histogram will later be fit to a (single) Gaussian distribution.
 - `self.OwnELHist ('samples')` -- It may be interesting to see if different PMTs have different minimum and maximum values, so we want to keep the output of the `SampleRange` algorithm and place it in the final output histogram.
 
-Such a script file is not limited to what you see here. You can have several instances of `AddTDAlg` in case you want more test information in the final analysis. In that case, you probably need more `CopyBranch` instructions and so on. Look at some of the other test scripts for more ideas.
+Such a script file is not limited to what you see here. You can have several instances of `AddTDAlg` in case you want more test information in the final analysis. In that case, you probably need more `CopyBranch` instructions and so on. Look at some of the other test scripts for more ideas. There are additional configurations for each test, so a familiarity with the flexibility of the code is encouraged.
 
 ### EventLoop Algorithms
 
@@ -109,9 +115,7 @@ Three algorithms just count the number of extreme values:
 - `Saturation`
 - `NullValue`
 
-These algorithms look for certain values in the `samples_*` branches. CRC values are negative numbers or numbers that exceed the 12-bit range. Saturated values are numbers at the 12-bit ceiling of 4095. Null values are zero. These three are a good example of keeping algorithms simple; they are separate even though you probably want all three in one test.
-
-**Note:** Algorithms that analyze the `samples_*` branches will skip these values.
+These algorithms look for certain values in the `samples_*` branches. CRC values are negative numbers or numbers that exceed the 12-bit range, usually a purposefully invalid number to indicate a firmware error. Saturated values are numbers at the 12-bit ceiling of 4095. Null values are zero. These three are a good example of keeping algorithms simple; they are separate even though you probably want all three in one test. **Note:** Algorithms that analyze the `samples_*` branches will skip these three values.
 
 There is an algorithm that studies the high-frequency response of the `samples_*` branch:
 
@@ -136,7 +140,7 @@ One more algorithm can also be useful for pulses:
 
 - `SampleLF`
 
-This algorithm looks separately at sample number and channel number (128 bin by 48 bin histograms), and displays the mean value and standard deviation of each. For example, it can show you the pulse shape for each PMT simulataneously over a large number of events.
+This algorithm looks separately at sample number and channel number (128 bin by 48 bin histograms), and displays the mean value and standard deviation of each. For example, it can show you the pulse shape (by color spectrum) for each PMT simulataneously over a large number of events.
 
 And one algorithm looks for systematic cross-talk:
 

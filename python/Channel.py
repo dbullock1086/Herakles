@@ -4,12 +4,18 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+# Channel.py
+# A class for managing algorithms and histograms for a specific gain and PMT.
+# Each instance of the Channel class receives its calls from the Module class,
+# which manages the entire collection of channels.
+
 from ROOTBase import *
 from Fitter import Fitter
 from Nomenclature import Nomenclature
 
 class Channel (Fitter, Nomenclature):
     def __init__ (self, mname, gain, pmt):
+        #### identify the channel with its specific gain and PMT
         self.gain  = gain
         self.pmt   = pmt
         self.name  = 'gain%i_pmt%i' % (self.gain, self.pmt)
@@ -20,11 +26,8 @@ class Channel (Fitter, Nomenclature):
         self.fitparams = {}
         pass
 
-    def GetAlgs (self):
-        algs = self.algs.values ()
-        return algs
-
     def Clear (self):
+        #### clear histograms and algorithms from the instance
         for name in self.algs:
             self.algs[name].IsA().Destructor (self.algs[name])
             del self.algs[name]
@@ -33,20 +36,6 @@ class Channel (Fitter, Nomenclature):
             self.hists[name].IsA().Destructor (self.hists[name])
             del self.hists[name]
             pass
-        pass
-
-    def DoFit (self, vargs, mode):
-        name = '%s_%s' % (self.name, vargs)
-        self.Fit (name, mode)
-        self.fitparams[name] = {}
-        fitres = self.hists[name].GetFunction (name + '_fit')
-        npar = fitres.GetNumberFreeParameters ()
-        for i in xrange(npar):
-            pname = fitres.GetParName   (i)
-            pval  = fitres.GetParameter (i)
-            self.fitparams[name][pname] = pval
-            pass
-        self.fitparams[name]['prob'] = fitres.GetProb ()
         pass
 
     def NameHist (self, xvar):
@@ -121,8 +110,26 @@ class Channel (Fitter, Nomenclature):
         pass
 
     def OwnHist (self, hist):
+        #### save a histogram, usually for the purpose of fitting and output
         name = hist.GetName ()
         self.hists[name] = hist
         self.hists[name].SetDirectory (0)
+        pass
+
+    def DoFit (self, vargs, mode):
+        #### perform a fit to a specified mode
+        name = '%s_%s' % (self.name, vargs)
+        self.Fit (name, mode)
+
+        # read back the parameters of the fit
+        self.fitparams[name] = {}
+        fitres = self.hists[name].GetFunction (name + '_fit')
+        npar = fitres.GetNumberFreeParameters ()
+        for i in xrange(npar):
+            pname = fitres.GetParName   (i)
+            pval  = fitres.GetParameter (i)
+            self.fitparams[name][pname] = pval
+            pass
+        self.fitparams[name]['prob'] = fitres.GetProb ()
         pass
     pass
