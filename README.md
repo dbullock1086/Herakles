@@ -55,11 +55,11 @@ Source `setup.sh` and it should build RootCore in your user area, then it will r
 
 As long as `$PYTHONPATH` is defined to the appropriate location in the source directory, you should be ready to run some tests. The basic commands will look like this:
 
-```
-herakles SampleNoise Data_20170101_PedStability.root Hist_20170101_PedStability.root
+```bash
+herakles PulseStability Data_20170101_LEDStability.root Hist_20170101_LEDStability.root
 ```
 
-This will run a pre-defined test called `biasnoise`. The input data comes from the file `Data_20170101_PedNoise.root`. The test analyzes the "sample" branch from the input TTree by plotting a histogram and fitting to a (single) Gaussian for each channel. These histograms and fit parameters are also summarized into a full overview for the minidrawer. The histograms are output to a new file called `Hist_20170101_PedStability.root`.
+This will run a pre-defined test called `PulseStability`. The input data comes from the file `Data_20170101_LEDStability.root`. The test analyzes the "sample" branch from the input TTree by plotting a histogram and fitting to a (single) Gaussian for each channel. These histograms and fit parameters are also summarized into a full overview for the minidrawer. The histograms are output to a new file called `Hist_20170101_LEDStability.root`.
 
 There are three command-line options that you may find useful:
 
@@ -81,23 +81,50 @@ The basic flow is:
 
 3. Some of the histograms are fit to expected models. If a channel (gain and PMT) is fit to a particular model, a summary histogram of all PMTs is updated to include the values of each parameter for a comparison.
 
-Your first interaction with `Herakles` is probably the command line as shown in the previous section. The `SampleNoise` term is indicating a particular test routine (a series of configurations and control instructions) that are designed to investigate the performance of a particular subsystem in the TileDemo mini-drawer. This command is a particular case in `share/herakles_scripts.sh`, which points to a source code in `share/SampleNoise.py`.
+Your first interaction with `Herakles` is probably the command line as shown in the previous section. The `LEDStability` term is indicating a particular test routine (a series of configurations and control instructions) that are designed to investigate the performance of a particular subsystem in the TileDemo mini-drawer. This command refers to `share/herakles_scripts.sh`, which points to a source code in `share/PulseStability.py`.
 
-Within this file, you will find a class by the same name. In this file, you will find some configurations:
+This test script uses control instructions, but the commands themselves are quite similar between tests.
 
-- `self.SetTree ('dataTree')` -- The raw input probably contains `TTree` objects for the raw data, the parameters, and the DCS. This line indicates that `Herakles` should examine the one called "dataTree".
-- `self.AddTDAlg ('SampleRange')` -- This is a simple algorithm that determines the minimum and maximum values of the `samples_hi` and `samples_lo` branches. This will become important later.
-- `self.CopyBranch ('samples')` -- From raw data, we need to copy this branch from the raw data to the derived set. We will be making histograms from the derived set.
-- `self.AddMDHist ('samples', fit='gaus')` -- A 1D histogram will be drawn for each gain and PMT, and each histogram will later be fit to a (single) Gaussian distribution.
-- `self.OwnELHist ('samples')` -- It may be interesting to see if different PMTs have different minimum and maximum values, so we want to keep the output of the `SampleRange` algorithm and place it in the final output histogram.
+Tests involving the LED refer to a flash of light that is collected by PMT and shaped by electronics into a pulse. The stability of a pulse is a study of reliability. The baseline of the pulse is influenced by the pedestal bias. If this value is held constant for many events, we should expect the pulse shape to also remain constant over the same events. The "pulse" is a sampling of a stochastic process that we model with a calibrated experimental function.
 
-Such a script file is not limited to what you see here. You can have several instances of `AddTDAlg` in case you want more test information in the final analysis. In that case, you probably need more `CopyBranch` instructions and so on. Look at some of the other test scripts for more ideas. There are additional configurations for each test, so a familiarity with the flexibility of the code is encouraged.
+The `PulseStability` test studies the stability of the pulse by plotting the parameters of a fitted pulse against the event number.
+
+>>> self.SetTree ('dataTree')
+
+The raw data file probably contains three different `TTree`s: one for data called "dataTree", one called "paramTree", and one called "dcsTree". This line indicates that we will be looking at the dataset called "dataTree".
+
+>>> self.AddTDAlg ('EvtRange')
+>>> self.AddTDAlg ('PulseFit')
+
+There are two EventLoop algorithms that we will need to configure this test. Since we are looking at event number, we need `EvtRange` to define the limits of the plot. The `PulseFit` algorithm attempts to fit the sample values to a pulse shape.
+
+>>> self.CopyBranch ('evt')
+
+After we run algorithms on raw data, we will be plotting histograms from a derived dataset. Since the event number is one of the branches we want to use in plots, we will copy the 'evt' branch from raw data to the new derived dataset.
+
+>>> self.AddMDProfile ('evt', 'pedestal', fit='linear')
+>>> self.AddMDProfile ('evt', 'height',   fit='linear')
+>>> self.AddMDProfile ('evt', 'phase',    fit='linear')
+>>> self.AddMDProfile ('evt', 'width',    fit='linear')
+>>> self.AddMDProfile ('evt', 'prob',     fit='linear')
+
+The `PulseFit` algorithm also adds branches to the derived dataset. These branches are the free parameters of the pulse fit, plus a $\chi^2$ and NDF probability of fit. We want to study these values using the MultiDraw algorithm, and the profile histogram is a good choice for a study of stability. The profile histogram displays the mean value of the parameter for each bin of the event number, and the error bars are the standard deviation. These profiles represent the stability, so if they are constant, then such a condition should be supported by a linear fit.
+
+**Note:** The linear fit is appropriate for this test, but some other control instructions will leave this term blank. The default is 'gaus' for a single Gaussian fit. A double Gaussian can be specified with 'dgaus'. There is no model currently implemented for 2D histograms.
+
+>>> self.OwnELHist ('pedestal')
+>>> self.OwnELHist ('height')
+>>> self.OwnELHist ('phase')
+>>> self.OwnELHist ('width')
+>>> self.OwnELHist ('prob')
+
+The output of all tests is a channel-by-channel fit of the data, and a summary of all channels so that you can compare the fit parameters across all gains and PMTs. But the `PulseFit` algorithm also finds the minimum and maximum values in order to determine a good range and bin size for populating histograms. These extrema also provide a good comparison between channels that may not be as obvious from a fit. The line shown above indicate that we want to keep these extra histograms and save them for output.
 
 ### EventLoop Algorithms
 
 If you are interested in testing the behavior of part of the mini-drawer, the algorithms in the `Herakles` source code are where you should look.
 
-**Caution:** If you think you need to write a new algorithm, please be mindful of the mess you might introduce. The algorithms are intended to be run in parallel and add as little as possible to the complexity of the EventLoop job. Therefore, algorithms should be cooperative, and no two algorithms should have an overlap in what they do.
+**Caution:** If you think you need to write a new algorithm, please be mindful of the mess you might introduce. The algorithms are intended to be run in parallel and add as little as possible to the complexity of the EventLoop job. Therefore, algorithms should be cooperative, and no two algorithms should have an overlap in purpose.
 
 There are some very simple algorithms that just determine minimum and maximum values:
 
@@ -107,7 +134,7 @@ There are some very simple algorithms that just determine minimum and maximum va
 - `PedRange`
 - `SampleRange`
 
-The first three return histograms that have two bins: the minimum value in bin 1 and the maximum value in bin 2. The pedestal values and sample values have four histograms (two gains times two max/min values) that have 48 bins (one for each PMT). Additionally, the capacitance, charge, and pedestal are independent variables, so they include histograms that count the number steps -- or changes in value, i.e. for a linearity test.
+The first three return histograms that have two bins: the minimum value in bin 1 and the maximum value in bin 2. The pedestal values and sample values have four histograms (two gains times two min/max values) that have 48 bins (one for each PMT). Additionally, the capacitance, charge, and pedestal are independent variables, so they include histograms that count the number steps -- or changes in value, i.e. for a linearity test.
 
 Three algorithms just count the number of extreme values:
 
@@ -115,7 +142,7 @@ Three algorithms just count the number of extreme values:
 - `Saturation`
 - `NullValue`
 
-These algorithms look for certain values in the `samples_*` branches. CRC values are negative numbers or numbers that exceed the 12-bit range, usually a purposefully invalid number to indicate a firmware error. Saturated values are numbers at the 12-bit ceiling of 4095. Null values are zero. These three are a good example of keeping algorithms simple; they are separate even though you probably want all three in one test. **Note:** Algorithms that analyze the `samples_*` branches will skip these three values.
+These algorithms look for certain values in the `samples_*` branches. CRC values are negative numbers or numbers that exceed the 12-bit range, usually a purposefully invalid number to indicate a firmware error. Saturated values are numbers at the 12-bit ceiling of 4095. Null values are zero. These three are a good example of keeping algorithms simple; they are separate even though you probably want all three in one test. **Note:** Algorithms that analyze the `samples_*` branches will skip these extreme values.
 
 There is an algorithm that studies the high-frequency response of the `samples_*` branch:
 
@@ -134,7 +161,7 @@ There are algorithms for studying pulses:
 - `PulseFit`
 - `FastFit`
 
-The first one takes the 128 samples from each event and fits it to a calibrated pulse shape. The branches added by this algorithm include the parameters of the fit (pedestal, height, phase, width) and the probability of the fit (using chi-squared and the number of degrees of freedom). It also adds a height/charge branch. This algorithm can be a little slow, so the second algorithm makes a coarser approximation of the fit by subtracting the `ped_*` value and integrating.
+The first one takes the 128 samples from each event and fits it to a calibrated pulse shape. The branches added by this algorithm include the parameters of the fit (pedestal, height, phase, width) and the probability of the fit (using chi-squared and the number of degrees of freedom). This algorithm can be a little slow, so the second algorithm makes a coarser approximation of the fit by subtracting the `ped_*` value and integrating.
 
 One more algorithm can also be useful for pulses:
 

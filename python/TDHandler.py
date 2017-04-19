@@ -4,6 +4,9 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+# TDHandler.py
+# A wrapper for the EventLoop algorithms so the objects can be called by name
+
 from ROOTBase import *
 
 class TDHandler:

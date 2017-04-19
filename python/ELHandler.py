@@ -4,8 +4,11 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+# ELHandler.py
+# The heavy-lifting of this software is RootCore and EventLoop. This class just
+# wraps the steering macros into python methods.
+
 from ROOTBase import *
-from TDHandler import TDHandler
 
 class ELHandler:
     def __init__ (self, name, tree):

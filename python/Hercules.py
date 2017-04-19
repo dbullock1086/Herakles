@@ -4,6 +4,13 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+# Hercules.py
+# This class is used to control the flow of the test. The "job" of a test is
+# divided into three sub-routines. Therefore, each routine may require a
+# different set of objects. This class should only be used for storing string
+# references to those objects, and the sub-routines cause other classes to load
+# those objects into memory.
+
 #### configure the test from the command line
 from ArgParse import *
 
@@ -28,12 +35,6 @@ if args.name not in history:
                           'multidraw': 0,
                           'hist': 0}
     pass
-
-#### This class is used to control the flow of the test. The "job" of a test
-#    is divided into three sub-routines. Therefore, each routine may require a
-#    different set of objects. This class should only be used for storing
-#    string references to those objects, and the sub-routines cause other
-#    classes to load those objects into memory.
 
 class Hercules (object):
     def __init__ (self):

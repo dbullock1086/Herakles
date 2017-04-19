@@ -4,6 +4,10 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+# IPbus.py
+# This is legacy code that has been supplanted by sRODInterface. It has not
+# been updated since ~ Septembeer 2014.
+
 import time, subprocess, Herakles
 
 class IPbus:

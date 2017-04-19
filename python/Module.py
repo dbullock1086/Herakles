@@ -4,6 +4,11 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+# Module.py
+# This class manages a collection of channels. It also stores summary
+# information about the entire mini-drawer so that you can view the status and
+# results of the tests for all 48 PMTs simultaneously for both gains.
+
 from ROOTBase import *
 from Channel import Channel
 from HistReader import HistReader

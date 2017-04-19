@@ -4,38 +4,13 @@
 # by Daniel Bullock, 2013-2017
 # https://github.com/dbullock1086/Herakles
 
+# Fitter.py
+# A class that fits the histograms for a particular gain and PMT.
+
 from ROOTBase import *
 
 class Fitter (object):
     def Fit (self, name, mode):
-        self.par = {}
-        # number of entries in the histogram
-        self.par['num'] = self.hists[name].GetEntries ()
-        # number of bins in the histogram
-        self.par['binx'] = self.hists[name].GetNbinsX ()
-        # minimum x-value of the histogram
-        self.par['minx'] = self.hists[name].GetXaxis().GetXmax()
-        # maximum x-value of the histogram
-        self.par['maxx'] = self.hists[name].GetXaxis().GetXmin()
-        # size of x-axis
-        self.par['size'] = self.par['maxx'] - self.par['minx']
-        # bin width
-        self.par['bins'] = self.par['size'] / self.par['binx']
-        # location of bin with the least entries
-        self.par['minbin'] = self.hists[name].GetMinimumBin ()
-        # location of bin with the most entries
-        self.par['maxbin'] = self.hists[name].GetMaximumBin ()
-        # least number of entries in a bin
-        self.par['minval'] = self.hists[name].GetMinimum ()
-        # most number of entries in a bin
-        self.par['maxval'] = self.hists[name].GetMaximum ()
-        # size of entry difference
-        self.par['valr'] = self.par['maxval'] - self.par['minval']
-        # mean value of the histogram
-        self.par['mean'] = self.hists[name].GetMean ()
-        # standard deviation of the histogram
-        self.par['std'] = self.hists[name].GetStdDev ()
-
         # mode-specific fit modeling
         if   mode == 'linear': self._linear ()
         elif mode == 'gaus':   self._gaus ()
@@ -49,8 +24,9 @@ class Fitter (object):
     def _linear (self):
         #### fit to a linear model
         # note: restrict function range to non-saturated and non-null values
+        binx = self.hists[name].GetNbinsX ()
 	xmin = False
-	for xbin in xrange (1, self.par['binx']+1):
+	for xbin in xrange (1, binx + 1):
 	    val = self.hists[name].GetBinContent (xbin)
 	    if xmin:
                 # establish the upper bin limit
@@ -78,76 +54,101 @@ class Fitter (object):
 
     def _gaus (self):
         #### fit to a Gaussian model
+        minx = self.hists[name].GetXaxis().GetXmax()
+        maxx = self.hists[name].GetXaxis().GetXmin()
+        num  = self.hists[name].GetEntries ()
+        mean = self.hists[name].GetMean ()
+        size = maxx - minx
+        std  = self.hists[name].GetStdDev ()
+
         self.model = ROOT.TF1 (self.hists[name].GetName() + '_fit',
                                '[0]*TMath::Gaus(x,[1],[2],1)',
-                               self.par['minx'], self.par['maxx'])
+                               minx, maxx)
 
         # normalization should be the total number of entries
         self.model.SetParName   (0, 'norm')
-        self.model.SetParLimits (0, self.par['num']/2, 2*self.par['num'])
-        self.model.SetParameter (0, self.par['num'])
+        self.model.SetParLimits (0, num/2., 2.*num)
+        self.model.SetParameter (0, num)
 
         # central location should match the histogram mean
         self.model.SetParName   (1, 'mu')
-        self.model.SetParLimits (1, self.par['mean'] - self.par['size']/4,
-                                 self.par['mean'] + self.par['size']/4)
-        self.model.SetParameter (1, self.par['mean'])
+        self.model.SetParLimits (1, mean - size/4., mean + size/4.)
+        self.model.SetParameter (1, mean)
 
         # width should match the histogram standard deviation
         self.model.SetParName   (2, 'sigma')
-        self.model.SetParLimits (2, 0, self.par['size'])
-        self.model.SetParameter (2, self.par['std'])
+        self.model.SetParLimits (2, 0, size)
+        self.model.SetParameter (2, std)
         pass
 
     def _dgaus (self):
         #### fit to a double Gaussian model
+        minx = self.hists[name].GetXaxis().GetXmax()
+        maxx = self.hists[name].GetXaxis().GetXmin()
+        num  = self.hists[name].GetEntries ()
+        mean = self.hists[name].GetMean ()
+        size = maxx - minx
+        std  = self.hists[name].GetStdDev ()
+
         # note: shared central value
         self.model = ROOT.TF1 (self.hists[name].GetName() + '_fit',
                                '[0]*(TMath::Gaus(x,[1],[2],1)+TMath::Gaus(x,[1],[3],1))/2',
-                               self.par['minx'], self.par['maxx'])
+                               minx, maxx)
 
         # normalization should be the total number of entries
         self.model.SetParName   (0, 'norm')
-        self.model.SetParLimits (0, self.par['num']/2, 2*self.par['num'])
-        self.model.SetParameter (0, self.par['num'])
+        self.model.SetParLimits (0, num/2., 2.*num)
+        self.model.SetParameter (0, num)
 
         # central location should match the histogram mean
         self.model.SetParName   (1, 'mu')
-        self.model.SetParLimits (1, self.par['mean'] - self.par['size']/4,
-                                 self.par['mean'] + self.par['size']/4)
-        self.model.SetParameter (1, self.par['mean'])
+        self.model.SetParLimits (1, mean - size/4., mean + size/4.)
+        self.model.SetParameter (1, mean)
 
         # first Gaussian should have a width upper-bound
         # by the histogram standard deviation
         self.model.SetParName   (2, 'sigma1')
-        self.model.SetParLimits (2, 0, self.par['std'])
-        self.model.SetParameter (2, self.par['std']/2)
+        self.model.SetParLimits (2, 0, std)
+        self.model.SetParameter (2, std/2.)
 
         # second Gaussian should have a width lower-bound
         # by the histogram standard deviation
         self.model.SetParameter (3, 'sigma2')
-        self.model.SetParLimits (3, self.par['std'], self.par['size'])
-        self.model.SetParameter (3, self.par['std'] + \
-                                 (self.par['size']-self.par['std'])/2)
+        self.model.SetParLimits (3, std, size)
+        self.model.SetParameter (3, std + (size-std/2.))
         pass
 
     def _pulse (self):
-        if not hasattr (self, 'pulsefit'): self.pulsefit = ROOT.TD.PulseFit ()
         #### fit to a pulse model
+        if not hasattr (self, 'pulsefit'): self.pulsefit = ROOT.TD.PulseFit ()
+
+        binx   = self.hists[name].GetNbinsX ()
+        minx   = self.hists[name].GetXaxis().GetXmax()
+        maxx   = self.hists[name].GetXaxis().GetXmin()
+        num    = self.hists[name].GetEntries ()
+        mean   = self.hists[name].GetMean ()
+        size   = maxx - minx
+        std    = self.hists[name].GetStdDev ()
+        minbin = self.hists[name].GetMinimumBin ()
+        maxbin = self.hists[name].GetMaximumBin ()
+        minval = self.hists[name].GetMinimum ()
+        maxval = self.hists[name].GetMaximum ()
+        valr   = maxval - minval
+
         self.model = ROOT.TF1 (self.hists[name].GetName() + '_fit',
                                self.pulsefit.PulseShape,
-                               self.par['minx'], self.par['maxx'])
+                               minx, maxx)
         # Is the pulse positive or negative?
         # ignore the maximum and minimum values then determine if
         # max or min is farther from the remaining average
-        approx = 0
-        for xbin in xrange(1, self.par['binx']+1):
-            if (xbin == self.par['minbin']): continue
-            if (xbin == self.par['maxbin']): continue
+        approx = 0.
+        for xbin in xrange(1, binx + 1):
+            if (xbin == minbin): continue
+            if (xbin == maxbin): continue
             approx += self.hists[name].GetBinContent (xbin)
             pass
-        approx /= self.par['binx'] - 2
-        if (abs(self.par['maxval']-approx) > abs(approx-self.par['minval'])):
+        approx /= binx - 2.
+        if (abs(maxval-approx) > abs(approx-minval)):
             pos = True
             pass
         else: pos = False
@@ -159,34 +160,26 @@ class Fitter (object):
 
         if pos: # the pulse is positive
             # pedestal should be in the lower half of the range
-            self.hists[name].SetParLimits (0, self.par['minval'],
-                                           self.par['valr']/2)
-            self.hists[name].SetParameter (0, self.par['minval'] + \
-                                           self.par['valr']/8)
+            self.hists[name].SetParLimits (0, minval, valr/2.)
+            self.hists[name].SetParameter (0, minval + valr/8.)
             # height can actually be larger than the range
-            self.hists[name].SetParLimits (1, self.par['valr']/2,
-                                           2*self.par['valr'])
-            self.hists[name].SetParameter (1, self.par['valr'])
+            self.hists[name].SetParLimits (1, valr/2., 2.*valr)
+            self.hists[name].SetParameter (1, valr)
             # phase is somewhere near the maximum
             # note: this could fail if the pulse is clipped
-            self.hists[name].SetParLimits (2, self.par['maxbin']-5,
-                                           self.par['maxbin']+5)
-            self.hists[name].SetParameter (2, self.par['maxbin'])
+            self.hists[name].SetParLimits (2, maxbin - 5., maxbin + 5.)
+            self.hists[name].SetParameter (2, maxbin)
             pass
         else: # the pulse is negative
             # pedestal should be in the upper half of the range
-            self.hists[name].SetParLimits (0, self.par['valr']/2,
-                                           self.par['maxval'])
-            self.hists[name].SetParameter (0, self.par['maxval'] - \
-                                           self.par['valr']/8)
+            self.hists[name].SetParLimits (0, valr/2., maxval)
+            self.hists[name].SetParameter (0, maxval - valr/8.)
             # height can actually be larger than the range
-            self.hists[name].SetParLimits (1, self.par['valr']/2,
-                                           2*self.par['valr'])
-            self.hists[name].SetParameter (1, self.par['valr'])
+            self.hists[name].SetParLimits (1, valr/2., 2.*valr)
+            self.hists[name].SetParameter (1, valr)
             # phase is somewhere near the minimum
-            self.hists[name].SetParLimits (2, self.par['minbin'] - 5,
-                                           self.par['minbin'] + 5)
-            self.hists[name].SetParameter (2, self.par['minbin'])
+            self.hists[name].SetParLimits (2, minbin - 5., minbin + 5.)
+            self.hists[name].SetParameter (2, minbin)
             pass
         # the width should be fairly stable
         # (fit success is also sensitive to constraining this parameter)
