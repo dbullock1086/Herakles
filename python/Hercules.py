@@ -29,15 +29,15 @@ if args.name not in history:
                           'hist': 0}
     pass
 
-#### main interface
+#### This class is used to control the flow of the test. The "job" of a test
+#    is divided into three sub-routines. Therefore, each routine may require a
+#    different set of objects. This class should only be used for storing
+#    string references to those objects, and the sub-routines cause other
+#    classes to load those objects into memory.
+
 class Hercules (object):
     def __init__ (self):
-        #### This class is used to control the flow of the test. The "job" of a
-        #    test is divided into three sub-routines. Therefore, each routine
-        #    may require a different set of objects. This class should only be
-        #    used for storing string references to those objects, and the
-        #    sub-routines cause other classes to load those objects into
-        #    memory.
+        #### some metadata
         self.elalgs     = set (['EvtRange'])
         self.mdhists    = []
         self.mdhists2d  = []
@@ -50,16 +50,19 @@ class Hercules (object):
 
     def SetTree (self, tree):
         #### set the TTree name for the raw data (e.g. dataTree or dcsTree)
+        assert type(tree).__name__ == 'str', 'tree must be a string'
         self.tree = tree
         pass
 
     def AddTDAlg (self, alg):
         #### add a TileDemo algorithm class (string reference)
+        assert type(alg).__name__ == 'str', 'alg must be a string'
         self.elalgs.add (alg)
         pass
 
     def CopyBranch (self, branch):
         #### copy a branch from raw data to the derived dataset
+        assert type(branch).__name__ == 'str', 'branch must be a string'
         if branch == 'ped' or branch == 'samples':
             if 0 in args.gains: self.cpybr.add (branch + '_lo')
             if 1 in args.gains: self.cpybr.add (branch + '_hi')
@@ -67,26 +70,33 @@ class Hercules (object):
         else: self.cpybr.add (branch)
         pass
 
-    def AddMDHist (self, xvar, fit=None):
+    def AddMDHist (self, xvar, fit=''):
         #### add a MultiDraw algorithm class (string reference)
+        assert type(xvar).__name__ == 'str', 'xvar must be a string'
         assert xvar != 'evt', 'evt not allowed as a 1D histogram'
+        assert type(fit).__name__ == 'str', 'fit must be a string'
         self.mdhists.append (xvar)
         if fit: self.mdfits[xvar] = fit
         pass
 
     def AddMDHist2D (self, xvar, yvar):
         #### add a MultiDraw algorithm class (string reference)
+        assert type(xvar).__name__ == 'str', 'xvar must be a string'
+        assert type(yvar).__name__ == 'str', 'yvar must be a string'
         self.mdhists2d.append ([xvar, yvar])
         pass
 
     def AddMDProfile (self, xvar, yvar, fit=None):
         #### add a MultiDraw algorithm class (string reference)
+        assert type(xvar).__name__ == 'str', 'xvar must be a string'
+        assert type(yvar).__name__ == 'str', 'yvar must be a string'
         self.mdprofiles.append ([xvar, yvar])
         if fit: self.mdfits['prf_%s_%s' % (xvar, yvar)] = fit
         pass
 
     def OwnELHist (self, name):
         #### save a histogram from the EventLoop routine for final output
+        assert type(name).__name__ == 'str', 'name must be a string'
         assert name not in ['evt', 'cap', 'charge'], \
             'evt, cap, and charge do not have summary histograms'
         self.ownel.add (name)
@@ -162,7 +172,7 @@ class Hercules (object):
             # add MD algorithms to EventLoop job
             for gain in args.gains:
                 for pmt in args.channels:
-                    algs = self.module.GetAlgs ()
+                    algs = self.module.GetAlgs (gain, pmt)
                     for alg in algs: el.AddAlg (alg)
                     pass
                 pass
@@ -256,8 +266,4 @@ class Hercules (object):
         cmd = 'rm -rf %s/%s/' % (HistDir, args.name)
         self._bash (cmd)
         pass
-
-    def OwnHist (self):
-        pass
-
     pass
