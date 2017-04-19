@@ -18,13 +18,11 @@ class PulseStability (Hercules):
         self.AddMDProfile ('evt', 'phase',    fit='linear')
         self.AddMDProfile ('evt', 'width',    fit='linear')
         self.AddMDProfile ('evt', 'prob',     fit='linear')
-        self.AddMDProfile ('evt', 'chgratio', fit='linear')
         self.OwnELHist ('pedestal')
         self.OwnELHist ('height')
         self.OwnELHist ('phase')
         self.OwnELHist ('width')
         self.OwnELHist ('prob')
-        self.OwnELHist ('chgratio')
         pass
     pass
 
