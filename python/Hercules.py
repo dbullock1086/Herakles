@@ -149,12 +149,24 @@ class Hercules (object):
                 Alg = td.GetAlg (alg)
                 el.AddAlg (Alg)
                 pass
-            el.Submit ()
+            el.Submit (TMPDIR + '/' + args.name)
+
+            tempfile = '%s/%s/hist-%s.root' % (TMPDIR, args.name, args.data)
+            cmd = 'cp %s %s/%s/eventloop.root' % (tempfile, HistDir, args.name)
+            self._bash (cmd)
+            tempfile = '%s/%s/ntuple.root' % (TMPDIR, args.name)
+            if os.access(tempfile, os.R_OK):
+                cmd = 'mv %s %s/%s/ntuple.root' % \
+                      (tempfile, HistDir, args.name)
+                self._bash (cmd)
+                pass
+            cmd = 'rm -rf %s/%s' % (TMPDIR, args.name)
+            self._bash (cmd)
             pass
         elif routine == 'multidraw':
             # build event loop
             el = ELHandler (self.name, 'ntuple')
-            el.SH (TMPDIR + '/' + args.name, 'multidraw.root')
+            el.SH ('%s/%s/ntuple.root' % (HistDir, args.name)
             el.EL ()
 
             # stage the MD algorithms to each channel
@@ -177,14 +189,21 @@ class Hercules (object):
                     for alg in algs: el.AddAlg (alg)
                     pass
                 pass
-            el.Submit ()
+            el.Submit (TMPDIR + '/' + args.name)
+
+            tempfile = '%s/%s/hist-ntuple.root' % (TMPDIR, args.name)
+            cmd = 'cp %s %s/%s/multidraw.root' % (tempfile, HistDir, args.name)
+            self._bash (cmd)
+            cmd = 'rm -rf %s/%s' % (TMPDIR, args.name)
+            self._bash (cmd)
             pass
         elif routine == 'hist':
             # collect and summarize hists
             if hasattr (self, 'module') self.module.Clear ()
             else: self.module = Module (args.name, args.gains, args.channels)
 
-            self.module.OpenFile ('%s/%s/multidraw.root' % (TMPDIR, args.name))
+            self.module.OpenFile ('%s/%s/multidraw.root' % \
+                                  (HistDir, args.name))
             for xvar in self.mdhists: self.module.OwnMDHist (xvar)
             for [xvar, yvar] in self.mdhists2d:
                 self.module.OwnMDHist2D (xvar, yvar)
@@ -197,11 +216,12 @@ class Hercules (object):
             for a in self.mdfits: self.module.DoFit (a, self.mdfits[a])
             self.module.Summarize ()
 
-            self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))
+            self.module.OpenFile ('%s/%s/eventloop.root' % \
+                                  (HistDir, args.name))
             for name in self.ownel: self.module.OwnELHist (name)
             self.module.CloseFile ()
 
-            self.module.OpenFile ('%s/%s/final.root' % (HistDir, args.name))
+            self.module.OpenFile ('%s/%s/hist.root' % (HistDir, args.name))
             self.module.Write ()
             self.module.CloseFile ()
 
@@ -256,7 +276,7 @@ class Hercules (object):
                   (HistDir, args.name, args.hist)
             pass
         else:
-            cmd = 'cp %s/%s/final.root %s' % \
+            cmd = 'cp %s/%s/hist.root %s' % \
                   (HistDir, args.name, args.hist)
             pass
         self._bash (cmd)

@@ -85,6 +85,8 @@ Your first interaction with `Herakles` is probably the command line as shown in 
 
 This test script uses control instructions, but the commands themselves are quite similar between tests.
 
+![figure:docs/class-structure.svg](docs/class-structure.svg "Class Structure and Hierarchy")
+
 Tests involving the LED refer to a flash of light that is collected by PMT and shaped by electronics into a pulse. The stability of a pulse is a study of reliability. The baseline of the pulse is influenced by the pedestal bias. If this value is held constant for many events, we should expect the pulse shape to also remain constant over the same events. The "pulse" is a sampling of a stochastic process that we model with a calibrated experimental function.
 
 The `PulseStability` test studies the stability of the pulse by plotting the parameters of a fitted pulse against the event number.
