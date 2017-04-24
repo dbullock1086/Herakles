@@ -39,14 +39,15 @@ if args.name not in history:
 class Hercules (object):
     def __init__ (self):
         #### some metadata
-        self.elalgs     = set (['EvtRange'])
-        self.mdhists    = []
-        self.mdhists2d  = []
-        self.mdprofiles = []
-        self.mdfits     = {}
-        self.cpybr      = set ()
-        self.tree       = 'dataTree'
-        self.ownel      = set ()
+        self.elalgs      = set (['EvtRange'])
+        self.statichists = []
+        self.mdhists     = []
+        self.mdhists2d   = []
+        self.mdprofiles  = []
+        self.histfits    = {}
+        self.cpybr       = set ()
+        self.tree        = 'dataTree'
+        self.ownel       = set ()
         pass
 
     def SetTree (self, tree):
@@ -71,13 +72,21 @@ class Hercules (object):
         else: self.cpybr.add (branch)
         pass
 
+    def AddStaticHist (self, name, fit=''):
+        #### add a Herakles algorithm class (string reference)
+        assert type(name).__name__ == 'str', 'name must be a string'
+        assert type(fit).__name__ == 'str', 'fit must be a string'
+        self.statichists.append (name)
+        if fit: self.histfits[name] = fit
+        pass
+
     def AddMDHist (self, xvar, fit=''):
         #### add a MultiDraw algorithm class (string reference)
         assert type(xvar).__name__ == 'str', 'xvar must be a string'
         assert xvar != 'evt', 'evt not allowed as a 1D histogram'
         assert type(fit).__name__ == 'str', 'fit must be a string'
         self.mdhists.append (xvar)
-        if fit: self.mdfits[xvar] = fit
+        if fit: self.histfits[xvar] = fit
         pass
 
     def AddMDHist2D (self, xvar, yvar):
@@ -92,7 +101,7 @@ class Hercules (object):
         assert type(xvar).__name__ == 'str', 'xvar must be a string'
         assert type(yvar).__name__ == 'str', 'yvar must be a string'
         self.mdprofiles.append ([xvar, yvar])
-        if fit: self.mdfits['prf_%s_%s' % (xvar, yvar)] = fit
+        if fit: self.histfits['prf_%s_%s' % (xvar, yvar)] = fit
         pass
 
     def OwnELHist (self, name):
@@ -166,13 +175,14 @@ class Hercules (object):
         elif routine == 'multidraw':
             # build event loop
             el = ELHandler (self.name, 'ntuple')
-            el.SH ('%s/%s/ntuple.root' % (HistDir, args.name)
+            el.SH ('%s/%s/ntuple.root' % (HistDir, args.name))
             el.EL ()
 
             # stage the MD algorithms to each channel
             self.module = Module (args.name, args.gains, args.channels)
             self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))
             self.module.InitRange ()
+            for name in self.statichists: self.module.AddStaticHist (name)
             for xvar in self.mdhists: self.module.AddMDHist (xvar)
             for [xvar, yvar] in self.mdhists2d:
                 self.module.AddMDHist2D (xvar, yvar)
@@ -204,6 +214,7 @@ class Hercules (object):
 
             self.module.OpenFile ('%s/%s/multidraw.root' % \
                                   (HistDir, args.name))
+            for name in self.statichists: self.module.OwnMDHist (name)
             for xvar in self.mdhists: self.module.OwnMDHist (xvar)
             for [xvar, yvar] in self.mdhists2d:
                 self.module.OwnMDHist2D (xvar, yvar)
@@ -213,7 +224,7 @@ class Hercules (object):
                 pass
             self.module.CloseFile ()
 
-            for a in self.mdfits: self.module.DoFit (a, self.mdfits[a])
+            for a in self.histfits: self.module.DoFit (a, self.histfits[a])
             self.module.Summarize ()
 
             self.module.OpenFile ('%s/%s/eventloop.root' % \

@@ -49,6 +49,15 @@ class Channel (Fitter, Nomenclature):
         title = '%s: %s' % (self.title, xtitle)
         return title
 
+    def StaticHist (self, name):
+        #### add a static algorithm to fill a histogram
+        pname = self.NameHist (name)
+        title = self.TitleHist (name)
+        self.algs[pname] = eval ('ROOT.TD.%s()' % name)
+        self.algs[pname].gain = self.gain
+        self.algs[pname].pmt = self.pmt
+        pass
+
     def MDHist (self, xvar, xbins, xmin, xmax):
         #### add a MultiDraw algorithm to fill a 1D histogram
         name = self.NameHist (xvar)
@@ -116,9 +125,9 @@ class Channel (Fitter, Nomenclature):
         self.hists[name].SetDirectory (0)
         pass
 
-    def DoFit (self, vargs, mode):
+    def DoFit (self, key, mode):
         #### perform a fit to a specified mode
-        name = '%s_%s' % (self.name, vargs)
+        name = '%s_%s' % (self.name, key)
         self.Fit (name, mode)
 
         # read back the parameters of the fit

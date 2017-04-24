@@ -43,6 +43,15 @@ class Module (HistReader):
             pass
         pass
 
+    def AddStaticHist (self, name):
+        #### add a 1D histogram to each channel
+        for gain in self.gains:
+            for pmt in self.channels:
+                self.members[gain][pmt].StaticHist (name)
+                pass
+            pass
+        pass
+
     def AddMDHist (self, xvar):
         #### add a 1D histogram to each channel
         for gain in self.gains:
@@ -58,6 +67,7 @@ class Module (HistReader):
         #### get a 1D histogram and assign to each channel
         for gain in self.gains:
             for pmt in self.channels:
+                name = self.members[gain][pmt].NameHist (xvar)
                 hist = self.rfile.Get (name)
                 self.members[gain][pmt].OwnHist (hist, xvar)
                 pass
@@ -82,6 +92,7 @@ class Module (HistReader):
         #### get a 2D histogram and assign to each channel
         for gain in self.gains:
             for pmt in self.channels:
+                name = self.members[gain][pmt].NameHist2D (xvar, yvar)
                 hist = self.rfile.Get (name)
                 self.members[gain][pmt].OwnHist (hist, xvar, yvar)
                 pass
@@ -106,6 +117,7 @@ class Module (HistReader):
         #### get a profile and assign to each channel
         for gain in self.gains:
             for pmt in self.channels:
+                name = self.members[gain][pmt].NameProfile (xvar, yvar)
                 hist = self.rfile.Get (name)
                 self.members[gain][pmt].OwnHist (hist, xvar, yvar)
                 pass
@@ -122,8 +134,7 @@ class Module (HistReader):
         #    and PMT
         for gain in self.gains:
             for pmt in self.channels:
-                self.members[gain][pmt].DoFit (vargs, mode)
-
+                self.members[gain][pmt].DoFit (key, mode)
                 # if a fit is performed, add it to summary
                 if not self.summary.has_key (key): self.summary[key] = {}
                 pass
