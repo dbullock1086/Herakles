@@ -55,6 +55,8 @@ class Channel (Fitter, Nomenclature):
         pname = self.NameHist (name)
         title = self.TitleHist (name)
         self.algs[pname] = eval ('ROOT.TD.%s()' % name)
+        self.algs[pname].histname = pname
+        self.algs[pname].histtitle = title
         self.algs[pname].gain = self.gain
         self.algs[pname].pmt = self.pmt
         self.algs[pname].window = self.window
