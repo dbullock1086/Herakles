@@ -59,7 +59,7 @@ namespace TD
 	else      sval = samples_lo[pmt][sample];
 	if (sval <= 4095 && sval > 0)
 	  {
-	    hist_temp->Fill (sample, sval);
+	    m_pulseprf->Fill (sample, sval);
 	  }
       } // end sample
 
