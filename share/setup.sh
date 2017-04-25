@@ -30,7 +30,7 @@ export DataDir=$WorkDir/data
 mkdir -p $DataDir
 export HistDir=$WorkDir/hists
 mkdir -p $HistDir
-export LogDir=$LogDir/logs
+export LogDir=$WorkDir/logs
 mkdir -p $LogDir
 export TMPDIR=$WorkDir/TMPDir
 mkdir -p $TMPDIR
