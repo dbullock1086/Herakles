@@ -18,7 +18,7 @@ namespace TD
   class PulseProfile : public EL::Algorithm
   {
   public:
-    std::string& histname, histtitle;
+    const char *histname, *histtitle;
     UShort_t gain;
     UShort_t pmt;
     UShort_t window[2];

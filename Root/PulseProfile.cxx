@@ -23,7 +23,7 @@ namespace TD
     char buffer[9];
 
     // initialize profile to fill
-    m_pulseprf = new TProfile (histname, histtitle, 128, 0, 128);
+    m_pulseprf = new TProfile (histname, histtitle, 128, 0, 128, "S");
     m_pulseprf->SetYTitle ("Average Sample");
     for (sample=0; sample<128; sample++)
       {
