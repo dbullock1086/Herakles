@@ -13,6 +13,7 @@
 #include <Herakles/CorrHF.h>
 #include <Herakles/PulseFit.h>
 #include <Herakles/FastFit.h>
+#include <Herakles/PulseProfile.h>
 
 #ifdef __CINT__
 
@@ -38,5 +39,7 @@
 #pragma link C++ class TD::CorrHF+;
 #pragma link C++ class TD::PulseFit+;
 #pragma link C++ class TD::FastFit+;
+
+#pragma link C++ class TD::PulseProfile+;
 
 #endif

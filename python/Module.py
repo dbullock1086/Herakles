@@ -23,7 +23,7 @@ class Module (HistReader):
         for gain in self.gains:
             self.members[gain] = {}
             for pmt in self.channels:
-                self.members[gain][pmt] = Channel (self.name, gain, pmt)
+                self.members[gain][pmt] = Channel (self.name, gain, pmt, self.window)
                 pass
             pass
         self.hists = {}

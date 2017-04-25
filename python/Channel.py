@@ -14,15 +14,16 @@ from Fitter import Fitter
 from Nomenclature import Nomenclature
 
 class Channel (Fitter, Nomenclature):
-    def __init__ (self, mname, gain, pmt):
+    def __init__ (self, mname, gain, pmt, window=[0,128]):
         #### identify the channel with its specific gain and PMT
-        self.gain  = gain
-        self.pmt   = pmt
-        self.name  = 'gain%i_pmt%i' % (self.gain, self.pmt)
-        self.title = '%s Gain%i PMT%i' % (mname, self.gain, self.pmt)
-        self.hists = {}
-        self.algs  = {}
-        self.summary = {}
+        self.gain   = gain
+        self.pmt    = pmt
+        self.window = window
+        self.name   = 'gain%i_pmt%i' % (self.gain, self.pmt)
+        self.title  = '%s Gain%i PMT%i' % (mname, self.gain, self.pmt)
+        self.hists     = {}
+        self.algs      = {}
+        self.summary   = {}
         self.fitparams = {}
         pass
 
@@ -56,6 +57,7 @@ class Channel (Fitter, Nomenclature):
         self.algs[pname] = eval ('ROOT.TD.%s()' % name)
         self.algs[pname].gain = self.gain
         self.algs[pname].pmt = self.pmt
+        self.algs[pname].window = self.window
         pass
 
     def MDHist (self, xvar, xbins, xmin, xmax):

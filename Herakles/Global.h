@@ -18,6 +18,8 @@ namespace TD
   class CorrHF;
   class PulseFit;
   class FastFit;
+
+  class PulseProfile;
 }
 
 #endif
