@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 # Herakles
@@ -6,9 +5,9 @@
 # https://github.com/dbullock1086/Herakles
 
 from ROOTBase import *
-from Nomenclature import Nomenclature
+from Branches import Branches
 
-class HistReader (Nomenclature):
+class HistReader (Branches):
     def OpenFile (self, fname, option='read'):
         #### open the eventloop output file
         self.rfile = ROOT.TFile.Open (fname, option)
@@ -25,13 +24,13 @@ class HistReader (Nomenclature):
     def GetRange (self, var, gain=0, pmt=0):
         #### get the number of bins and range for a particular variable
         #    for a particular gain and channel
-        name = self.VarELName (var)
+        name = self.VarRange (var)
 
         if var == 'evt':
             minval = self.evtmin
             maxval = self.evtmax
             pass
-        elif self.VarMinMax (var):
+        elif self.VarChannel (var):
             if gain:
                 hist = self.rfile.Get (name + '_hi_min')
                 minval = hist.GetBinContent (pmt + 1)
@@ -85,33 +84,6 @@ class HistReader (Nomenclature):
         binsize = valsize / (steps - 1)
         maxval += binsize
         return [steps, minval, maxval]
-
-    def _own (self, tname):
-        self.owned[tname] = self.rfile.Get (tname)
-        self.owned[tname].SetDirectory (0)
-        title = self.title + self.owned[tname].GetTitle ()
-        self.owned[tname].SetTitle (title)
-        pass
-
-    def OwnRange (self, var):
-        name = self.VarELName (var)
-        if self.VarMinMax (var):
-            if gain:
-                tname = name + '_hi_min'
-                self._own (tname)
-                tname = name + '_hi_max'
-                self._own (tname)
-                pass
-            else:
-                tname = name + '_lo_min'
-                self._own (tname)
-                tname = name + '_lo_max'
-                self._own (tname)
-                pass
-            pass
-        else: self._own (tname)
-        pass
-    pass
 
     def CloseFile (self):
         #### always be tidy

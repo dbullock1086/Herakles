@@ -10,12 +10,7 @@ class SampleView (Hercules):
     def __init__ (self):
         super (SampleView, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('EvtRange')
-        self.AddTDAlg ('SampleRange')
-        self.CopyBranch ('evt')
-        self.CopyBranch ('samples')
         self.AddMDHist2D ('evt', 'samples')
-        self.OwnELHist ('samples')
         pass
     pass
 

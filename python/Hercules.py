@@ -17,7 +17,7 @@ from ArgParse import *
 #### load supports
 import os, subprocess, json
 from ELHandler import ELHandler
-from TDHandler import TDHandler
+from Branches import Branches
 from Module import Module
 
 #### get environment variables
@@ -39,15 +39,15 @@ if args.name not in history:
 class Hercules (object):
     def __init__ (self):
         #### some metadata
-        self.elalgs      = set (['EvtRange'])
-        self.statichists = []
-        self.mdhists     = []
-        self.mdhists2d   = []
-        self.mdprofiles  = []
-        self.histfits    = {}
-        self.cpybr       = set ()
-        self.tree        = 'dataTree'
-        self.ownel       = set ()
+        self.elalgs     = set (['EvtRange'])
+        self.mdhists    = []
+        self.mdhists2d  = []
+        self.mdprofiles = []
+        self.histfits   = {}
+        self.cpybr      = set ()
+        self.tree       = 'dataTree'
+        self.ownel      = set ()
+        self.brRef = Branches ()
         pass
 
     def SetTree (self, tree):
@@ -56,28 +56,25 @@ class Hercules (object):
         self.tree = tree
         pass
 
-    def AddTDAlg (self, alg):
-        #### add a TileDemo algorithm class (string reference)
+    def AddStatic (self, alg):
+        #### add a static algorithm class (string reference)
         assert type(alg).__name__ == 'str', 'alg must be a string'
         self.elalgs.add (alg)
+        self.ownel.add (alg)
         pass
 
-    def CopyBranch (self, branch):
+    def _checkbranch (self, branch):
         #### copy a branch from raw data to the derived dataset
-        assert type(branch).__name__ == 'str', 'branch must be a string'
-        if branch == 'ped' or branch == 'samples':
-            if 0 in args.gains: self.cpybr.add (branch + '_lo')
-            if 1 in args.gains: self.cpybr.add (branch + '_hi')
+        #    or add the associated algorithm
+        self.ownel.add (self.brRef.VarRange(branch)
+        if self.brRef.VarRaw (branch):
+            if self.brRef.VarChannel (branch):
+                if 0 in args.gains: self.cpybr.add (branch + '_lo')
+                if 1 in args.gains: self.cpybr.add (branch + '_hi')
+                pass
+            else: self.cpybr.add (branch)
             pass
-        else: self.cpybr.add (branch)
-        pass
-
-    def AddStaticHist (self, name, fit=''):
-        #### add a Herakles algorithm class (string reference)
-        assert type(name).__name__ == 'str', 'name must be a string'
-        assert type(fit).__name__ == 'str', 'fit must be a string'
-        self.statichists.append (name)
-        if fit: self.histfits[name] = fit
+        else: self.elalgs.add (self.brRef.VarAlg(branch))
         pass
 
     def AddMDHist (self, xvar, fit=''):
@@ -85,6 +82,7 @@ class Hercules (object):
         assert type(xvar).__name__ == 'str', 'xvar must be a string'
         assert xvar != 'evt', 'evt not allowed as a 1D histogram'
         assert type(fit).__name__ == 'str', 'fit must be a string'
+        self._checkbranch (xvar)
         self.mdhists.append (xvar)
         if fit: self.histfits[xvar] = fit
         pass
@@ -93,6 +91,8 @@ class Hercules (object):
         #### add a MultiDraw algorithm class (string reference)
         assert type(xvar).__name__ == 'str', 'xvar must be a string'
         assert type(yvar).__name__ == 'str', 'yvar must be a string'
+        self._checkbranch (xvar)
+        self._checkbranch (yvar)
         self.mdhists2d.append ([xvar, yvar])
         pass
 
@@ -100,21 +100,14 @@ class Hercules (object):
         #### add a MultiDraw algorithm class (string reference)
         assert type(xvar).__name__ == 'str', 'xvar must be a string'
         assert type(yvar).__name__ == 'str', 'yvar must be a string'
+        self._checkbranch (xvar)
+        self._checkbranch (yvar)
         self.mdprofiles.append ([xvar, yvar])
         if fit: self.histfits['prf_%s_%s' % (xvar, yvar)] = fit
         pass
 
-    def OwnELHist (self, name):
-        #### save a histogram from the EventLoop routine for final output
-        assert type(name).__name__ == 'str', 'name must be a string'
-        assert name not in ['evt', 'cap', 'charge'], \
-            'evt, cap, and charge do not have summary histograms'
-        self.ownel.add (name)
-        pass
-
     def Run (self):
         #### execute the test
-
         # run a single routine (i.e. batch)
         if args.routine: self._run (args.routine)
 
@@ -139,7 +132,7 @@ class Hercules (object):
         log = json.dumps(history, sort_keys=True,
                          indent=4, separators=(',', ': '))
         f = open (WorkDir + '/history.json', 'w')
-        f.write (log)
+        f.write ('history = ' + log)
         f.close ()
 
         if routine == 'eventloop':
@@ -153,7 +146,7 @@ class Hercules (object):
             if self.cpybr: el.NTuple (self.cpybr)
 
             # get the algorithm objects
-            td = TDHandler (args.gains, args.channels, args.window)
+            td = Algorithms (args.gains, args.channels, args.window)
             for alg in self.algs:
                 Alg = td.GetAlg (alg)
                 el.AddAlg (Alg)
@@ -175,14 +168,13 @@ class Hercules (object):
         elif routine == 'multidraw':
             # build event loop
             el = ELHandler (self.name, 'ntuple')
-            el.SH ('%s/%s/ntuple.root' % (HistDir, args.name))
+            el.SH ('%s/%s' % (HistDir, args.name), 'ntuple.root')
             el.EL ()
 
             # stage the MD algorithms to each channel
-            self.module = Module (args.name, args.gains, args.channels)
+            self.module = Module (args.gains, args.channels, args.window)
             self.module.OpenFile ('%s/%s/eventloop.root' % (TMPDIR, args.name))
             self.module.InitRange ()
-            for name in self.statichists: self.module.AddStaticHist (name)
             for xvar in self.mdhists: self.module.AddMDHist (xvar)
             for [xvar, yvar] in self.mdhists2d:
                 self.module.AddMDHist2D (xvar, yvar)
@@ -210,11 +202,10 @@ class Hercules (object):
         elif routine == 'hist':
             # collect and summarize hists
             if hasattr (self, 'module') self.module.Clear ()
-            else: self.module = Module (args.name, args.gains, args.channels)
+            else: self.module = Module (args.gains, args.channels, args.window)
 
             self.module.OpenFile ('%s/%s/multidraw.root' % \
                                   (HistDir, args.name))
-            for name in self.statichists: self.module.OwnMDHist (name)
             for xvar in self.mdhists: self.module.OwnMDHist (xvar)
             for [xvar, yvar] in self.mdhists2d:
                 self.module.OwnMDHist2D (xvar, yvar)

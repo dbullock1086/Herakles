@@ -10,12 +10,7 @@ class SampleLinearity (Hercules):
     def __init__ (self):
         super (SampleLinearity, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('PedRange')
-        self.CopyBranch ('ped')
-        self.CopyBranch ('samples')
         self.AddMDProfile ('ped', 'samples', fit='linear')
-        self.OwnELHist ('ped')
-        self.OwnELHist ('samples')
         pass
     pass
 

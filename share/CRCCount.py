@@ -10,11 +10,7 @@ class CRCCount (Hercules):
     def __init__ (self):
         super (CRCCount, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('EventRange')
-        self.AddTDAlg ('CRCError')
-        self.CopyBranch ('evt')
         self.AddMDHist2D ('evt', 'crc')
-        self.OwnELHist ('crc')
         pass
     pass
 

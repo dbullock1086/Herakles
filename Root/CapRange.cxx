@@ -34,7 +34,7 @@ namespace TD
 
     // histogram contains number of steps
     m_capsteps = new TH1D ("CapSteps", "Cap Steps", 1, 0, 1);
-    m_capsteps->GetXaxis()->SetBinLabel (1, "Steps");
+    m_capsteps->SetYTitle ("Steps");
 
     // add the histograms to EL output
     wk()->addOutput (m_cap);

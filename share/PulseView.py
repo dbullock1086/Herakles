@@ -10,9 +10,7 @@ class PulseView (Hercules):
     def __init__ (self):
         super (PulseView, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('SampleLF')
-        self.OwnELHist ('lfmean')
-        self.OwnELHist ('lfstd')
+        self.AddStatic ('SampleLF')
         pass
     pass
 

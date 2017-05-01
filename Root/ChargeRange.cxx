@@ -34,7 +34,7 @@ namespace TD
 
     // histogram contains number of steps
     m_chargesteps = new TH1D ("ChargeSteps", "Charge Steps", 1, 0, 1);
-    m_chargesteps->GetXaxis()->SetBinLabel (1, "Steps");
+    m_chargesteps->SetYTitle ("Steps");
 
     // add the histograms to EL output
     wk()->addOutput (m_charge);

@@ -10,11 +10,7 @@ class SampleStability (Hercules):
     def __init__ (self):
         super (SampleStability, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('EvtRange')
-        self.CopyBranch ('evt')
-        self.CopyBranch ('samples')
         self.AddMDProfile ('evt', 'samples', fit='linear')
-        self.OwnELHist ('samples')
         pass
     pass
 

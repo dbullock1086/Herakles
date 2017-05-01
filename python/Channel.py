@@ -11,19 +11,18 @@
 
 from ROOTBase import *
 from Fitter import Fitter
-from Nomenclature import Nomenclature
+from Branches import Branches
 
-class Channel (Fitter, Nomenclature):
-    def __init__ (self, mname, gain, pmt, window=[0,128]):
+class Channel (Fitter, Branches):
+    def __init__ (self, gain, pmt, window=[0,128]):
         #### identify the channel with its specific gain and PMT
         self.gain   = gain
         self.pmt    = pmt
         self.window = window
         self.name   = 'gain%i_pmt%i' % (self.gain, self.pmt)
-        self.title  = '%s Gain%i PMT%i' % (mname, self.gain, self.pmt)
+        self.title  = 'Gain%i PMT%i' % (self.gain, self.pmt)
         self.hists     = {}
         self.algs      = {}
-        self.summary   = {}
         self.fitparams = {}
         pass
 
@@ -49,18 +48,6 @@ class Channel (Fitter, Nomenclature):
         xtitle = self.VarTitle (xvar)
         title = '%s: %s' % (self.title, xtitle)
         return title
-
-    def StaticHist (self, name):
-        #### add a static algorithm to fill a histogram
-        pname = self.NameHist (name)
-        title = self.TitleHist (name)
-        self.algs[pname] = eval ('ROOT.TD.%s()' % name)
-        self.algs[pname].histname = pname
-        self.algs[pname].histtitle = title
-        self.algs[pname].gain = self.gain
-        self.algs[pname].pmt = self.pmt
-        self.algs[pname].window = self.window
-        pass
 
     def MDHist (self, xvar, xbins, xmin, xmax):
         #### add a MultiDraw algorithm to fill a 1D histogram

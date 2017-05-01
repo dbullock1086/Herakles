@@ -14,18 +14,18 @@ from Channel import Channel
 from HistReader import HistReader
 
 class Module (HistReader):
-    def __init__ (self, name, gains, channels, window):
+    def __init__ (self, gains, channels, window):
         #### manager of channels and summaries
-        self.name = name
         self.gains = gains
         self.channels = channels
         self.window = window
         for gain in self.gains:
             self.members[gain] = {}
             for pmt in self.channels:
-                self.members[gain][pmt] = Channel (self.name, gain, pmt, self.window)
+                self.members[gain][pmt] = Channel (gain, pmt, self.window)
                 pass
             pass
+        self.algs = {}
         self.hists = {}
         self.summary = {}
         pass
@@ -40,15 +40,6 @@ class Module (HistReader):
         for name in self.hists:
             self.hists[name].IsA().Destructor (self.hists[name])
             del self.hists[name]
-            pass
-        pass
-
-    def AddStaticHist (self, name):
-        #### add a 1D histogram to each channel
-        for gain in self.gains:
-            for pmt in self.channels:
-                self.members[gain][pmt].StaticHist (name)
-                pass
             pass
         pass
 
@@ -146,12 +137,12 @@ class Module (HistReader):
             for pmt in self.channels:
                 for name in self.summary:
                     if gain:
-                        sbase = '%s_%s_hi' % (self.name, name)
-                        stitle = '%s %s High' % (self.name, name)
+                        sbase = '%s_hi' % name
+                        stitle = '%s High' % name
                         pass
                     else:
-                        sbase = '%s_%s_lo' % (self.name, name)
-                        stitle = '%s %s Low' % (self.name, name)
+                        sbase = '%s_lo' % name
+                        stitle = '%s Low' % name
                         pass
 
                     namesplit = name.split('_')

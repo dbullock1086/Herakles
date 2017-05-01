@@ -10,8 +10,7 @@ class SampleCorr (Hercules):
     def __init__ (self):
         super (SampleCorr, self).__init__ ()
         self.SetTree ('dataTree')
-        self.AddTDAlg ('SampleCorr')
-        self.OwnELHist ('hfcorr')
+        self.AddStatic ('CorrHF')
         pass
     pass
 
